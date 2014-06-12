@@ -1,0 +1,121 @@
+.sprite {
+    background-image: url(/colorful/spritesheet.png);
+    background-repeat: no-repeat;
+    float: left;
+    margin-right: 15px;
+    display: block;
+}
+
+.sprite-1396343029_shop {
+    width: 20px;
+    height: 20px;
+    background-position: -5px -5px;
+}
+
+.sprite-1396343039_like {
+    width: 20px;
+    height: 20px;
+    background-position: -35px -5px;
+}
+
+.sprite-1396343050_news {
+    width: 20px;
+    height: 20px;
+    background-position: -65px -5px;
+}
+
+.sprite-1396343080_mail {
+    width: 20px;
+    height: 20px;
+    background-position: -95px -5px;
+}
+
+.sprite-1396343119_params {
+    width: 20px;
+    height: 20px;
+    background-position: -125px -5px;
+}
+
+.sprite-1396343166_paperplane {
+    width: 20px;
+    height: 20px;
+    background-position: -155px -5px;
+}
+
+.sprite-1396343345_user {
+    width: 20px;
+    height: 20px;
+    background-position: -185px -5px;
+}
+
+.sprite-1396343908_settings {
+    width: 20px;
+    height: 20px;
+    background-position: -215px -5px;
+}
+
+.sprite-1396344419_lock {
+    width: 20px;
+    height: 20px;
+    background-position: -245px -5px;
+}
+
+.sprite-1396344637_search {
+    width: 20px;
+    height: 20px;
+    background-position: -275px -5px;
+}
+
+.sprite-1396344657_vallet {
+    width: 20px;
+    height: 20px;
+    background-position: -305px -5px;
+}
+
+.sprite-1396344673_phone {
+    width: 20px;
+    height: 20px;
+    background-position: -335px -5px;
+}
+
+.sprite-1396344746_truck {
+    width: 20px;
+    height: 20px;
+    background-position: -365px -5px;
+}
+
+.sprite-1396345059_stack {
+    width: 20px;
+    height: 20px;
+    background-position: -395px -5px;
+}
+
+.sprite-1396377513_map- {
+    width: 128px;
+    height: 128px;
+    background-position: -425px -5px;
+}
+
+.sprite-1396377515_bubbles {
+    width: 128px;
+    height: 128px;
+    background-position: -563px -5px;
+}
+
+.sprite-1396377528_target {
+    width: 128px;
+    height: 128px;
+    background-position: -701px -5px;
+}
+
+.sprite-1396379273_86 {
+    width: 16px;
+    height: 16px;
+    background-position: -839px -5px;
+}
+
+.sprite-1396379288_90 {
+    width: 16px;
+    height: 16px;
+    background-position: -865px -5px;
+}

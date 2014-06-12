@@ -1,0 +1,44 @@
+input[type="text"]{
+	background: #FAFAFA;
+}
+input[name="Price"]{
+	font-size: 2em;
+	width: 7em;
+	background: #FAFAFA;
+}
+
+textarea{
+	font-family: inherit;
+	width: calc(100% - 25px);
+	height: 200px;
+	background: #FAFAFA;
+	resize:none;
+}
+
+#addTable{
+	background: url("/colorful/pattern5.jpg");
+	padding: 10px;
+	width: 1040px;
+	background: rgba(255,255,255,.95);
+	margin: -4px auto 0px auto;
+	box-shadow: 0px 0px 4px #CCC;
+	vertical-align: top;
+}
+
+#imgDrop {
+	height: 130px;
+	width: calc(100% - 25px);
+	background: #FAFAFA;
+	background: url("/colorful/pstripes.jpg") repeat;
+}
+
+#imgDrop img{
+	z-index: 61;
+	margin: 3px 2% 5px 2%;
+	max-width: 200px;
+	height: 120px;
+	border: 2px solid #C0C0C0;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+}

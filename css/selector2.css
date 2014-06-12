@@ -1,0 +1,188 @@
+body{
+	background: #FFF;
+}
+.sprite {
+    float: inherit;
+    margin-right: 0px;
+    display: block;
+    margin: auto;
+}
+.footerBar{
+	position: inherit;
+	background: #F0F0F0;
+	border-top: 3px solid #9ACE4D;
+}
+
+#parallax{
+	width: 100%;
+	height: 100%;
+	padding: 0px;
+	margin: 0px;
+	z-index: -1000;
+	position: fixed;
+	background: url("/colorful/cf0.jpg");
+	background-size: 100%;
+	background-repeat: none;
+	background-attachment: top;
+}
+
+#schools {
+	width: 600px;
+	height: 0px;
+	margin: 0px auto 0px auto;
+	background: rgba(0,0,0,.75);
+	color: #FFF;
+	text-align: center;
+}
+
+#schools li{
+	cursor: pointer;
+	display: block;
+	width: 100%;
+	height: 45px;
+	margin:auto;
+	font-size: 1.2em;
+	line-height: 54px;
+}
+
+#schools li:hover{
+	color: #9ACE4D;
+	font-weight: 800;
+}
+
+#schoolSearch{
+	position: relative;
+	left: 50%;
+	margin: 100px 0px 0px -300px;
+	font-size: 14px;
+	color: #7b7b80;
+	background: rgba(255,255,255,9);
+	width: 584px;
+	padding: 8px;
+	border: none;
+	font-style: italic;
+	font-weight: bold;
+	vertical-align: middle;
+	-moz-box-shadow: 0px 0px 1px #4b4b4b;
+	-webkit-box-shadow: 0px 0px 1px #4b4b4b;
+	box-shadow: 0px 0px 1px #4b4b4b;
+}
+
+#finalCB{
+	border-bottom: none;
+
+}
+
+.fullBodyWrapper{
+	margin: 0px;
+	width: 100%;
+	min-width: 1024px;
+	overflow: hidden;
+}
+
+.fullBodyWrapper div{
+	background: #FFF;
+}
+
+.fullBodyWrapper .titleHeader{
+	padding: 0px 50px;
+	height: 60px;
+	border-bottom: 3px solid #9ACE4D;
+}
+.fullBodyWrapper .titleHeader img{
+	margin: 5px 0px;
+}
+
+.fullBodyWrapper .contentBlock{
+	border-top: 3px solid #9ACE4D;
+	border-bottom: 3px solid #9ACE4D;
+	min-height: 400px;
+}
+
+.contentBlock h1{
+	font-size: 2em;
+	text-align: center;
+	color: #808080;
+}
+.contentBlock #blab{
+	width: 100%;
+	text-align: center;
+	padding: 30px 0px;
+	overflow: hidden;
+}
+
+.contentBlock #blab .fl{
+	color: #808080;
+	width: 900px;
+	margin: auto;
+	font-size: 2em;
+}
+
+
+.contentBlock #blab .fl p{
+	padding: 10px 30px;
+}
+
+.contentBlock #blab .fl p{
+	font-size: .75em;
+}
+
+.fullBodyWrapper .clearfix{
+	background: none;
+	height: 500px;
+}
+
+#clearFix0 button{
+	background-color:rgba(73, 114, 13, 0.9);;
+	border: none;
+	font-size: 1.3em;
+	color: #FFF;
+	width: 300px;
+	padding: 10px; 
+	cursor: pointer;
+	position: relative;
+	left: 50%;
+	margin-left: -150px;
+	top: 250px;
+}
+
+#clearFix1{
+	background-image: url("/colorful/cf1.jpg");
+	background-size: 100%;
+}
+
+#clearFix2{
+	background-image: url("/colorful/cf2.jpg");
+	background-size: 100%;
+}
+
+#clearFix3{
+	background-image: url("/colorful/cf3.jpg");
+	background-size: 100%;
+}
+
+.fullBodyWrapper .clearfix div{
+	position: relative;
+	background: none;
+}
+
+.fullBodyWrapper .clearfix div h1{
+	font-size: 3em;
+	display: inline-block;
+	color: #FFF;
+	background: rgba(73, 114, 13, 0.75);
+	padding: 10px;
+	position: relative;
+	top: 80px;left: 100px;
+}
+
+.fullBodyWrapper .clearfix div h2{
+	font-size: 1.3em;
+	display: inline-block;
+	color: #FFF;
+	background: rgba(0,0,0,.75);
+	padding: 10px;
+	position: relative;
+	top: 61px;left: 100px;
+	text-transform: uppercase;
+}

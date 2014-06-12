@@ -1,0 +1,44 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	getUserPosts();
+})
+</script>
+<style type="text/css">
+#yourPosts{
+	min-height: 400px;
+}
+
+#yourPosts h3{
+	padding: 30px 10px 30px 10px;
+}
+table{
+	border-bottom: 1px solid #C0C0C0;
+}
+table th{
+	text-align: left;
+	font-style: bold;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	background: url("/colorful/pstripes.jpg");
+	border-top: 1px solid #C0C0C0;
+	border-bottom: 1px solid #C0C0C0;
+}
+table td{
+	margin: auto;
+	text-align: center;
+	height: 40px;
+	padding:0px 10px 0px 10px;
+	line-height: 30px;
+	text-align: left;
+	font-style: bold;
+}
+
+.boxStyle1 div {
+	padding: 0px;
+}
+</style>
+<div class="boxStyle1">
+	<div class="settingsHeader">Manage your posts.</div>
+	<div id="yourPosts">
+	</div>
+</div>

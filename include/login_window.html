@@ -1,0 +1,19 @@
+	<form class="loginForm" action="javascript:void(0)" onSubmit="user_login()" name="login">
+		<h1><span class="log-in">Log in</span> or <span class="sign-up"><a href="/signup">sign up</a></span></h1>
+		<p class="float">
+			<label for="login"><i class="icon-user"></i>Email</label>
+			<input type="text" name="username" placeholder="email" autofocus="autofocus" id="emailBox">
+		</p>
+		<p class="float">
+			<label for="password"><i class="icon-lock"></i>Password</label>
+			<input type="password" name="password" placeholder="Password" class="showpassword">
+		</p>
+		<p class="clearfix"> 
+			<input type="checkbox" name="rememberMe" value="true" checked="true"> Remember me
+			<a href="javascript:resetPassword()">Forgot password</a>
+			<p class="response">
+				<span id="response"></span>
+			</p>
+			<input type="submit" name="submit" value="Log in">
+		</p>
+	</form>​​

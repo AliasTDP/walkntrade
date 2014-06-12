@@ -1,0 +1,61 @@
+.iClock{
+	float:left;
+	margin: 0px 10px 0px 0px;
+	background: url("../colorful/minimal_icons.png")no-repeat --25px 0;
+	width: 19px;
+	height: 18px;
+}
+
+.iMag{
+	float:left;
+	margin: 0px 10px 0px 0px;
+	background: url("../colorful/minimal_icons.png")no-repeat -259px -1px;
+	width: 17px;
+	height: 18px;
+}
+
+.iEye{
+	float:left;
+	margin: 0px 10px 0px 0px;
+	background: url("../colorful/minimal_icons.png")no-repeat -197px -3px;
+	width: 28px;
+	height: 16px;
+}
+
+.iCheck{
+	float:left;
+	margin: 0px 10px 0px 0px;
+	background: url("../colorful/minimal_icons.png")no-repeat -87px -2px;
+	width: 21px;
+	height: 16px;
+}
+
+.iExx{
+	float:left;
+	margin: 0px 10px 0px 0px;
+	background: url("../colorful/minimal_icons.png")no-repeat -115px -2px;
+	width: 17px;
+	height: 17px;
+}
+
+.iEdit {
+	background: url('../colorful/minimal_icons.png') no-repeat -282px -1px;
+	width: 16px;
+	height: 16px;
+}
+
+.iPic{
+	float:left;
+	margin: 0px 10px 0px 0px;
+	background: url('../colorful/minimal_icons.png') no-repeat -55px -3px;
+	width: 21px;
+	height: 16px;
+}
+
+.iComm {
+	float:left;
+	margin: 0px 10px 0px 0px;
+	background: url('../colorful/minimal_icons.png') no-repeat -142px -3px;
+	width: 20px;
+	height: 16px;
+}

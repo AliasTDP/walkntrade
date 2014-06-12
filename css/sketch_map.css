@@ -1,0 +1,225 @@
+.sprite{
+	position: absolute;
+}
+
+.pencil {
+	background: url('../colorful/sketch_map.gif') no-repeat -6px -11px;
+	width: 44px;
+	height: 38px;
+}
+
+.lol {
+	background: url('../colorful/sketch_map.gif') no-repeat -59px -23px;
+	width: 83px;
+	height: 28px;
+}
+
+.watch {
+	background: url('../colorful/sketch_map.gif') no-repeat -161px -11px;
+	width: 36px;
+	height: 49px;
+}
+
+.paperPlane {
+	background: url('../colorful/sketch_map.gif') no-repeat -285px -34px;
+	width: 44px;
+	height: 19px;
+}
+
+.mobile1 {
+	background: url('../colorful/sketch_map.gif') no-repeat -346px -14px;
+	width: 36px;
+	height: 43px;
+}
+
+.graphs {
+	background: url('../colorful/sketch_map.gif') no-repeat -6px -72px;
+	width: 66px;
+	height: 40px;
+}
+
+.java {
+	background: url('../colorful/sketch_map.gif') no-repeat -91px -72px;
+	width: 56px;
+	height: 45px;
+}
+
+.email {
+	background: url('../colorful/sketch_map.gif') no-repeat -179px -80px;
+	width: 34px;
+	height: 34px;
+}
+
+.planner {
+	background: url('../colorful/sketch_map.gif') no-repeat -238px -86px;
+	width: 33px;
+	height: 32px;
+}
+
+.cellPhoneComm {
+	background: url('../colorful/sketch_map.gif') no-repeat -238px -86px;
+	width: 33px;
+	height: 32px;
+}
+
+.megaphone {
+	background: url('../colorful/sketch_map.gif') no-repeat -362px -84px;
+	width: 60px;
+	height: 36px;
+}
+
+.laptop1 {
+	background: url('../colorful/sketch_map.gif') no-repeat -2px -136px;
+	width: 85px;
+	height: 43px;
+}
+
+.list {
+	background: url('../colorful/sketch_map.gif') no-repeat -104px -133px;
+	width: 48px;
+	height: 54px;
+}
+
+.search {
+	background: url('../colorful/sketch_map.gif') no-repeat -170px -131px;
+	width: 155px;
+	height: 62px;
+}
+
+.speechBubbles {
+	background: url('../colorful/sketch_map.gif') no-repeat -346px -132px;
+	width: 67px;
+	height: 47px;
+}
+
+.alarmClock {
+	background: url('../colorful/sketch_map.gif') no-repeat -8px -203px;
+	width: 66px;
+	height: 69px;
+}
+
+.cloud {
+	background: url('../colorful/sketch_map.gif') no-repeat -102px -197px;
+	width: 55px;
+	height: 82px;
+}
+
+.envelopes {
+	background: url('../colorful/sketch_map.gif') no-repeat -183px -216px;
+	width: 68px;
+	height: 36px;
+}
+
+.moneyBriefcase {
+	background: url('../colorful/sketch_map.gif') no-repeat -271px -214px;
+	width: 45px;
+	height: 36px;
+}
+
+.plusMinus {
+	background: url('../colorful/sketch_map.gif') no-repeat -342px -221px;
+	width: 54px;
+	height: 31px;
+}
+
+.check {
+	background: url('../colorful/sketch_map.gif') no-repeat -353px -274px;
+	width: 44px;
+	height: 22px;
+}
+
+.camera {
+	background: url('../colorful/sketch_map.gif') no-repeat -613px -3px;
+	width: 67px;
+	height: 54px;
+}
+
+.like {
+	background: url('../colorful/sketch_map.gif') no-repeat -437px 0;
+	width: 168px;
+	height: 48px;
+}
+
+.tablet {
+	background: url('../colorful/sketch_map.gif') no-repeat -444px -53px;
+	width: 54px;
+	height: 69px;
+}
+
+.globe {
+	background: url('../colorful/sketch_map.gif') no-repeat -512px -59px;
+	width: 67px;
+	height: 61px;
+}
+
+.rss {
+	background: url('../colorful/sketch_map.gif') no-repeat -442px -126px;
+	width: 50px;
+	height: 45px;
+}
+
+.sms {
+	background: url('../colorful/sketch_map.gif') no-repeat -507px -123px;
+	width: 73px;
+	height: 46px;
+}
+
+.sms {
+	background: url('../colorful/sketch_map.gif') no-repeat -590px -125px;
+	width: 47px;
+	height: 42px;
+}
+
+.mapPins {
+	background: url('../colorful/sketch_map.gif') no-repeat -442px -181px;
+	width: 85px;
+	height: 40px;
+}
+
+.laptop2 {
+	background: url('../colorful/sketch_map.gif') no-repeat -539px -176px;
+	width: 115px;
+	height: 63px;
+}
+
+.question {
+	background: url('../colorful/sketch_map.gif') no-repeat -435px -247px;
+	width: 81px;
+	height: 57px;
+}
+
+.cellPhone2 {
+	background: url('../colorful/sketch_map.gif') no-repeat -533px -250px;
+	width: 34px;
+	height: 53px;
+}
+
+.flag {
+	background: url('../colorful/sketch_map.gif') no-repeat -581px -240px;
+	width: 52px;
+	height: 60px;
+}
+
+.atSymbol {
+	background: url('../colorful/sketch_map.gif') no-repeat -642px -258px;
+	width: 41px;
+	height: 35px;
+}
+
+.envelopes2 {
+	background: url('../colorful/sketch_map.gif') no-repeat -642px -258px;
+	width: 41px;
+	height: 35px;
+}
+
+.cloud2 {
+	background: url('../colorful/sketch_map.gif') no-repeat -534px -313px;
+	width: 74px;
+	height: 78px;
+}
+
+.pressPlay {
+	background: url('../colorful/sketch_map.gif') no-repeat -626px -328px;
+	width: 53px;
+	height: 36px;
+}
