@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Walkntrade.com [test] - BUY AND SELL ON CAMPUS!</title>
+	<title>Walkntrade.com - BUY AND SELL ON CAMPUS!</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="css/landing.css">
 	<link type="text/css" rel="stylesheet" href="css/spritesheet.css">
