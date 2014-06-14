@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /noscript.html
+
+User-agent: Googlebot-Image
+Disallow: /

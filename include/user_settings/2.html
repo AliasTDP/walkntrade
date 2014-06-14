@@ -1,0 +1,67 @@
+<script type="text/javascript">
+	getSentWebmail();
+	function refreshAll(){
+		getSentWebmail();
+	}
+</script>
+
+<style type="text/css">
+#messageReply{
+	text-align: left;
+}
+
+#messageReply{
+	width: 100%;
+}
+#messageReply textarea{
+	height: 150px;
+	resize:none;
+}
+.messageView{
+	text-align: left;
+	width: 100%;
+	padding: 10px;
+}
+.messageView th{
+	border-bottom: 1px solid #C0C0C0;
+}
+
+#messageWrapper{
+	height: 150px;
+	overflow: scroll;
+}
+
+#webmail{
+	min-height: 400px;
+}
+#webmail table{
+	width: 100%;
+}
+#webmail table th{
+	text-align: left;
+	background: #F0F0F0;
+}
+#webmail table td{
+	font-size: .85em;
+	height: 30px;
+	line-height: 30px;
+	border-bottom: 1px solid #C0C0C0;
+	cursor: pointer;
+}
+.unread td{
+	color: #000;
+	font-weight:900;
+	white-space: nowrap;
+}
+#navBarMail{
+	height: 30px;
+	line-height: 30px;
+	background: url("/colorful/pstripes.jpg");
+	border-bottom: 1px solid #C0C0C0;
+}
+</style>
+<div class="boxStyle1">
+	<div class="settingsHeader">Sent Messages</div>
+	<div id="navBarMail"></div>
+	<div id="webmail"></div>
+</div>

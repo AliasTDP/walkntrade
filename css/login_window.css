@@ -1,0 +1,141 @@
+.loginForm *,
+.loginForm *:after,
+.loginForm *:before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.clearfix a{
+    font-size: .75em;
+    float: right;
+}
+
+.loginForm {
+    /* Size and position */
+    width: 340px;
+    margin: 10% auto;
+    padding: 15px;
+    position: relative;
+
+    /* Styles */
+    background: #FFF;
+    border-radius: 4px;
+    color: #7e7975;
+    box-shadow:
+    0 2px 2px rgba(0,0,0,0.2),
+    0 1px 5px rgba(0,0,0,0.2),
+    0 0 0 12px rgba(255,255,255,0.4); 
+}
+
+.loginForm h1 {
+    font-size: 15px;
+    font-weight: bold;
+    color: #bdb5aa;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #EBE6E2;
+    text-shadow: 0 2px 0 rgba(255,255,255,0.8);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.loginForm h1 .log-in,
+.loginForm h1 .sign-up {
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+.loginForm h1 .log-in {
+    color: #6c6763;
+    padding-right: 2px;
+}
+
+.loginForm h1 .sign-up {
+    color: #709906;
+    padding-left: 2px;
+}
+
+.loginForm .float {
+    width: 50%;
+    float: left;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,1);
+}
+.loginForm .response{
+    width: 100%;
+    min-height: 36px;
+    padding: 2px;
+    text-align: center;
+}
+.loginForm #response{
+    font-size: 15px;
+}
+
+.loginForm .float:first-of-type {
+    padding-right: 5px;
+}
+
+.loginForm .float:last-of-type {
+    padding-left: 5px;
+}
+
+.loginForm label {
+    display: block;
+    padding: 0 0 5px 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 400;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    font-size: 11px;
+}
+
+.loginForm label i {
+    margin-right: 5px; /* Gap between icon and text */
+    display: inline-block;
+    width: 10px;
+}
+
+.loginForm label:hover ~ input {
+    border-color: #CCC;
+}
+
+.loginForm input[type=submit]{
+    width: 100%;
+}
+
+
+/* Fallback fro broswers that don't support box shadows */
+.no-boxshadow .loginForm input[type=submit]:hover {
+    background: #709906;
+}
+
+
+.loginForm p:last-of-type {
+    clear: both;
+}
+
+.loginForm .opt {
+    text-align: right;
+    margin-right: 3px;
+}
+
+.loginForm label[for=showPassword] {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+
+.loginForm input[type=checkbox] {
+    vertical-align: middle;
+    margin: -1px 5px 0 1px;
+}

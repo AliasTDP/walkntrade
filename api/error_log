@@ -1,0 +1,42 @@
+[11-Jun-2014 14:17:02 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 14:17:06 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 15:22:18 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 15:27:43 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 14:36:15 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 14:42:48 America/Chicago] PHP Warning:  Missing boundary in multipart/form-data POST data in Unknown on line 0
+[11-Jun-2014 14:50:56 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 15:03:59 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 15:04:04 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 18:45:45 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 18:57:21 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 21:09:00 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagecreatefromjpeg(): Filename cannot be empty in /home2/wtonline/public_html/framework/BinaryHandler.php on line 92
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagesx() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 93
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagesy() expects parameter 1 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 94
+[11-Jun-2014 21:10:21 America/New_York] PHP Warning:  imagecopyresampled() expects parameter 2 to be resource, boolean given in /home2/wtonline/public_html/framework/BinaryHandler.php on line 106
+[11-Jun-2014 22:41:32 America/Chicago] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0

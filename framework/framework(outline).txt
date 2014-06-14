@@ -1,0 +1,50 @@
+/res is gone:
+#------------------------------------------------------------------------------
+
+* - Section completed and tested
+~ - Section under construction
+
+*Walkntrade.php: Base script, holds prerequisite functions, connects to database, generates results
+	*private function dbConnect()
+	*public function getUserConnection()
+	*public function getListingConnection()
+	*public function getSchoolName($identifier)
+	*public function getSchools($search)
+	*public function getPosts($query, $school, $category, $sort, $offset, $amount)
+	*public function checkUname($username)
+	*public function checkEmail($email)
+	*public function verifyEmail($email
+	*public function cookieCheck($intent)
+		^
+		|
+		|
+	*CredentialStore.php: holds and generates login, generates secure session
+		*private function login_check()
+		*private function secure_session_start()
+		*public function getLoginStatus()
+		*public function getUserName()
+			^	
+			|
+			|
+		------------------------------------------------------------------------------------------------------------
+		*PostQuery.php: handles queries for posts
+			*public function addPost($category, $school, $title, $author, $details, $price, $location, $tags, $isbn)
+			*public function editPost($title, $details, $price, $tags, $identifier, $school)
+			*public function removePost($identifier, $school)
+
+		*userMgmt.php: handles requests relating to users (Add/Remove Change pass, email, login, logout)
+			*public function login($email, $password)
+			*public function logout()
+			*public function addUser($username, $email, $password, $phone)
+			*public function controlPanel($oldPw, $email, $newPw, $phone)
+			*public function getPostsCurrentUser()
+			*public function checkPassword($password)
+			*public function checkUsername($username)
+			*public function messageUser($uid, $title, $message)
+
+		*BinaryHandler.php: Upload any binary data to website
+			*public function uploadAvatar($password, $binImage)
+			*public function uploadPostImages($binImage, $iteration, $identifier, $school)
+			*public function editPost($title, $details, $price, $tags, $identifier, $school)
+			*private function scaleImage($sourcePath, $destPath, $iDestWidth, $iDestHeight , $proportional)
+		------------------------------------------------------------------------------------------------------------
