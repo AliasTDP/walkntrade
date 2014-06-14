@@ -445,10 +445,7 @@ switch($getIntent){
 		$cs = new CredentialStore();
 		echo $cs->getPhoneNum();
 		break;
-<<<<<<< HEAD
 	default:
 		echo var_dump($_POST);
-		break;
-=======
->>>>>>> e523d0143e9f3919868ae992e2f0b187734341b9
+	break;
 }?>
