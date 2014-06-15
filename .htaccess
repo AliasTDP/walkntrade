@@ -1,0 +1,30 @@
+Options -Indexes
+ErrorDocument 404 /errors/404.php
+ErrorDocument 403 /errors/redirect.php
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule (.*) $1.php [L]
+</IfModule>
+
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresByType text/html "modification"
+	ExpiresByType image/gif "modification"
+	ExpiresByType image/jpeg "modification"
+	ExpiresByType image/png "modification"
+	ExpiresByType image/x-icon "modification"
+	ExpiresByType text/css "modification"
+	ExpiresByType text/javascript "modification"
+	ExpiresByType application/x-javascript "modification"
+	ExpiresByType application/x-shockwave-flash "modification"
+</IfModule>
+
+<IfModule mod_suphp.c>
+    suPHP_ConfigPath /opt/php54/lib
+</IfModule>
+
+# Use PHP54 as default
+AddHandler application/x-httpd-php54 .php
