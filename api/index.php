@@ -19,6 +19,15 @@ switch($getIntent){
 		$amount= htmlspecialchars($_POST["amount"]);
 		echo $wt->getPosts($query, $school, $category, $sort, $offset, $amount);
 		break;
+	case "getPostByIdentifier":
+		require_once "../framework/Walkntrade.php";
+		$wt = new Walkntrade();
+		$args=array_keys($_POST);
+		$args = split(":", $args[1]);
+		$identifier = htmlspecialchars($args[1]);
+		$school = htmlspecialchars($args[0]);
+		echo $wt->getPostByIdentifier($identifier, $school);
+		break;
 
 	case "getSchools":
 		require_once "../framework/Walkntrade.php";

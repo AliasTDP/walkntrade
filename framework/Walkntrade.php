@@ -392,5 +392,34 @@ class Walkntrade {
 			return -1;
 		}
 	}
+
+	public function getPostByIdentifier($identifier, $school){
+		if($gpbiSTMT = $this->listingConnection->prepare("SELECT `id`, `category`, `title`, `author`, `details`, `price`, `isbn`, `tags`, `username`, `date`, `views` FROM `spsu` WHERE `identifier` = ? LIMIT 1")){
+			$gpbiSTMT->bind_param("s", $identifier);
+			$gpbiSTMT->execute();
+			$gpbiSTMT->store_result();
+			$gpbiSTMT->bind_result($_pId, $_pCategory, $_pTitle, $_pAuthor, $_pDetails, $_pPrice, $_pIsbn, $_pTags, $_pUsername, $_pDate, $_pViews);
+			$gpbiSTMT->fetch();
+			if($gpbiSTMT->num_rows != 1){
+				echo "no such post";
+			}
+			else{
+				$concatenated = "<post>\n";
+					$concatenated .= "\t<id>".$_pId."</id>";
+					$concatenated .= "\t<category>".$_pCategory."</category>\n";
+					$concatenated .= "\t<title>".$_pTitle."</title>\n";
+					$concatenated .= "\t<author>".$_pAuthor."</author>\n";
+					$concatenated .= "\t<details>".$_pDetails."</details>\n";
+					$concatenated .= "\t<price>".$_pPrice."</price>\n";
+					$concatenated .= "\t<isbn>".$_pIsbn."</isbn>\n";
+					$concatenated .= "\t<tags>".$_pTags."</tags>\n";
+					$concatenated .= "\t<username>".$_pUsername."</username>\n";
+					$concatenated .= "\t<date>".$_pDate."</date>\n";
+					$concatenated .= "\t<views>".$_pViews."</views>\n";
+				$concatenated .= "</post>";
+				return $concatenated;
+			}
+		}
+	}
 }
 ?>
