@@ -279,7 +279,7 @@ class UserMgmt extends CredentialStore{
 			$schs->bind_result($school);
 			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<results>\n";
 			while($schs->fetch()){
-				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
+				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `expire` ASC");
 				$mypost->bind_param("s", $_SESSION["user_id"]);
 				$mypost->execute();
 				$mypost->store_result();
