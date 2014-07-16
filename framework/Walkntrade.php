@@ -128,42 +128,28 @@ class Walkntrade {
 		switch ($category) {
 			case 'book':
 			$category = "book";
-			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ? OR `isbn` = ? OR `author` LIKE ?) ORDER BY ".$sort." LIMIT ?,?");
+			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ? OR `isbn` = ? OR `author` LIKE ?) AND `expired` = 0 ORDER BY ".$sort." LIMIT ?,?");
 			$stmt->bind_param("sssssii",$category, $query, $query, $query, $query, $offset, $amount);
 			break;
 			case 'tech':
 			$category = "tech";
-			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ?) ORDER BY ".$sort." LIMIT ?,?");
+			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ?) AND `expired` = 0 ORDER BY ".$sort." LIMIT ?,?");
 			$stmt->bind_param("sssii",$category, $query, $query, $offset, $amount);
 			break;
 			case 'service':
 			$category = "service";
-			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ?) ORDER BY ".$sort." LIMIT ?,?");
+			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ?) AND `expired` = 0 ORDER BY ".$sort." LIMIT ?,?");
 			$stmt->bind_param("sssii",$category, $query, $query, $offset, $amount);
 			break;
 			case 'misc':
 			$category = "misc";
-			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ?) ORDER BY ".$sort." LIMIT ?,?");
+			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ?) AND `expired` = 0 ORDER BY ".$sort." LIMIT ?,?");
 			$stmt->bind_param("sssii",$category, $query, $query, $offset, $amount);
 			break;
-
-			//---------------JUST FOR ASA-------------------------
-			case 'asa':
-			$category = "asa";
-			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ?) ORDER BY ".$sort." LIMIT ?,?");
-			$stmt->bind_param("sssii",$category, $query, $query, $offset, $amount);
-			break;
-
 			default:
-			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` != 'asa' AND (`title` LIKE ? OR `tags` LIKE ? OR `isbn` LIKE ? OR `author` LIKE ?) ORDER BY ".$sort." LIMIT ?,?");
+			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE (`title` LIKE ? OR `tags` LIKE ? OR `isbn` LIKE ? OR `author` LIKE ?) AND `expired` = 0 ORDER BY ".$sort." LIMIT ?,?");
 			$stmt->bind_param("ssssii", $query, $query, $query, $query, $offset, $amount);
 			break;
-			//---------------!JUST FOR ASA------------------------
-
-			// default:
-			// $stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `title` LIKE ? OR `tags` LIKE ? OR `isbn` LIKE ? OR `author` LIKE ? ORDER BY ".$sort." LIMIT ?,?");
-			// $stmt->bind_param("ssssii", $query, $query, $query, $query, $offset, $amount);
-			// break;
 		}
 		$stmt->execute();
 		$stmt->store_result();

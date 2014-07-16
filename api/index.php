@@ -272,6 +272,26 @@ switch($getIntent){
 		}
 		break;
 
+	case "renewPost":
+		require_once "../framework/PostQuery.php";
+		$pq = new PostQuery();
+		$args=array_keys($_POST);
+		$args = split(":", $args[1]);
+		$identifier = htmlspecialchars($args[1]);
+		$school = htmlspecialchars($args[0]);
+		switch($pq->renewPost($identifier, $school)){
+			case(0):
+			echo("success");
+			break;
+			case(1):
+			echo("You are not authorized for this operation.");
+			break;
+			default:
+			echo"Internal server error, Please report this error <a href='/feedback'>here</a>";
+			break;
+		}
+		break;
+
 	case "uploadPostImages":
 		require_once "../framework/BinaryHandler.php";
 		$bh = new BinaryHandler();

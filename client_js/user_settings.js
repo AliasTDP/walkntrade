@@ -270,10 +270,21 @@ function getUserPosts(){
 					var title = $(this).attr("title");
 					var date = $(this).attr("date");
 					var views = $(this).attr("views");
-					schoolPostsElement.append('<tr id="p_'+id+'" class="'+category+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
-					$("#p_"+id).find("a :last").text(title);
+					var expired = $(this).attr("expired");
+					if(expired == "false")schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired_'+expired+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+					else schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired_'+expired+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+					//$("#p_"+id).find("a :last").text(title);
 				});
 			});
+			$(".expired_true").hover(function(){
+				$(".clearfix1").remove();
+				$("table .expired_true").css({background: "#FFF9F4"});
+
+				$(this).css({background: "#FFCA99"});
+				id = $(this).attr("id");
+				$('<tr class="clearfix1"><td colspan="5">This post has expired. Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+			})
+
 		}
 	});
 }
@@ -424,6 +435,21 @@ function deletePost(identifier){
 	dialog("Are you sure you want to delete this post? This cannot be undone.", true, null, function(r){
 		if(r){
 			$.ajax({dataType:"html", data:"intent=removePost&"+identifier+"=", context:getUserPosts}).success(function(r){
+				if(r == "success"){
+					this();
+				}
+				else{
+					dialog(r);
+				}
+			});
+		}
+	});
+}
+
+function renewPost(identifier){
+	dialog("Are you sure you want to restore this post? This action will reset the date of the post to today.", true, null, function(r){
+		if(r){
+			$.ajax({dataType:"html", data:"intent=renewPost&"+identifier+"=", context:getUserPosts}).success(function(r){
 				if(r == "success"){
 					this();
 				}

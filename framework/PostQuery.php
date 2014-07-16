@@ -129,5 +129,23 @@ class PostQuery extends CredentialStore {
 			return 1;
 		}
 	}
+
+	public function renewPost($identifier, $school){
+		if($this->getLoginStatus()){
+			$lc = $this->getListingConnection();
+			if($d = $lc->prepare("UPDATE `".$school."` SET `expired` = 0 AND expire = -1 AND date = ? WHERE `identifier` = ? AND `userid` = ?  LIMIT 1")){
+				$d->bind_param("ssi", date("Y-m-d"), $identifier, $_SESSION["user_id"]);
+				$d->execute();
+				return 0;
+			}
+			else{
+			//SQL error
+				return $d->error;
+			}
+		}
+		else{
+			return 1;
+		}
+	}
 }
 ?>
