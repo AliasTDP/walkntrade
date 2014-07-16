@@ -380,7 +380,7 @@ class Walkntrade {
 	}
 
 	public function getPostByIdentifier($identifier, $school){
-		if($gpbiSTMT = $this->listingConnection->prepare("SELECT `id`, `category`, `title`, `author`, `details`, `price`, `isbn`, `tags`, `username`, `date`, `views` FROM `spsu` WHERE `identifier` = ? LIMIT 1")){
+		if($gpbiSTMT = $this->listingConnection->prepare("SELECT `id`, `category`, `title`, `author`, `details`, `price`, `isbn`, `tags`, `username`, `date`, `views` FROM `".$school."` WHERE `identifier` = ? LIMIT 1")){
 			$gpbiSTMT->bind_param("s", $identifier);
 			$gpbiSTMT->execute();
 			$gpbiSTMT->store_result();
