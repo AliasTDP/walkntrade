@@ -8,10 +8,10 @@ class PostRenew extends CredentialStore {
 		$schs->store_result();
 		$schs->bind_result($school);
 		while($schs->fetch()){
-			$mypost = $this->getlistingConnection()->prepare("SELECT `id`, `date`, `expire` FROM `".$school."`");
+			$mypost = $this->getlistingConnection()->prepare("SELECT `id`, `title`, `userid`, `date`, `expire` FROM `".$school."`");
 			$mypost->execute();
 			$mypost->store_result();
-			$mypost->bind_result($pId, $date, $postExpireInt);
+			$mypost->bind_result($pId, $pTitle, $pUserid, $date, $postExpireInt);
 			while($mypost->fetch()){
 				//action here
 				if($postExpireInt == -1){ //if the post is not marked for deletion
@@ -20,6 +20,15 @@ class PostRenew extends CredentialStore {
 						$expireSTMT = $this->getlistingConnection()->prepare("UPDATE `".$school."` SET `expire` = 3 WHERE `id` =  ?");//if it's over a month old prepare SQL query to mark for 3 day deletion
 						$expireSTMT->bind_param("i", $pId);
 						$expireSTMT->execute();
+
+						$getEmailSTMT = $this->getUserConnection()->prepare("SELECT `email` FROM `users` WHERE `id` = ?");
+						$getEmailSTMT->bind_param("s", $pUserid);
+						$getEmailSTMT->execute();
+						$getEmailSTMT->store_result();
+						$getEmailSTMT->bind_result($email);
+						$getEmailSTMT->fetch();
+
+						$this->alertViaEmail($pTitle, $email);
 					}
 				}
 				else{ //it the post is marked for deletion
@@ -47,6 +56,28 @@ class PostRenew extends CredentialStore {
 
 		$diff = $date2->diff($date1)->format("%a");
 		return $diff;
+	}
+
+	private function alertViaEmail($postTitle, $email){
+		$subject = "Your post is about to expire";
+		$string = '
+		<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
+		<h1>Please renew your post:"'.$postTitle.'"</h1>
+		<p>
+			Here at Walkntrade we have a 30 day post renewal policy. Please log into your account at walkntrade.com and view the "My Posts" tab in account settings. From there you can choose to renew your post if it\'s still available, but please hurry, as your post will expire in 3 days if you don\'t renew it.
+		</p>
+		<p>
+			This is done in an effort to keep Walkntrade relevant and useful to you. Thanks for your time, and as always thank you for using walkntrade.
+		</p>
+		</p>
+		';
+		$headers = "MIME-Version: 1.0" . "\r\n";
+		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+		$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
+		echo $email." ".$subject." ".$string." ".$headers;
+		if(mail($email, $subject, $string, $headers)){
+			return 0;
+		}
 	}
 }
 
