@@ -104,10 +104,10 @@ class Walkntrade {
 		if(isset($sort)){
 			switch ($sort) {
 				case '1':
-				$sort = "`id` DESC";
+				$sort = "`date` DESC";
 				break;
 				case '2':
-				$sort = "`id` ASC";
+				$sort = "`date` ASC";
 				break;
 				case '3':
 				$sort = "`price` DESC";
@@ -116,7 +116,7 @@ class Walkntrade {
 				$sort = "`price` ASC";
 				break;
 				default:
-				$sort = "`id` DESC";
+				$sort = "`date` DESC";
 				break;
 			}
 		}
