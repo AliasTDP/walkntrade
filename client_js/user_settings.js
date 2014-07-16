@@ -270,21 +270,56 @@ function getUserPosts(){
 					var title = $(this).attr("title");
 					var date = $(this).attr("date");
 					var views = $(this).attr("views");
+					var expire = $(this).attr("expire");
 					var expired = $(this).attr("expired");
-					if(expired == "false")schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired_'+expired+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+					if(expired == "false"){
+						if(expire == -1) schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired_'+expired+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+						else schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired_'+expired+', expire_in_'+expire+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+					}
 					else schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired_'+expired+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
 					//$("#p_"+id).find("a :last").text(title);
 				});
 			});
-			$(".expired_true").hover(function(){
+			$(".expired_false").hover(function(){
 				$(".clearfix1").remove();
-				$("table .expired_true").css({background: "#FFF9F4"});
-
-				$(this).css({background: "#FFCA99"});
-				id = $(this).attr("id");
-				$('<tr class="clearfix1"><td colspan="5">This post has expired. Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+				$("table tr").removeAttr('style');
 			})
 
+			$(".expired_true").hover(function(){
+				$(".clearfix1").remove();
+				$("table tr").removeAttr('style');
+
+				$(this).css({background: "#FF8080", color: "#FFFFFF"});
+				id = $(this).attr("id");
+				$('<tr class="clearfix1" style="background-color:#FF8080"><td colspan="5">This post has expired. Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+			})
+
+			$(".expire_in_1").hover(function(){
+				$(".clearfix1").remove();
+				$("table tr").removeAttr('style');
+
+				$(this).css({background: "#FFC661"});
+				id = $(this).attr("id");
+				$('<tr class="clearfix1" style="background-color:#FFC661"><td colspan="5">This post will expire in 1 day!!! Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+			})
+
+			$(".expire_in_2").hover(function(){
+				$(".clearfix1").remove();
+				$("table tr").removeAttr('style');
+
+				$(this).css({background: "#FFC661"});
+				id = $(this).attr("id");
+				$('<tr class="clearfix1" style="background-color:#FFC661"><td colspan="5">This post will expire in 2 days!! Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+			})
+
+			$(".expire_in_3").hover(function(){
+				$(".clearfix1").remove();
+				$("table tr").removeAttr('style');
+
+				$(this).css({background: "#FFC661"});
+				id = $(this).attr("id");
+				$('<tr class="clearfix1" style="background-color:#FFC661"><td colspan="5">This post will expire in 3 days! Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+			})
 		}
 	});
 }
