@@ -76,6 +76,7 @@ class PostRenew extends CredentialStore {
 		$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
 		echo $email." ".$subject." ".$string." ".$headers;
 		if(mail($email, $subject, $string, $headers)){
+			echo "Emailed ".$email."\n";
 			return 0;
 		}
 	}
