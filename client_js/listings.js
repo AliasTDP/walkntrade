@@ -284,10 +284,10 @@ function addService(){
 }
 
 function addMisc(){
-	var title = miscelaneous.elements["Title"].value;
-	//var location = miscelaneous.elements["location"].value;
-	var details = miscelaneous.elements["Details"].value;
-	var tags = miscelaneous.elements["Tags"].value;
+	var title = miscellaneous.elements["Title"].value;
+	//var location = miscellaneous.elements["location"].value;
+	var details = miscellaneous.elements["Details"].value;
+	var tags = miscellaneous.elements["Tags"].value;
 
 	var errTitle = document.getElementById("errTitle");
 	//var errLocation = document.getElementById("errLocation");
