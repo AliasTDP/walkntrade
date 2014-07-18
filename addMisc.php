@@ -53,9 +53,9 @@ if(!$loggedIn = $cs->getLoginStatus())
 			<?php $noLogin=false; include("include/header.php"); ?>
 		</div>
 		<div id="addTable" style="border-left:5px solid #44D3D8;border-right:5px solid #44D3D8;color:#44D3D8">
-			<p><h1 style="text-align:center">Miscelaneous</h1></p>
+			<p><h1 style="text-align:center">Miscellaneous</h1></p>
 		<table style="width:100%" cellpadding="15">
-			<form action="javascript:void(0)" method="POST" name="miscelaneous" onSubmit="addMisc()">
+			<form action="javascript:void(0)" method="POST" name="miscellaneous" onSubmit="addMisc()">
 				<tr>
 					<td>
 						<input type="text" name="Title" placeholder="*Name your item">
