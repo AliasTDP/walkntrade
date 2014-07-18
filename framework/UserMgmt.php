@@ -291,7 +291,9 @@ class UserMgmt extends CredentialStore{
 						$link =  $school.":".$identifier;
 						$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
 						$html_blacklist = "/< >/";
-						$pTitle = ($pExpired == true) ? "[EXPIRED] ".htmlspecialchars($pTitle): htmlspecialchars($pTitle);
+						if($pExpired == true) $pTitle = "[EXPIRED] ".htmlspecialchars($pTitle);
+						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAYS LEFT] ".htmlspecialchars($pTitle);
+						else $pTitle = htmlspecialchars($pTitle);
 						$pDate = htmlspecialchars($pDate);
 						$pCat = htmlspecialchars($pCat);
 						$pExpired = ($pExpired == 1) ? "true" : "false";
