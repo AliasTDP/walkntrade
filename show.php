@@ -131,9 +131,9 @@ switch ($category) {
 }
 if($loggedIn){
 	if($myPhone != null)
-		$message = "Hi, I would like to find out more about your post, please call me at $myPhone or email me. Thanks!";
+		$message = "Hi, I would like to find out more about your post, please call me at $myPhone or contact me on Walkntrade. Thanks!";
 	else
-		$message =  "Hi, I would like to find out more about your post, please email me. Thanks!";
+		$message =  "Hi, I would like to find out more about your post, please contact me on Walkntrade. Thanks!";
 	echo('
 		');
 }
