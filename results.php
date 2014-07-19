@@ -67,7 +67,7 @@
 		</div>
 		<div id="dynamicWrapper">
 			<div id="dynamicContent">
-				<div id="filterBar">Sort by: <a href="javascript:(w_sort(1))">Newest first</a> | <a href="javascript:(w_sort(2))">Oldest first</a> | <a href="javascript:(w_sort(4))">cheapest first</a> | <a href="javascript:(w_sort(3))">expensive first</a></div>
+				<div id="filterBar">Sort by: <a href="javascript:(w_sort(1))">Newest First</a> | <a href="javascript:(w_sort(2))">Oldest First</a> | <a href="javascript:(w_sort(4))">Lowest Price</a> | <a href="javascript:(w_sort(3))">Highest Price</a></div>
 				<div id="message">
 					No results :(
 					<p style="font-size:.5em;line-height:2em">We're sorry we couldn't find what you're looking for... <br>Try refining your search or selecting a different category or school.</p>

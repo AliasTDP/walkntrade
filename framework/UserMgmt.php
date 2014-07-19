@@ -292,7 +292,7 @@ class UserMgmt extends CredentialStore{
 						$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
 						$html_blacklist = "/< >/";
 						if($pExpired == true) $pTitle = "[EXPIRED] ".htmlspecialchars($pTitle);
-						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAYS LEFT] ".htmlspecialchars($pTitle);
+						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAY(S) LEFT] ".htmlspecialchars($pTitle);
 						else $pTitle = htmlspecialchars($pTitle);
 						$pDate = htmlspecialchars($pDate);
 						$pCat = htmlspecialchars($pCat);
