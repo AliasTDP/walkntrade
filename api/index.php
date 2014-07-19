@@ -178,13 +178,13 @@ switch($getIntent){
 				echo("success");
 				break;
 				case(1):
-				echo("Username or password incorrect.");
+				echo("<font color=\"#FF0000\">Username or password incorrect.</font>");
 				break;
 				case(2):
 				echo("verify");
 				break;
 				case(5):
-				echo("Your account has been banned for foul language. We warned you!");
+				echo("<font color=\"#FF0000\">Your account has been banned for foul language. We warned you!</font>");
 				break;
 				case(450):
 				echo("reset");
