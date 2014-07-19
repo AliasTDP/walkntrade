@@ -82,7 +82,7 @@ function user_login(){
 	var checkBox = document.login.rememberMe.checked;
 
 	if (uname == "") {
-		$("#response").html("Please enter an email address.");
+		$("#response").html("<font color=\"#FF0000\">Please enter an email address.</font>");
 		return;
 	}
 
@@ -91,13 +91,13 @@ function user_login(){
 			$("#response").html("");
 		}
 		else{
-			$("#response").html("Please enter a valid email address.");
+			$("#response").html("<font color=\"#FF0000\">Please enter a valid email address.</font>");
 			return;
 		}
 	}
 
 	if (pword == "") {
-		$("#response").html("Please enter a password.");
+		$("#response").html("<font color=\"#FF0000\">Please enter a password.</font>");
 		return;
 	}
 	else if (pword != ""){
