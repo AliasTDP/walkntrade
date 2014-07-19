@@ -1,6 +1,8 @@
 <?php
 require_once "../../framework/CredentialStore.php";
 class PostRenew extends CredentialStore {
+	private $emailQueue = array();	
+	private $postTitles = array();
 
 	public function traverseDB(){
 		$schs = $this->getlistingConnection()->prepare("SELECT `textId` FROM `schools`");
@@ -21,7 +23,7 @@ class PostRenew extends CredentialStore {
 						$expireSTMT->bind_param("i", $pId);
 						$expireSTMT->execute();
 						$email = $this->getEmailFromUserID($pUserid);
-						$this->alertViaEmail($pTitle, $email);
+						$this->enqueUserEmail($email, $pTitle, "false");
 					}
 				}
 				else{ //it the post is marked for deletion
@@ -29,9 +31,8 @@ class PostRenew extends CredentialStore {
 						$expireSTMT = $this->getlistingConnection()->prepare("UPDATE `".$school."` SET `expired`=1,`expire`=-2 WHERE `id` =  ?"); //post is expired now
 						$expireSTMT->bind_param("i", $pId);
 						$expireSTMT->execute();
-
 						$email = $this->getEmailFromUserID($pUserid);
-						$this->alertViaEmailPostExpired($pTitle, $email);
+						$this->enqueUserEmail($email, $pTitle, "true");
 					}
 					elseif($postExpiredInt  == 0){
 						$expireSTMT = $this->getlistingConnection()->prepare("UPDATE `".$school."` SET `expire` = `expire` - 1 WHERE `id` =  ?"); //otherwise deincrement the posts remaining time to live
@@ -41,6 +42,7 @@ class PostRenew extends CredentialStore {
 				}
 			}
 		}
+		return $this->showCompletion();
 		$mypost->close();
 		$schs->close();
 	}
@@ -64,48 +66,87 @@ class PostRenew extends CredentialStore {
 		return $diff;
 	}
 
-	private function alertViaEmail($postTitle, $email){
-		$subject = "Your post is about to expire";
-		$string = '
-		<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
-		<h1>Please renew your post:"'.$postTitle.'"</h1>
-		<p>
-			Here at Walkntrade we have a 30 day post renewal policy. Please log into your account at walkntrade.com and view the "My Posts" tab in account settings. From there you can choose to renew your post if it\'s still available, but please hurry, as your post will expire in 3 days if you don\'t renew it.
-		</p>
-		<p>
-			This is done in an effort to keep Walkntrade relevant and useful to you. Thanks for your time, and as always thank you for using walkntrade.
-		</p>
-		</p>
-		';
-		$headers = "MIME-Version: 1.0" . "\r\n";
-		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-		$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
-		if(mail($email, $subject, $string, $headers)){
-			echo "Emailed ".$email."\n";
-			return 0;
+	private function enqueUserEmail($email, $pTitle, $expired){
+		//echo $email." ".$pTitle." ".$expired."\n";
+		$status = ($expired == "true") ? " <font color=\"#FF0000\">[expired]</font>" : "";
+		if(!in_array($email, $this->emailQueue)){
+			$index = array_push($this->emailQueue, $email);
+			$this->postTitles[$index-1]=array($pTitle.$status);
+		}
+		else{
+			$index = array_search($email, $this->emailQueue);
+			array_push($this->postTitles[$index], $pTitle.$status);
 		}
 	}
 
-	private function alertViaEmailPostExpired($postTitle, $email){
-		$subject = "Your post is expired";
-		$string = '
-		<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
-		<h1>Your post, "'.$postTitle.'" has expired</h1>
-		<p>
-			It is no longer visible on walkntrade, however, if you still wish to claim it you may do so by renewing it on walkntrade.com
-		</p>
-		<p>
-			This is done in an effort to keep Walkntrade relevant and useful to you. Thanks for your time, and as always thank you for using walkntrade.
-		</p>
-		</p>
-		';
+	private function showCompletion(){
+		//var_dump($this->emailQueue);
+		//var_dump($this->postTitles);
+
+		foreach ($this->emailQueue as $email) {
+			$text = "
+			<html>
+			<head></head>
+			<body bgcolor=\"#FFFFFF\" style=\"-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; height: 100%; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; width: 100% !important\">
+			<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\"><tr>
+				<table cellspacing=\"0\" cellpadding=\"8\" border=\"0\" width=\"100%\" style=\"font-size:1.1em\">
+					<tr>
+						<td width=\"600px\" colspan=\"2\" style=\"background: #3f3f3f;
+							background: -moz-linear-gradient(top, #3f3f3f 0%, #1d1d1d 100%);
+							background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3f3f3f), color-stop(100%,#1d1d1d));
+							background: -webkit-linear-gradient(top, #3f3f3f 0%,#1d1d1d 100%);
+							background: -o-linear-gradient(top, #3f3f3f 0%,#1d1d1d 100%);
+							background: -ms-linear-gradient(top, #3f3f3f 0%,#1d1d1d 100%);
+							background: linear-gradient(to bottom, #3f3f3f 0%,#1d1d1d 100%);
+							filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3f3f3f', endColorstr='#1d1d1d',GradientType=0 );\"><img src=\"http://walkntrade.com/colorful/wtlogo.png\" alt=\"\Walkntrade Logo\"></td>
+					</tr>
+					<tr>
+						<td></td>
+					</tr>
+					<tr>
+						<td  colspan=\"2\" align=\"center\"><h1 style=\"color: #45B407;\">Keep your posts alive!</h1></td>
+					</tr>
+					<tr>
+						<td colspan=\"2\">Here at Walkntrade we have adopted a new 30 day post renewal policy. We are contacting you because one or more of your posts are expiring or have already expired. To fix this please log into your account and renew the posts that you want to keep listed. Posts expire after three days from their first warning.</td>
+					</tr>
+					<tr>
+						<td colspan=\"2\"><a href=\"http://walkntrade.com/user_settings#3\">Access my account</a></td>
+					</tr>
+					<tr>
+						<td  colspan=\"2\">The following posts are in trouble:</td>
+					</tr>";
+			$index = array_search($email, $this->emailQueue);
+			foreach ($this->postTitles[$index] as $postTitle) {
+				$text.="<tr><td style=\"padding:3px\">&#149;</td><td  style=\"padding:3px\"><b>".$postTitle."</b></td></tr>";
+			}
+			$text.="
+			<tr>
+				<td colspan=\"2\">This is done as an effort to keep Walkntrade relevant and useful to you. Thanks for your time, and as always thank you for using walkntrade.</td>
+			</tr>
+			<tr>
+				<td></td>
+			</tr>
+			<tr>
+				<td colspan=\"2\" style=\"height: 150px;background: #929292;color: #525252;text-align: center;\"><p><a style=\"color:\#525252\" href=\"/ToS\">Terms of Service</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/privacy\" style=\"color:\#525252\">Privacy Policy</a>  &nbsp;&nbsp;|&nbsp;&nbsp; <a href=\"/feedback\" style=\"color:\#525252\">Feedback</a></p></td>
+			</tr>
+			</table>
+			</td></tr></table></body></html>";
+			$this->alertViaEmail($text, $email);
+		}
+	}
+
+	private function alertViaEmail($string, $email){
+		$subject = "Your posts are expiring!";
 		$headers = "MIME-Version: 1.0" . "\r\n";
 		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-		$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
+		$headers .= 'From: Walkntrade <no-reply@walkntrade.com>' . "\r\n";
 		if(mail($email, $subject, $string, $headers)){
 			echo "Emailed ".$email."\n";
 			return 0;
 		}
+		// else
+		// 	echo "Email ".$email." failed!\n";
+		echo $string;
 	}
 }
 
