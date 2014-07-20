@@ -144,9 +144,8 @@ class PostRenew extends CredentialStore {
 			echo "Emailed ".$email."\n";
 			return 0;
 		}
-		// else
-		// 	echo "Email ".$email." failed!\n";
-		echo $string;
+		else
+		 	echo "Email ".$email." failed!\n";
 	}
 }
 
