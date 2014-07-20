@@ -292,6 +292,26 @@ switch($getIntent){
 		}
 		break;
 
+	case "addAndroidDeviceId":
+		require_once "../framework/UserMgmt.php";
+		$wt = new UserMgmt();
+		$deviceId = $_POST["deviceId"];
+		$r = $wt->addAndroidDeviceId($deviceId);
+		switch ($r) {
+			case 0:
+				echo "success";
+				break;
+
+			case 1:
+				echo "Not authorized";
+				break;
+			
+			default:
+				echo "An internal error has occured.";
+				break;
+		}
+		break;
+
 	case "uploadPostImages":
 		require_once "../framework/BinaryHandler.php";
 		$bh = new BinaryHandler();
