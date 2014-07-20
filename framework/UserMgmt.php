@@ -174,548 +174,564 @@ class UserMgmt extends CredentialStore{
 						) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 						")){
 						$createInboxSTMT->execute();
-					$createInboxSTMT->close();
+						$createInboxSTMT->close();
+					}
+					else
+						return 350;
+					return 0;
 				}
-				else
-					return 350;
-				return 0;
+				else{
+					$insert_stmt->close();
+						//unable to send email
+					return "-3e"+$status;
+				}
 			}
 			else{
-				$insert_stmt->close();
-					//unable to send email
-				return "-3e"+$status;
+					//table not updated
+				return 2;
 			}
 		}
-		else{
-				//table not updated
-			return 2;
+		else {
+					//SQL error
+			return 1;
 		}
 	}
-	else {
-				//SQL error
-		return 1;
-	}
-}
 
-public function controlPanel($oldPw, $email, $newPw, $phone){
-	$uc = $this->getUserConnection();
-	if($this->getLoginStatus()){
-		if($this->checkPassword($oldPw)){
-			$errors = false;
-			if($email != ""){
-				if($this->checkEmail($email)){
-					if($emailUpdate = $uc->prepare("UPDATE `users` SET `email` = ?,`verified` = 0 WHERE `id` = ? LIMIT 1")){
-						$emailUpdate->bind_param("ss", $email, $_SESSION["user_id"]);
-						$emailUpdate ->execute();
-						if($emailUpdate->affected_rows ==1){
-							if($this->verifyEmail($email) == 0){
-								//success
-								$emailUpdate->close();
+	public function controlPanel($oldPw, $email, $newPw, $phone){
+		$uc = $this->getUserConnection();
+		if($this->getLoginStatus()){
+			if($this->checkPassword($oldPw)){
+				$errors = false;
+				if($email != ""){
+					if($this->checkEmail($email)){
+						if($emailUpdate = $uc->prepare("UPDATE `users` SET `email` = ?,`verified` = 0 WHERE `id` = ? LIMIT 1")){
+							$emailUpdate->bind_param("ss", $email, $_SESSION["user_id"]);
+							$emailUpdate ->execute();
+							if($emailUpdate->affected_rows ==1){
+								if($this->verifyEmail($email) == 0){
+									//success
+									$emailUpdate->close();
+								}
+								else{
+									//unable to send email
+									$emailUpdate->close();
+									return 14;
+								}
 							}
 							else{
-								//unable to send email
-								$emailUpdate->close();
-								return 14;
+								//unable to update table
+								return 13;
 							}
 						}
 						else{
-							//unable to update table
-							return 13;
+							//SQL error
+							return 12;
 						}
 					}
 					else{
-						//SQL error
-						return 12;
+						//email address exixts
+						return 11;
 					}
 				}
-				else{
-					//email address exixts
-					return 11;
+				if($newPw != ""){
+					$newPw = md5($newPw);
+					$stmt = $uc->prepare("UPDATE `users` SET `password` = ?  WHERE `id` = ? LIMIT 1");
+					$stmt->bind_param("si", $newPw, $_SESSION["user_id"]);
+					$stmt->execute();
+					if($stmt->affected_rows != 1){
+						$errors = true;
+					}
 				}
-			}
-			if($newPw != ""){
-				$newPw = md5($newPw);
-				$stmt = $uc->prepare("UPDATE `users` SET `password` = ?  WHERE `id` = ? LIMIT 1");
-				$stmt->bind_param("si", $newPw, $_SESSION["user_id"]);
-				$stmt->execute();
-				if($stmt->affected_rows != 1){
-					$errors = true;
+				if($phone != ""){
+					$stmt = $uc->prepare("UPDATE `users` SET `phone` = ?  WHERE `id` = ? LIMIT 1");
+					$stmt->bind_param("si", $phone, $_SESSION["user_id"]);
+					$stmt->execute();
+					if($stmt->affected_rows != 1){
+						$errors = true;
+					}
 				}
-			}
-			if($phone != ""){
-				$stmt = $uc->prepare("UPDATE `users` SET `phone` = ?  WHERE `id` = ? LIMIT 1");
-				$stmt->bind_param("si", $phone, $_SESSION["user_id"]);
-				$stmt->execute();
-				if($stmt->affected_rows != 1){
-					$errors = true;
+				if(!$errors){
+					if($email == "" && $newPw == "" && $phone =="")
+						//No Act
+						return 301;
+					//All Gud
+					return 0;
 				}
-			}
-			if(!$errors){
-				if($email == "" && $newPw == "" && $phone =="")
-					//No Act
-					return 301;
-				//All Gud
-				return 0;
+				else
+					//Err detect
+					return 3;
 			}
 			else
-				//Err detect
-				return 3;
+				//No Auth
+				return 2;
 		}
 		else
-			//No Auth
-			return 2;
-	}
-	else
-		//NLI
-		return 1;
-}
-
-public function getPostsCurrentUser(){
-	$lc = $this->getlistingConnection();
-	if($this->getLoginStatus()){
-		$schs = $lc->prepare("SELECT `textId` FROM `schools` ORDER BY `name` DESC LIMIT 100");
-		$schs->execute();
-		$schs->store_result();
-		$schs->bind_result($school);
-		$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<results>\n";
-		while($schs->fetch()){
-			$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `expire` ASC");
-			$mypost->bind_param("s", $_SESSION["user_id"]);
-			$mypost->execute();
-			$mypost->store_result();
-			$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews, $pExpire, $pExpired);
-			if($mypost->num_rows > 0){
-				$concatenated = $concatenated."\t<school shortName=\"".$school."\" longName=\"".$this->getSchoolName($school)."\">";
-
-				while($mypost->fetch()){
-					$link =  $school.":".$identifier;
-					$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
-					$html_blacklist = "/< >/";
-					if($pExpired == true) $pTitle = "[EXPIRED] ".htmlspecialchars($pTitle);
-					elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAY(S) LEFT] ".htmlspecialchars($pTitle);
-					else $pTitle = htmlspecialchars($pTitle);
-					$pDate = htmlspecialchars($pDate);
-					$pCat = htmlspecialchars($pCat);
-					$pExpired = ($pExpired == 1) ? "true" : "false";
-					$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\" expire=\"".$pExpire."\" expired=\"".$pExpired."\"/>\n";
-				}
-				$concatenated = $concatenated."\t</school>\n";
-			}
-			$mypost->close();
-		}
-		$concatenated = $concatenated."</results>";
-		return $concatenated;
-	}
-	else{
-		//NLI
-		return 1;
-	}
-}
-
-public function getSentWebmail(){
-	$wc = $this->getWebmailConnection();
-	if($this->getLoginStatus()){
-		if($webmailSTMT = $wc->prepare("SELECT `id`, `to`, `subject`, `message`, `datetime` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `from` = ? ORDER BY `id` DESC LIMIT 100")){
-			$webmailSTMT->bind_param("i", $_SESSION["user_id"]);
-			$webmailSTMT->execute();
-			$webmailSTMT->store_result();
-			$webmailSTMT->bind_result($id, $to, $subject, $message, $datetime);
-		}
-		else return 152;
-		$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<webmail>\n";
-		while($webmailSTMT->fetch()){
-			$to_resolved = $this->resolveIDToUsername($to);
-			$to = ($to_resolved == null) ? "[deleted]" : $to_resolved;
-			$subject = (strlen($subject) >= 35)? substr($subject, 0, 35)."..." : $subject;
-			$message = (strlen($message) >= 40)? substr($message, 0, 40)."..." : $message;
-			$subject = htmlspecialchars($subject);
-			$message = htmlspecialchars($message);
-			$concatenated = $concatenated."<message id=\"".$id."\" to=\"".$to."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\"/>\n";
-		}
-		$webmailSTMT->close();
-		$concatenated = $concatenated."</webmail>";
-		return $concatenated;
-	}
-	else{
-		//NLI
-		return 1;
-	}
-}
-
-public function getWebmail(){
-	$wc = $this->getWebmailConnection();
-	if($this->getLoginStatus()){
-		if($webmailSTMT = $wc->prepare("SELECT `id`, `from`, `subject`, `message`, `datetime`, `read` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `to` = ? ORDER BY `id` DESC LIMIT 100")){
-			$webmailSTMT->bind_param("i", $_SESSION["user_id"]);
-			$webmailSTMT->execute();
-			$webmailSTMT->store_result();
-			$webmailSTMT->bind_result($id, $from, $subject, $message, $datetime, $read);
-		}
-		else return 152;
-		$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<webmail>\n";
-		while($webmailSTMT->fetch()){
-			$from_resolved = $this->resolveIDToUsername($from);
-			$from = ($from_resolved == "null") ? "[deleted]" : $from_resolved;
-			$subject = (strlen($subject) >= 35)? substr($subject, 0, 35)."..." : $subject;
-			$message = (strlen($message) >= 40)? substr($message, 0, 40)."..." : $message;
-			$subject = htmlspecialchars($subject);
-			$message = htmlspecialchars($message);
-			$concatenated = $concatenated."<message id=\"".$id."\" from=\"".$from."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\" read=\"".$read."\"/>\n";
-		}
-		$webmailSTMT->close();
-		$concatenated = $concatenated."</webmail>";
-		return $concatenated;
-	}
-	else{
-		//NLI
-		return 1;
-	}
-}
-
-public function pollNewWebmail(){
-		if($this->getLoginStatus()){//If user logged in
-			if($pollNewWebmailSTMT = $this->getWebmailConnection()->prepare("SELECT `id` FROM uid_".$_SESSION["user_id"]." WHERE `trash` = 0 AND `to` = ? AND `read` = 0")){
-				$pollNewWebmailSTMT->bind_param("i", $_SESSION["user_id"]);
-				$pollNewWebmailSTMT->execute();
-				$pollNewWebmailSTMT->store_result();
-				return $pollNewWebmailSTMT->num_rows();
-			}
-		}
+			//NLI
+			return 1;
 	}
 
-	public function getMessage($messageId){
+	public function getPostsCurrentUser(){
+		$lc = $this->getlistingConnection();
 		if($this->getLoginStatus()){
-			if($getMessageSTMT = $this->getWebmailConnection()->prepare("SELECT `from`, `to`, `subject`, `message`, `datetime` FROM `uid_".$_SESSION["user_id"]."` WHERE id = ?")){
-				$getMessageSTMT->bind_param("i", $messageId);
-				$getMessageSTMT->execute();
-				$getMessageSTMT->store_result();
-				$getMessageSTMT->bind_result($from, $to, $subject, $message, $datetime);
-				$getMessageSTMT->fetch();
-			}
-			if($getUserNameSTMT = $this->getUserConnection()->prepare("SELECT name FROM users where id = ? LIMIT 1")){
-				$getUserNameSTMT->bind_param("i", $from);
-				$getUserNameSTMT->execute();
-				$getUserNameSTMT->store_result();
-				$getUserNameSTMT->bind_result($from);
-				$getUserNameSTMT->fetch();
-				$getUserNameSTMT->close();
-				$from = ($from == "") ? "[deleted user]" : $from;
-			}
+			$schs = $lc->prepare("SELECT `textId` FROM `schools` ORDER BY `name` DESC LIMIT 100");
+			$schs->execute();
+			$schs->store_result();
+			$schs->bind_result($school);
+			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<results>\n";
+			while($schs->fetch()){
+				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `expire` ASC");
+				$mypost->bind_param("s", $_SESSION["user_id"]);
+				$mypost->execute();
+				$mypost->store_result();
+				$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews, $pExpire, $pExpired);
+				if($mypost->num_rows > 0){
+					$concatenated = $concatenated."\t<school shortName=\"".$school."\" longName=\"".$this->getSchoolName($school)."\">";
 
-			if($getMessageSTMT = $this->getWebmailConnection()->prepare("UPDATE `uid_".$_SESSION["user_id"]."` SET `read` = 1 WHERE id = ?")){
-				$getMessageSTMT->bind_param("i", $messageId);
-				$getMessageSTMT->execute();
+					while($mypost->fetch()){
+						$link =  $school.":".$identifier;
+						$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
+						$html_blacklist = "/< >/";
+						if($pExpired == true) $pTitle = "[EXPIRED] ".htmlspecialchars($pTitle);
+						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAY(S) LEFT] ".htmlspecialchars($pTitle);
+						else $pTitle = htmlspecialchars($pTitle);
+						$pDate = htmlspecialchars($pDate);
+						$pCat = htmlspecialchars($pCat);
+						$pExpired = ($pExpired == 1) ? "true" : "false";
+						$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\" expire=\"".$pExpire."\" expired=\"".$pExpired."\"/>\n";
+					}
+					$concatenated = $concatenated."\t</school>\n";
+				}
+				$mypost->close();
 			}
-			else return 150;
-			$getMessageSTMT->close();
-			$html_blacklist = "/< >/";
-			$subject = htmlspecialchars($subject);
-			$message = htmlspecialchars($message);
-			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<message from=\"".$from."\" to=\"".$this->resolveIDToUsername($to)."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\"/>";
+			$concatenated = $concatenated."</results>";
 			return $concatenated;
 		}
 		else{
-		//NLI
+			//NLI
 			return 1;
 		}
 	}
 
-	public function setEmailPref($intent){
+	public function getSentWebmail(){
+		$wc = $this->getWebmailConnection();
 		if($this->getLoginStatus()){
-			if($setEmailPrefSTMT = $this->getUserConnection()->prepare("UPDATE users SET emailPref = ? WHERE id = ? LIMIT 1")){
-				$setEmailPrefSTMT->bind_param("ii", $intent, $_SESSION["user_id"]);
-				$setEmailPrefSTMT->execute();
-				$_SESSION["email_me"] = $intent;
-				return 0;
+			if($webmailSTMT = $wc->prepare("SELECT `id`, `to`, `subject`, `message`, `datetime` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `from` = ? ORDER BY `id` DESC LIMIT 100")){
+				$webmailSTMT->bind_param("i", $_SESSION["user_id"]);
+				$webmailSTMT->execute();
+				$webmailSTMT->store_result();
+				$webmailSTMT->bind_result($id, $to, $subject, $message, $datetime);
 			}
-			else return 10;
-		}
-		else return 1;
-	}
-
-	public function getEmailPref(){
-		echo $_SESSION["email_me"];
-	}
-
-	public function removeMessage($messageId){
-		if($this->getLoginStatus()){
-			if($removeMessageSTMT = $this->getWebmailConnection()->prepare("UPDATE `uid_".$_SESSION["user_id"]."` SET `trash` = 1 WHERE id = ? LIMIT 1")){
-				$removeMessageSTMT->bind_param("i", $messageId);
-				$removeMessageSTMT->execute();
-				if($removeMessageSTMT->affected_rows == 1){
-					return 0;
-				}
+			else return 152;
+			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<webmail>\n";
+			while($webmailSTMT->fetch()){
+				$to_resolved = $this->resolveIDToUsername($to);
+				$to = ($to_resolved == null) ? "[deleted]" : $to_resolved;
+				$subject = (strlen($subject) >= 35)? substr($subject, 0, 35)."..." : $subject;
+				$message = (strlen($message) >= 40)? substr($message, 0, 40)."..." : $message;
+				$subject = htmlspecialchars($subject);
+				$message = htmlspecialchars($message);
+				$concatenated = $concatenated."<message id=\"".$id."\" to=\"".$to."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\"/>\n";
 			}
+			$webmailSTMT->close();
+			$concatenated = $concatenated."</webmail>";
+			return $concatenated;
 		}
 		else{
-		//NLI
+			//NLI
 			return 1;
 		}
 	}
 
-	public function checkPassword($password){
-		$password = md5($password);
-		if ($passwordck = $this->getUserConnection()->prepare("SELECT `id` FROM `users` WHERE `password` = ? AND `name` = ?")) {    
-			$passwordck->bind_param('ss', $password, $_SESSION["username"]); 
+	public function getWebmail(){
+		$wc = $this->getWebmailConnection();
+		if($this->getLoginStatus()){
+			if($webmailSTMT = $wc->prepare("SELECT `id`, `from`, `subject`, `message`, `datetime`, `read` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `to` = ? ORDER BY `id` DESC LIMIT 100")){
+				$webmailSTMT->bind_param("i", $_SESSION["user_id"]);
+				$webmailSTMT->execute();
+				$webmailSTMT->store_result();
+				$webmailSTMT->bind_result($id, $from, $subject, $message, $datetime, $read);
+			}
+			else return 152;
+			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<webmail>\n";
+			while($webmailSTMT->fetch()){
+				$from_resolved = $this->resolveIDToUsername($from);
+				$from = ($from_resolved == "null") ? "[deleted]" : $from_resolved;
+				$subject = (strlen($subject) >= 35)? substr($subject, 0, 35)."..." : $subject;
+				$message = (strlen($message) >= 40)? substr($message, 0, 40)."..." : $message;
+				$subject = htmlspecialchars($subject);
+				$message = htmlspecialchars($message);
+				$concatenated = $concatenated."<message id=\"".$id."\" from=\"".$from."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\" read=\"".$read."\"/>\n";
+			}
+			$webmailSTMT->close();
+			$concatenated = $concatenated."</webmail>";
+			return $concatenated;
+		}
+		else{
+			//NLI
+			return 1;
+		}
+	}
 
-			if($passwordck->execute()){
-				$passwordck->store_result();
-				if(($passwordck->num_rows) != 1){
-					$passwordck->close();
-					return false;
+	public function pollNewWebmail(){
+			if($this->getLoginStatus()){//If user logged in
+				if($pollNewWebmailSTMT = $this->getWebmailConnection()->prepare("SELECT `id` FROM uid_".$_SESSION["user_id"]." WHERE `trash` = 0 AND `to` = ? AND `read` = 0")){
+					$pollNewWebmailSTMT->bind_param("i", $_SESSION["user_id"]);
+					$pollNewWebmailSTMT->execute();
+					$pollNewWebmailSTMT->store_result();
+					return $pollNewWebmailSTMT->num_rows();
 				}
-				else{
-					$passwordck->bind_result($id);
-					$passwordck->fetch();
+			}
+		}
 
-					if ($id == $_SESSION["user_id"]){
+		public function getMessage($messageId){
+			if($this->getLoginStatus()){
+				if($getMessageSTMT = $this->getWebmailConnection()->prepare("SELECT `from`, `to`, `subject`, `message`, `datetime` FROM `uid_".$_SESSION["user_id"]."` WHERE id = ?")){
+					$getMessageSTMT->bind_param("i", $messageId);
+					$getMessageSTMT->execute();
+					$getMessageSTMT->store_result();
+					$getMessageSTMT->bind_result($from, $to, $subject, $message, $datetime);
+					$getMessageSTMT->fetch();
+				}
+				if($getUserNameSTMT = $this->getUserConnection()->prepare("SELECT name FROM users where id = ? LIMIT 1")){
+					$getUserNameSTMT->bind_param("i", $from);
+					$getUserNameSTMT->execute();
+					$getUserNameSTMT->store_result();
+					$getUserNameSTMT->bind_result($from);
+					$getUserNameSTMT->fetch();
+					$getUserNameSTMT->close();
+					$from = ($from == "") ? "[deleted user]" : $from;
+				}
+
+				if($getMessageSTMT = $this->getWebmailConnection()->prepare("UPDATE `uid_".$_SESSION["user_id"]."` SET `read` = 1 WHERE id = ?")){
+					$getMessageSTMT->bind_param("i", $messageId);
+					$getMessageSTMT->execute();
+				}
+				else return 150;
+				$getMessageSTMT->close();
+				$html_blacklist = "/< >/";
+				$subject = htmlspecialchars($subject);
+				$message = htmlspecialchars($message);
+				$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<message from=\"".$from."\" to=\"".$this->resolveIDToUsername($to)."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\"/>";
+				return $concatenated;
+			}
+			else{
+			//NLI
+				return 1;
+			}
+		}
+
+		public function setEmailPref($intent){
+			if($this->getLoginStatus()){
+				if($setEmailPrefSTMT = $this->getUserConnection()->prepare("UPDATE users SET emailPref = ? WHERE id = ? LIMIT 1")){
+					$setEmailPrefSTMT->bind_param("ii", $intent, $_SESSION["user_id"]);
+					$setEmailPrefSTMT->execute();
+					$_SESSION["email_me"] = $intent;
+					return 0;
+				}
+				else return 10;
+			}
+			else return 1;
+		}
+
+		public function getEmailPref(){
+			echo $_SESSION["email_me"];
+		}
+
+		public function removeMessage($messageId){
+			if($this->getLoginStatus()){
+				if($removeMessageSTMT = $this->getWebmailConnection()->prepare("UPDATE `uid_".$_SESSION["user_id"]."` SET `trash` = 1 WHERE id = ? LIMIT 1")){
+					$removeMessageSTMT->bind_param("i", $messageId);
+					$removeMessageSTMT->execute();
+					if($removeMessageSTMT->affected_rows == 1){
+						return 0;
+					}
+				}
+			}
+			else{
+			//NLI
+				return 1;
+			}
+		}
+
+		public function checkPassword($password){
+			$password = md5($password);
+			if ($passwordck = $this->getUserConnection()->prepare("SELECT `id` FROM `users` WHERE `password` = ? AND `name` = ?")) {    
+				$passwordck->bind_param('ss', $password, $_SESSION["username"]); 
+
+				if($passwordck->execute()){
+					$passwordck->store_result();
+					if(($passwordck->num_rows) != 1){
 						$passwordck->close();
+						return false;
+					}
+					else{
+						$passwordck->bind_result($id);
+						$passwordck->fetch();
+
+						if ($id == $_SESSION["user_id"]){
+							$passwordck->close();
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		public function checkUsername($username){
+			if ($unameck = $this->getUserConnection()->prepare("SELECT `id` FROM `users` WHERE `name` = ?")) {    
+				$unameck->bind_param('s', $username); 
+
+				if($unameck->execute()){
+					$unameck->store_result();
+					if(($unameck->num_rows) > 0){
+						$unameck->close();
+						return false;
+					}
+					else{
+						$unameck->close();
 						return true;
 					}
 				}
 			}
 		}
-	}
 
-	public function checkUsername($username){
-		if ($unameck = $this->getUserConnection()->prepare("SELECT `id` FROM `users` WHERE `name` = ?")) {    
-			$unameck->bind_param('s', $username); 
-
-			if($unameck->execute()){
-				$unameck->store_result();
-				if(($unameck->num_rows) > 0){
-					$unameck->close();
-					return false;
-				}
-				else{
-					$unameck->close();
-					return true;
-				}
-			}
-		}
-	}
-
-	public function messageUser($uid, $title, $message){
-		if($this->getLoginStatus()){
-			$needles = array(" fuck ", " shit ", " damn ", " bitch ", " ass ", " dick ", " pussy ", " motherfucker ");
-			foreach ($needles as $needle) {
-				if(stripos($message, $needle) !== false){
-					if($stmtINFRACTIONS = $this->getUserConnection()->prepare("UPDATE `users` SET `infractions` = `infractions` + 1 WHERE `id` = ? LIMIT 1")){
-						$stmtINFRACTIONS->bind_param("i", $_SESSION["user_id"]);
-						$stmtINFRACTIONS->execute();
+		public function messageUser($uid, $title, $message){
+			if($this->getLoginStatus()){
+				$needles = array(" fuck ", " shit ", " damn ", " bitch ", " ass ", " dick ", " pussy ", " motherfucker ");
+				foreach ($needles as $needle) {
+					if(stripos($message, $needle) !== false){
+						if($stmtINFRACTIONS = $this->getUserConnection()->prepare("UPDATE `users` SET `infractions` = `infractions` + 1 WHERE `id` = ? LIMIT 1")){
+							$stmtINFRACTIONS->bind_param("i", $_SESSION["user_id"]);
+							$stmtINFRACTIONS->execute();
+						}
+						return 5;
 					}
-					return 5;
 				}
-			}
-			if($stmt = $this->getUserConnection()->prepare("SELECT `email`, `emailPref`, `android_deviceId` FROM `users`  WHERE `id` = ? LIMIT 1")){
-				$stmt->bind_param("i", $uid);
-				$stmt->execute();
-				$stmt->store_result();
-				if($stmt->affected_rows == 1){
-					$stmt->bind_result($email, $emailPref, $androidDeviceId);
-					$emailPref = ($emailPref == "1") ? true : false;
-					$stmt->fetch();
-					//success
-					date_default_timezone_set('America/New_York');
-					$user_inbox = "uid_".$uid;
-					if($webmailSTMT = $this->getWebmailConnection()->prepare("INSERT INTO ".$user_inbox." (`from`, `to`, `subject`, `message`, `datetime`, `read`, `trash`) VALUES (?,?,?,?,?,0,0)")){
-						$dateTime = date('Y/m/d H:i:s');
-						$title = ($title == "") ? "[no title]" : $title;
-						$message = ($message == "") ? "[no message]" : $message;
-						$webmailSTMT->bind_param("iisss", $_SESSION["user_id"], $uid, $title, $message, $dateTime);
-						$webmailSTMT->execute();
-						$remoteMessageId = $webmailSTMT->insert_id;
-						if($_SESSION["user_id"] != $uid){
-							if($webmailSTMT = $this->getWebmailConnection()->prepare("INSERT INTO "."uid_".$_SESSION["user_id"]." (`from`, `to`, `subject`, `message`, `datetime`, `read`, `trash`) VALUES (?,?,?,?,?,0,0)")){
-								$webmailSTMT->bind_param("iisss", $_SESSION["user_id"], $uid, $title, $message, $dateTime);
-								$webmailSTMT->execute();
+				if($stmt = $this->getUserConnection()->prepare("SELECT `email`, `emailPref`, `android_deviceId` FROM `users`  WHERE `id` = ? LIMIT 1")){
+					$stmt->bind_param("i", $uid);
+					$stmt->execute();
+					$stmt->store_result();
+					if($stmt->affected_rows == 1){
+						$stmt->bind_result($email, $emailPref, $androidDeviceId);
+						$emailPref = ($emailPref == "1") ? true : false;
+						$stmt->fetch();
+						//success
+						date_default_timezone_set('America/New_York');
+						$user_inbox = "uid_".$uid;
+						if($webmailSTMT = $this->getWebmailConnection()->prepare("INSERT INTO ".$user_inbox." (`from`, `to`, `subject`, `message`, `datetime`, `read`, `trash`) VALUES (?,?,?,?,?,0,0)")){
+							$dateTime = date('Y/m/d H:i:s');
+							$title = ($title == "") ? "[no title]" : $title;
+							$message = ($message == "") ? "[no message]" : $message;
+							$webmailSTMT->bind_param("iisss", $_SESSION["user_id"], $uid, $title, $message, $dateTime);
+							$webmailSTMT->execute();
+							$remoteMessageId = $webmailSTMT->insert_id;
+							if($_SESSION["user_id"] != $uid){
+								if($webmailSTMT = $this->getWebmailConnection()->prepare("INSERT INTO "."uid_".$_SESSION["user_id"]." (`from`, `to`, `subject`, `message`, `datetime`, `read`, `trash`) VALUES (?,?,?,?,?,0,0)")){
+									$webmailSTMT->bind_param("iisss", $_SESSION["user_id"], $uid, $title, $message, $dateTime);
+									$webmailSTMT->execute();
+								}
 							}
+							if($webmailSTMT->affected_rows == 1){
+								$webmailSTMT->close();
+								if($archiveSTMT = $this->getUserConnection()->prepare("INSERT INTO `interactions`(`sender`,`reciever`,`message`,`datetime`)VALUES(?,?,?,?);")){
+									$archiveSTMT->bind_param("ssss", $_SESSION{"emailAddress"}, $email, $message, $dateTime);
+									$archiveSTMT->execute();
+									if($androidDeviceId != "")
+										$this->GCMPush($androidDeviceId, $remoteMessageId, $message);
+								}
+								if($emailPref){
+									$subject = "New message from a user on walkntrade";
+									$string = '
+									<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
+									<h1>New message from '.$_SESSION["username"].' on walkntrade</h1>
+									<p>
+										<b>'.$title.'</b>
+									</p>
+									<p>
+										<b>'.$message.'</b>
+									</p>
+									<p>
+										<i>Please log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.</i>
+									</p>
+								</p>
+								';
+								$headers = "MIME-Version: 1.0" . "\r\n";
+								$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+								$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
+								if(mail($email, $subject, $string, $headers)){
+									return 0;
+								}
+								else return 4;
+							}
+							else return 0;
 						}
-						if($webmailSTMT->affected_rows == 1){
+						else{
 							$webmailSTMT->close();
-							if($archiveSTMT = $this->getUserConnection()->prepare("INSERT INTO `interactions`(`sender`,`reciever`,`message`,`datetime`)VALUES(?,?,?,?);")){
-								$archiveSTMT->bind_param("ssss", $_SESSION{"emailAddress"}, $email, $message, $dateTime);
-								$archiveSTMT->execute();
-								if($androidDeviceId != "")
-									$this->GCMPush($androidDeviceId, $remoteMessageId, $message);
-							}
-							if($emailPref){
-								$subject = "New message from a user on walkntrade";
-								$string = '
-								<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
-								<h1>New message from '.$_SESSION["username"].' on walkntrade</h1>
-								<p>
-									<b>'.$title.'</b>
-								</p>
-								<p>
-									<b>'.$message.'</b>
-								</p>
-								<p>
-									<i>Please log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.</i>
-								</p>
-							</p>
-							';
-							$headers = "MIME-Version: 1.0" . "\r\n";
-							$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-							$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
-							if(mail($email, $subject, $string, $headers)){
-								return 0;
-							}
-							else return 4;
+							return 120;
 						}
-						else return 0;
 					}
 					else{
-						$webmailSTMT->close();
-						return 120;
+						return 100;
 					}
 				}
 				else{
-					return 100;
+					//user does not exist
+					return 3;
 				}
 			}
 			else{
-				//user does not exist
-				return 3;
+				//SQL error
+				return 2;
 			}
 		}
 		else{
-			//SQL error
-			return 2;
+			//NLI
+			return 1;
 		}
 	}
-	else{
-		//NLI
-		return 1;
+
+	private function GCMPush($androidDeviceId, $remoteMessageId, $message){
+		$registrationIDs = array($androidDeviceId);
+		$apiKey = "AIzaSyCOlxC1pWV-MAVDyGE_NcdKfk1hCVJ7ZcQ";
+		$post_string["id"]=$remoteMessageId;
+		$post_string["user"]=$_SESSION["username"];
+		$post_string["message"]=$message;
+	    // Set POST variables
+		$url = 'https://android.googleapis.com/gcm/send';
+
+		$fields = array(
+			'registration_ids' => $registrationIDs,
+			'data' => $post_string,
+			);
+		$headers = array(
+			'Authorization: key=' . $apiKey,
+			'Content-Type: application/json'
+			);
+
+	    // Open connection
+		$ch = curl_init();
+
+	    // Set the URL, number of POST vars, POST data
+		curl_setopt( $ch, CURLOPT_URL, $url);
+		curl_setopt( $ch, CURLOPT_POST, true);
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true);
+	    //curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $fields));
+
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	    // curl_setopt($ch, CURLOPT_POST, true);
+	    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode( $fields));
+
+	    // Execute post
+		$result = curl_exec($ch);
+
+	    // Close connection
+		curl_close($ch);
+		// echo $result;
+	    //print_r($result);
+	    //var_dump($result);
 	}
-}
 
-private function GCMPush($androidDeviceId, $remoteMessageId, $message){
-	$registrationIDs = array($androidDeviceId);
-	$apiKey = "AIzaSyCOlxC1pWV-MAVDyGE_NcdKfk1hCVJ7ZcQ";
-	$post_string["id"]=$remoteMessageId;
-	$post_string["user"]=$_SESSION["username"];
-	$post_string["message"]=$message;
-    // Set POST variables
-	$url = 'https://android.googleapis.com/gcm/send';
-
-	$fields = array(
-		'registration_ids' => $registrationIDs,
-		'data' => $post_string,
-		);
-	$headers = array(
-		'Authorization: key=' . $apiKey,
-		'Content-Type: application/json'
-		);
-
-    // Open connection
-	$ch = curl_init();
-
-    // Set the URL, number of POST vars, POST data
-	curl_setopt( $ch, CURLOPT_URL, $url);
-	curl_setopt( $ch, CURLOPT_POST, true);
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers);
-	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true);
-    //curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $fields));
-
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    // curl_setopt($ch, CURLOPT_POST, true);
-    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode( $fields));
-
-    // Execute post
-	$result = curl_exec($ch);
-
-    // Close connection
-	curl_close($ch);
-	// echo $result;
-    //print_r($result);
-    //var_dump($result);
-}
-
-public function resolveUsernameToID($userName){
-	if ($resolveUsernameToIDSTMT = $this->getUserConnection()->prepare("SELECT `id` FROM `users` WHERE `name` = ?")) {    
-		$resolveUsernameToIDSTMT->bind_param('s', $userName); 
-		$resolveUsernameToIDSTMT->execute();
-		$resolveUsernameToIDSTMT->store_result();
-		$resolveUsernameToIDSTMT->bind_result($id);
-		$resolveUsernameToIDSTMT->fetch();
+	public function resolveUsernameToID($userName){
+		if ($resolveUsernameToIDSTMT = $this->getUserConnection()->prepare("SELECT `id` FROM `users` WHERE `name` = ?")) {    
+			$resolveUsernameToIDSTMT->bind_param('s', $userName); 
+			$resolveUsernameToIDSTMT->execute();
+			$resolveUsernameToIDSTMT->store_result();
+			$resolveUsernameToIDSTMT->bind_result($id);
+			$resolveUsernameToIDSTMT->fetch();
+		}
+		$id = ($id == "") ? null : $id;
+		return $id;
 	}
-	$id = ($id == "") ? null : $id;
-	return $id;
-}
 
-public function resolveIDToUsername($id){
-	if ($resolveUsernameToIDSTMT = $this->getUserConnection()->prepare("SELECT `name` FROM `users` WHERE `id` = ?")) {    
-		$resolveUsernameToIDSTMT->bind_param('i', $id); 
-		$resolveUsernameToIDSTMT->execute();
-		$resolveUsernameToIDSTMT->store_result();
-		$resolveUsernameToIDSTMT->bind_result($id);
-		$resolveUsernameToIDSTMT->fetch();
+	public function resolveIDToUsername($id){
+		if ($resolveUsernameToIDSTMT = $this->getUserConnection()->prepare("SELECT `name` FROM `users` WHERE `id` = ?")) {    
+			$resolveUsernameToIDSTMT->bind_param('i', $id); 
+			$resolveUsernameToIDSTMT->execute();
+			$resolveUsernameToIDSTMT->store_result();
+			$resolveUsernameToIDSTMT->bind_result($id);
+			$resolveUsernameToIDSTMT->fetch();
+		}
+		$id = ($id == "") ? null : $id;
+		return $id;
 	}
-	$id = ($id == "") ? null : $id;
-	return $id;
-}
 
-public function getAvatarOf($userid){
-	if(file_exists("user_images/uid_".$userid.".jpg"))
-		return("/user_images/uid_".$userid.".jpg");
-	else
-		return("/colorful/Anonymous_User.jpg");
-}
+	public function getAvatarOf($userid){
+		if(file_exists("user_images/uid_".$userid.".jpg"))
+			return("/user_images/uid_".$userid.".jpg");
+		else
+			return("/colorful/Anonymous_User.jpg");
+	}
 
-public function getUserProfile($uid){
-	$schs = $this->getListingConnection()->prepare("SELECT `textId` FROM `schools` ORDER BY `name` DESC LIMIT 100");
-	$schs->execute();
-	$schs->store_result();
-	$schs->bind_result($school);
-	$userName = $this->resolveIDToUsername($uid);
-	if($userName != null){
-		$avatarUrl = $this->getAvatarOf($uid);
-		$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<userProfile>\n";
-		$concatenated .= "<username>".$userName."</username>\n";
-		$concatenated .= "<avatarUrl>".$avatarUrl."</avatarUrl>\n";
-		while($schs->fetch()){
-			$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
-			$mypost->bind_param("s", $uid);
-			$mypost->execute();
-			$mypost->store_result();
-			$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews);
-			if($mypost->num_rows > 0){
-				$concatenated = $concatenated."\t<school shortName=\"".$school."\" longName=\"".$this->getSchoolName($school)."\">\n";
+	public function getUserProfile($uid){
+		$schs = $this->getListingConnection()->prepare("SELECT `textId` FROM `schools` ORDER BY `name` DESC LIMIT 100");
+		$schs->execute();
+		$schs->store_result();
+		$schs->bind_result($school);
+		$userName = $this->resolveIDToUsername($uid);
+		if($userName != null){
+			$avatarUrl = $this->getAvatarOf($uid);
+			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<userProfile>\n";
+			$concatenated .= "<username>".$userName."</username>\n";
+			$concatenated .= "<avatarUrl>".$avatarUrl."</avatarUrl>\n";
+			while($schs->fetch()){
+				$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
+				$mypost->bind_param("s", $uid);
+				$mypost->execute();
+				$mypost->store_result();
+				$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews);
+				if($mypost->num_rows > 0){
+					$concatenated = $concatenated."\t<school shortName=\"".$school."\" longName=\"".$this->getSchoolName($school)."\">\n";
 
-				while($mypost->fetch()){
-					$link =  $school.":".$identifier;
-					$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
-					$html_blacklist = "/< >/";
-					$pTitle = htmlspecialchars($pTitle);
-					$pDate = htmlspecialchars($pDate);
-					$pCat = htmlspecialchars($pCat);
-					$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\"/>\n";
+					while($mypost->fetch()){
+						$link =  $school.":".$identifier;
+						$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
+						$html_blacklist = "/< >/";
+						$pTitle = htmlspecialchars($pTitle);
+						$pDate = htmlspecialchars($pDate);
+						$pCat = htmlspecialchars($pCat);
+						$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\"/>\n";
+					}
+					$concatenated = $concatenated."</school>\n";
 				}
-				$concatenated = $concatenated."</school>\n";
+				$mypost->close();
 			}
-			$mypost->close();
+			$concatenated = $concatenated."</userProfile>";
+			return $concatenated;
 		}
-		$concatenated = $concatenated."</userProfile>";
-		return $concatenated;
 	}
-}
 
-public function addAndroidDeviceId($deviceId){
-	if($this->getLoginStatus()){
-		if($aidSTMT = $this->getUserConnection()->prepare("UPDATE `users` SET `android_deviceId` = ? WHERE `id` = ?")){
-			$aidSTMT->bind_param("ss", $deviceId, $_SESSION["user_id"]);
-			$aidSTMT->execute();
-			$aidSTMT->store_result();
-			if($aidSTMT->affected_rows == 1){
-				return 0;
+	public function addAndroidDeviceId($deviceId){
+		if($this->getLoginStatus()){
+			if($aidSTMT = $this->getUserConnection()->prepare("UPDATE `users` SET `android_deviceId` = ? WHERE `id` = ?")){
+				$aidSTMT->bind_param("ss", $deviceId, $_SESSION["user_id"]);
+				$aidSTMT->execute();
+				$aidSTMT->store_result();
+				if($aidSTMT->affected_rows == 1){
+					return 0;
+				}
 			}
 		}
+		else{
+			return 1;
+		}
 	}
-	else{
-		return 1;
+
+	public function removeAndroidDeviceId(){
+		if($this->getLoginStatus()){
+			if($aidSTMT = $this->getUserConnection()->prepare("UPDATE `users` SET `android_deviceId` = null WHERE `id` = ?")){
+				$aidSTMT->bind_param("s", $_SESSION["user_id"]);
+				$aidSTMT->execute();
+				$aidSTMT->store_result();
+				if($aidSTMT->affected_rows == 1){
+					return 0;
+				}
+			}
+		}
+		else{
+			return 1;
+		}
 	}
-}
 }
 ?>

@@ -199,6 +199,10 @@ switch($getIntent){
 	case "logout":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
+		if(isset($_POST["GCMClear"]))
+			$GCMClear = ($_POST["GCMClear"] == "true") ? true : false;
+		if($GCMClear)
+			$um->removeAndroidDeviceId();
 		$um->logout();
 		break;
 
