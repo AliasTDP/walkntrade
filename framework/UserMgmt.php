@@ -593,7 +593,7 @@ class UserMgmt extends CredentialStore{
 	private function GCMPush($uid, $androidDeviceId, $remoteMessageId, $message){
 		$registrationIDs = array($androidDeviceId);
 		$apiKey = "AIzaSyCOlxC1pWV-MAVDyGE_NcdKfk1hCVJ7ZcQ";
-		$imgUrl = "user_images/uid_".$uid.".jpg";
+		$imgUrl = "user_images/uid_".$_SESSION["user_id"].".jpg";
 
 		$post_string["id"]=$remoteMessageId;
 		$post_string["user"]=$_SESSION["username"];
