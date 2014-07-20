@@ -537,7 +537,7 @@ class UserMgmt extends CredentialStore{
 									$archiveSTMT->bind_param("ssss", $_SESSION{"emailAddress"}, $email, $message, $dateTime);
 									$archiveSTMT->execute();
 									if($androidDeviceId != "")
-										$this->GCMPush($androidDeviceId, $remoteMessageId, $message);
+										$this->GCMPush($uid, $androidDeviceId, $remoteMessageId, $message);
 								}
 								if($emailPref){
 									$subject = "New message from a user on walkntrade";
@@ -590,12 +590,16 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	private function GCMPush($androidDeviceId, $remoteMessageId, $message){
+	private function GCMPush($uid, $androidDeviceId, $remoteMessageId, $message){
 		$registrationIDs = array($androidDeviceId);
 		$apiKey = "AIzaSyCOlxC1pWV-MAVDyGE_NcdKfk1hCVJ7ZcQ";
+		$imgUrl = "http://walkntrade.com/user_images/uid_".$uid.".jpg";
+
 		$post_string["id"]=$remoteMessageId;
 		$post_string["user"]=$_SESSION["username"];
 		$post_string["message"]=$message;
+		$post_string["userImageURL"]= (file_exists($imgUrl)) ? $imgUrl : "http://walkntrade.com/colorful/Anonymous_User.jpg";
+		
 	    // Set POST variables
 		$url = 'https://android.googleapis.com/gcm/send';
 
