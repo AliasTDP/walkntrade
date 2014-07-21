@@ -487,7 +487,7 @@ switch($getIntent){
 				echo "Thanks for your feedback!";
 				break;
 				case 3:
-				echo "An error has occured... Can you try again? If it still doesn't work you can email us at feedback@walkntrade.com and we'll get on it! :)";
+				echo "An error has occured... Can you try again? If it still doesn't work you can email us at wt@walkntrade.com and we'll get on it! :)";
 			break;
 			}
 		}

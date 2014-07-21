@@ -232,7 +232,7 @@ class Walkntrade {
 				<h2>Or you may enter the code below if prompted.</h2>
 				<h1><span class="tab">'.$seed.'</span></h1>
 				<p>
-				If you believe that this email was sent in error, you may ignore it or email feedback@walkntrade.com and we will investigate the issue.
+				If you believe that this email was sent in error, you may ignore it or email wt@walkntrade.com and we will investigate the issue.
 				</p>
 				</p>
 				';
@@ -261,7 +261,7 @@ class Walkntrade {
 
 	public function sendFeedback($from, $message){
 		//get email params and send confirmation email
-		$email = "feedback@walkntrade.com";
+		$email = "wt@walkntrade.com";
 		$subject = "feedback from walkntrade";
 		$string = '
 		<h2>A user on walkntrade sent feedback</h2>
