@@ -462,16 +462,12 @@ function deletePost(identifier){
 }
 
 function renewPost(identifier){
-	dialog("Are you sure you want to restore this post? This action will reset the date of the post to today.", true, null, function(r){
-		if(r){
-			$.ajax({dataType:"html", data:"intent=renewPost&"+identifier+"=", context:getUserPosts}).success(function(r){
-				if(r == "success"){
-					this();
-				}
-				else{
-					dialog(r);
-				}
-			});
+	$.ajax({dataType:"html", data:"intent=renewPost&"+identifier+"=", context:getUserPosts}).success(function(r){
+		if(r == "success"){
+			this();
+		}
+		else{
+			dialog(r);
 		}
 	});
 }
