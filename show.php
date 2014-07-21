@@ -203,7 +203,6 @@ if($loggedIn){
 	<style type="text/css">
 	.colorAttr{color:<?php echo $color ?>;}
 	.colorBg{background-color:<?php echo $color ?>;}
-	#marginRight #sidebar .blurb{border-top: 10px solid <?php echo $color ?>}
 	</style>
 </head>
 <body>

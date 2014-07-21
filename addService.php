@@ -63,7 +63,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 				include ("include/header.php");
 				?>
 			</div>
-			<div id="addTable" style="border-left:5px solid #ff8c00;border-right:5px solid #ff8c00;color:#ff8c00">
+			<div id="addTable" class="boxStyle1">
 				<p>
 					<h1 style="text-align:center">Services</h1>
 				</p>

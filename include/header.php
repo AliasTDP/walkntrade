@@ -1,7 +1,7 @@
 <div id="newMessageWrapper">
 </div>
 <div id="leftHead">
-	<a href="./"><img id="logo" src="/colorful/wtlogo.png"></a>
+	<a href="./"><img id="logo" src="/colorful/wtlogo_dark.png"></a>
 </div>
 <div id="rightHead">
 	<script type="text/javascript">

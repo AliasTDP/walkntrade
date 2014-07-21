@@ -22,12 +22,6 @@
 	height: 45px;
 	line-height: 45px;
 	color:#FFF;
-	border-top-left-radius: 5px;
-	-moz-border-top-left-radius: 5px;
-	-webkit-border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	-moz-border-top-right-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
 	padding: 0px 10px;
 }
 
@@ -36,11 +30,6 @@
 	background: #FFF;
 	overflow:hidden;
 	border-bottom-left-radius: 5px;
-	-moz-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	-moz-border-bottom-right-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;
 }
 
 #marginLeft #postWrapper .body #title{
@@ -186,8 +175,6 @@
 	font-size: .9em;
 	background: #FFF url("/colorful/pstripes.jpg");
 	padding: 5px;
-	border-radius: 5px;
-	border-top: 10px solid #C0C0C0;
 	margin-bottom: 40px;
 }
 

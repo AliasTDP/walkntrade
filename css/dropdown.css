@@ -1,16 +1,22 @@
 .wrapper-dropdown-5 {
-	line-height: 17px;
-	position: absolute;
-	right: 0px;
-	bottom: 13px;
-	margin: 0 auto;
-	min-width: 175px;
-	padding: 12px 40px 12px 15px;
-	background: #4E4E4E;
-	border-radius: 5px;
-	cursor: pointer;
-	outline: none;
-	transition: all 0.3s ease-out;
+    line-height: 17px;
+    position: absolute;
+    right: 0px;
+    bottom: 13px;
+    margin: 0 auto;
+    min-width: 175px;
+    padding: 12px 40px 12px 15px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease-out;
+    border-left: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    color: #333;
+}
+
+.wrapper-dropdown-5:hover{
+    background: #9ccc65;
+    color: #FFF;
 }
 
 .wrapper-dropdown-5 img{
@@ -31,7 +37,7 @@
     margin-top: -3px;
     border-width: 6px 6px 0 6px;
     border-style: solid;
-    border-color: #C0DC76 transparent;
+    border-color: #9ccc65 transparent;
 }
 
 .wrapper-dropdown-5 .dropdown {
@@ -77,21 +83,19 @@
 /* Hover state */
  
 .wrapper-dropdown-5 .dropdown li:hover a {
-    color: #57a9d9;
+    color: #33691e;
 }
 
 /* Active state */
  
 .wrapper-dropdown-5.active {
-    border-radius: 5px 5px 0 0;
-    background: ##727272;
-    box-shadow: none;
     border-bottom: none;
-    color: white;
+    background: #9ccc65;
+    color: #FFF;
 }
  
 .wrapper-dropdown-5.active:after {
-    border-color: #82d1ff transparent;
+    border-color: #FFF transparent;
 }
  
 .wrapper-dropdown-5.active .dropdown {

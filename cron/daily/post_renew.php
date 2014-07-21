@@ -91,14 +91,7 @@ class PostRenew extends CredentialStore {
 			<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\"><tr>
 				<table cellspacing=\"0\" cellpadding=\"8\" border=\"0\" width=\"100%\" style=\"font-size:1.1em\">
 					<tr>
-						<td width=\"600px\" colspan=\"2\" style=\"background: #3f3f3f;
-							background: -moz-linear-gradient(top, #3f3f3f 0%, #1d1d1d 100%);
-							background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3f3f3f), color-stop(100%,#1d1d1d));
-							background: -webkit-linear-gradient(top, #3f3f3f 0%,#1d1d1d 100%);
-							background: -o-linear-gradient(top, #3f3f3f 0%,#1d1d1d 100%);
-							background: -ms-linear-gradient(top, #3f3f3f 0%,#1d1d1d 100%);
-							background: linear-gradient(to bottom, #3f3f3f 0%,#1d1d1d 100%);
-							filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3f3f3f', endColorstr='#1d1d1d',GradientType=0 );\"><img src=\"http://walkntrade.com/colorful/wtlogo.png\" alt=\"\Walkntrade Logo\"></td>
+						<td width=\"600px\" colspan=\"2\" style=\"background: #3f3f3f;\"><img src=\"http://walkntrade.com/colorful/wtlogo.png\" alt=\"\Walkntrade Logo\"></td>
 					</tr>
 					<tr>
 						<td></td>

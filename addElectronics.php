@@ -52,7 +52,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 		<div id="pageHead">
 			<?php $noLogin=false; include("include/header.php"); ?>
 		</div>
-		<div id="addTable" style="border-left:5px solid #370989;border-right:5px solid #370989;color:#370989">
+		<div id="addTable" class="boxStyle1" >
 			<p><h1 style="text-align:center">Electronics or Games</h1></p>
 		<table style="width:100%">
 			<form action="javascript:void(0)" method="POST" name="electronics" onSubmit="addElectronics()">
