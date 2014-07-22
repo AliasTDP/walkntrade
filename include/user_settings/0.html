@@ -2,21 +2,40 @@
 #heyhey{
 	margin: 0px;
 	padding: 15px;
-	min-height: 400px;
+}
+
+#fbBox{
+	padding: 15px;
+	text-align: center;
 }
 
 #addMees{
 	position: relative;
 	overflow: hidden;
-	height: 300px;
 }
 #addMees li a{
 	text-decoration: underline;
 }
+
+.fb-comments, .fb-comments span, .fb-comments iframe { width: 100% !important; }
 </style>
 
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=230844286960713&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 <div class="boxStyle1">
-	<div class="settingsHeader">Welcome!</div>
+	<div class="settingsHeader">Welcome</div>
+	<div id="fbBox">
+		<h1>We're on facebook!</h1>
+		<hr>
+		<div class="fb-like-box" data-href="https://www.facebook.com/walkntrade" data-width="575px" data-colorscheme="light" data-show-faces="true" data-header="false" data-stream="false" data-show-border="false"></div>
+	</div>
 	<div id="heyhey">
 		<h1>Posting is simple!</h1>
 		<hr>

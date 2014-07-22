@@ -45,7 +45,7 @@ h3{
 }
 
 hr {
-	border:1px solid #88B900;
+	border:1px solid #9CCC65;
 }
 
 a {
@@ -163,13 +163,7 @@ input[type=submit], .button{
 }
 
 .gray{
-	background: #C0C0C0; /* Fallback */
-    background: -moz-linear-gradient(#C0C0C0, #E0E0E0);
-    background: -ms-linear-gradient(#C0C0C0, #E0E0E0);
-    background: -o-linear-gradient(#C0C0C0, #E0E0E0);
-    background: -webkit-gradient(linear, 0 0, 0 100%, from(#C0C0C0), to(#E0E0E0));
-    background: -webkit-linear-gradient(#C0C0C0, #E0E0E0);
-    background: linear-gradient(#C0C0C0, #E0E0E0);
+	background: #C0C0C0;
     border: 1px solid #777;
     color: #494949;
 }
