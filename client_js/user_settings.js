@@ -307,15 +307,16 @@ function getUserPosts(){
 function getAccountPrefs(callback){
 	concat = '	<form name="acctPrefs" action="javascript:updateAcctPrefs()" autocomplete="off">';
 	concat += '	<table cellspacing="0px" cellpadding="0px">';
-	concat += '	<tr><th colspan="2">Email Address</th></tr>';
-	concat += '	<tr><td width="50%">change email:</td><td width="50%"><input type="text" name="email1"></td></tr>';
-	concat += '	<tr><td>verify:</td><td><input type="text" name="email2"></td></tr>';
-	concat += '	<tr><th colspan="2">Password</th></tr>';
-	concat += '	<tr><td>Old Password:</td><td><input type="password" name="pword0"></td></tr>';
+	concat += '	<tr><th colspan="2">Enter your password</th></tr>';
+	concat += '	<tr><td>Current Password:</td><td><input type="password" name="pword0"></td></tr>';
+	concat += '	<tr><th colspan="2">Update your email</th></tr>';
+	concat += '	<tr><td width="50%">New Email:</td><td width="50%"><input type="text" name="email1"></td></tr>';
+	concat += '	<tr><td>Comfirm:</td><td><input type="text" name="email2"></td></tr>';
+	concat += '	<tr><th colspan="2">Update your password</th></tr>';
 	concat += '	<tr><td>New Password:</td><td><input type="password" name="pword1"></td></tr>';
-	concat += '	<tr><td>verify:</td><td><input type="password" name="pword2"></td></tr>';
-	concat += '	<tr><th colspan="2">Phone Number</th></tr>';
-	concat += '	<tr><td>change phone number:</td><td><input type="text" name="phone1"></td></tr>';
+	concat += '	<tr><td>Comfirm:</td><td><input type="password" name="pword2"></td></tr>';
+	concat += '	<tr><th colspan="2">Choose your digits</th></tr>';
+	concat += '	<tr><td>Phone Number:</td><td><input type="text" name="phone1"></td></tr>';
 	concat += '	<tr><td colspan="2"><input type="submit" value="Save Changes"></td></tr>'
 	concat += '	</table>';
 	concat += '	</form>';
