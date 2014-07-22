@@ -12,10 +12,9 @@ $loggedIn = $cs->getLoginStatus();
 	<meta name="description" content="Terms of Service" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />
 	<meta http-equiv="Content-Language" content="en">
-	<script type="text/javascript" src="js/brain.js"></script>
-	<script type="text/javascript" src="js/users.js"></script>
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="js/fb.js"></script>
+	<script type="text/javascript" src="/client_js/include.js"></script>	
+	<script type="text/javascript" src="/client_js/jquery.min.js"></script>
+	<script type="text/javascript" src="/client_js/user_login.js"></script>
 	<script>
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

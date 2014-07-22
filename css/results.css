@@ -1,4 +1,4 @@
-body{
+#dubody{
 	background: #4D4D4D;
 }
 
@@ -58,7 +58,6 @@ body{
 	width: 50%;
 	height: 100%;
 	text-align: right;
-	text-shadow:0px 0px 5px #000;
 }
 
 #schoolWrapper{
@@ -156,14 +155,12 @@ body{
 
 #mainCWB #dynamicWrapper #dynamicContent #dump li{
 	width: calc(20% - 22px); /*210px;*/
-	
 	height:	300px;
 	padding: 5px;
 	margin: 0px 5px 10px 5px;
 	display: block;
 	float: left;
 	background: rgba(255,255,255, .75);
-	border-radius: 3px;
 	border: 1px solid #C0C0C0;
 }
 
@@ -225,6 +222,5 @@ body{
 #mainCWB #dynamicWrapper #dynamicContent #dump .categoryTab{
 	color: #FFF;
 	text-align: center;
-	border-radius: 4px;
 	text-transform: capitalize;
 }

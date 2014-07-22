@@ -130,7 +130,7 @@ function user_login(){
 				</form>', false);
 			break;
 			default:
-			$("#response").html(r);
+			$("#response").html("<font color=\"#FF0000\">"+r+"</font>");
 			break;
 		}
 	});

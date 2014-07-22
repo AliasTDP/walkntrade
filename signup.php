@@ -110,7 +110,7 @@ $loggedIn = $cs->getLoginStatus();
 					</tr>
 					<tr>
 						<th colspan="2">
-							<input type="submit" value="Submit">
+							<input type="submit" value="Submit" style="width:50%">
 						</th>
 					</tr>
 			</table>
@@ -155,7 +155,7 @@ $loggedIn = $cs->getLoginStatus();
 					</tr>
 					<tr style="text-align:center;">
 						<th colspan="2">
-							<input class="LButton" type="submit" value="login">
+							<input class="LButton" type="submit" value="login" style="width:50%">
 						</th>
 					</tr>
 				</table>

@@ -132,7 +132,7 @@ function pageLoad(query, school, cat, sort, callback) {
 				color="rgba(0,0,0,.5)";
 				break;
 			}
-			parentElement.append($("<a/>", {"id":"p_"+id, "target":"new", "href":"/show?"+obsId}));
+			parentElement.append($("<a/>", {"id":"p_"+id, "href":"/show?"+obsId}));
 			$("#p_"+id).append($("<li/>"));
 			$("#p_"+id+" li")
 				.append($("<div/>", {"class":"title"}))
