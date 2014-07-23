@@ -294,7 +294,7 @@ class UserMgmt extends CredentialStore{
 						if($pExpired == true) $pTitle = "[EXPIRED] ".htmlspecialchars($pTitle);
 						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAY(S) LEFT] ".htmlspecialchars($pTitle);
 						else $pTitle = htmlspecialchars($pTitle);
-						$pDate = htmlspecialchars($pDate);
+						$pDate = $this->getAgeInDays($pDate)." Day(s) ago";
 						$pCat = htmlspecialchars($pCat);
 						$pExpired = ($pExpired == 1) ? "true" : "false";
 						$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\" expire=\"".$pExpire."\" expired=\"".$pExpired."\"/>\n";
