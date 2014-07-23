@@ -236,7 +236,10 @@ if($loggedIn){
 									?>
 								</div>
 							</div>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="fb-share-button" data-href="<?php echo apache_getenv("HTTP_HOST") . apache_getenv("REQUEST_URI");?>"></div>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="fb-share-button" data-href="<?php 
+								$link =  "//$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+								$escaped_link = htmlspecialchars($link, ENT_QUOTES, 'UTF-8');
+								echo $escaped_link?>"></div>
 							<p><?php echo $details?></p>
 						</div>
 						<div id="imgBox">
