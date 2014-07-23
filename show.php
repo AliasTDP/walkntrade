@@ -236,6 +236,7 @@ if($loggedIn){
 									?>
 								</div>
 							</div>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="fb-share-button" data-href="<?php echo apache_getenv("HTTP_HOST") . apache_getenv("REQUEST_URI");?>"></div>
 							<p><?php echo $details?></p>
 						</div>
 						<div id="imgBox">

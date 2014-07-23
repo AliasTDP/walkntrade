@@ -52,7 +52,6 @@ $(document).ready(function(){
 		$("#contentTab").html(cpModule[0]);
 		var _preventDefault = false;
 	}
-	layoutRefresh();
 	$("#navBar").append("<ul></ul>");
 	for(var i = 0; i < sections.length; i++){
 		if(i==0 && !_preventDefault)
@@ -64,21 +63,22 @@ $(document).ready(function(){
 		$("#"+i).click(function(e){
 			$("#navBar ul").find("li").removeAttr("class");
 			$("#"+e.target.id).attr("class", "selected");
-			$("#contentTab").fadeOut(function(){
+			$("#contentTab").slideUp(200, function(){
 				$("#contentTab").html(cpModule[e.target.id]);
-				layoutRefresh();
-				$("#contentTab").fadeIn(function(){
+				$("#contentTab").slideDown(200, function(){
+					layoutRefresh();
 				});
 			});
 		});
 	}
-	$("#screen_solid").fadeOut();
+	$("#screen_solid").fadeOut(layoutRefresh());
 })
 
 //function declarations
 
 function layoutRefresh(){
-	$("#navBar").height($("#contentTab").height() + 59);
+	//$("#navBar").height($("#contentTab").height()+50);
+	$("#navBar").animate({height:$("#contentTab").height()+50}, 200);
 }
 
 function getWebmail(){
@@ -86,7 +86,7 @@ function getWebmail(){
 	$.ajax({ dataType:"xml", data:"intent=getWebmail"}).success(function(xml){
 		var pageElement = $("#webmail");
 		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total | <a href='javascript:getWebmail();pollNewMessages();'>[Refresh]</a>");
+		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total <input type='button' class='button' value='Reload' onclick='getWebmail()' >");
 		$(xml).find("message").each(function(){
 			var id = $(this).attr("id");
 			var from = $(this).attr("from");
@@ -108,7 +108,7 @@ function getSentWebmail(){
 	$.ajax({ dataType:"xml", data:"intent=getSentWebmail"}).success(function(xml){
 		var pageElement = $("#webmail");
 		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total | <a href='javascript:getSentWebmail()'>[Refresh]</a>");
+		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total");
 		$(xml).find("message").each(function(){
 			var id = $(this).attr("id");
 			var to = $(this).attr("to");
@@ -263,7 +263,6 @@ function getUserPosts(){
 				contentElement.find("table #"+shortName+" th:nth-child(3)").text("views");
 				var schoolPostsElement = contentElement.find("table");
 				$(this).find("post").each(function(){
-					console.log($(this));
 					var id = $(this).attr("id");
 					var link = $(this).attr("link");
 					var category = $(this).attr("category");
