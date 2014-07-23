@@ -170,6 +170,8 @@ class Walkntrade {
 			$details = htmlspecialchars($details);
 			$username = htmlspecialchars($username);
 
+			$date = $this->getAgeInDays($date)." Day(s) Ago;
+
 			$string = $string."\t<listing id=\"$id\" obsId=\"$obsId\" title=\"$title\" category=\"$cat\" details=\"$details\" username=\"$username\" price=\"$price\" image=\"$image\" userid=\"$userid\" date=\"$date\" views=\"$views\"/>\n";
 		}
 		$string = $string."</results>";
@@ -406,6 +408,14 @@ class Walkntrade {
 				return $concatenated;
 			}
 		}
+	}
+	private function getAgeInDays($date_string){
+		#date format YYYY-MM-DD
+		$date1 = new DateTime($date_string);
+		$date2 = new DateTime(date("Y-m-d"));
+
+		$diff = $date2->diff($date1)->format("%a");
+		return $diff;
 	}
 }
 ?>
