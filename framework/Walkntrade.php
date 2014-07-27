@@ -407,5 +407,14 @@ class Walkntrade {
 			}
 		}
 	}
+
+	public function getAgeInDays($date_string){
+		#date format YYYY-MM-DD
+		$date1 = new DateTime($date_string);
+		$date2 = new DateTime(date("Y-m-d"));
+
+		$diff = $date2->diff($date1)->format("%a");
+		return $diff;
+	}
 }
 ?>

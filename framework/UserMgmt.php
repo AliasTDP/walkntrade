@@ -279,7 +279,7 @@ class UserMgmt extends CredentialStore{
 			$schs->bind_result($school);
 			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<results>\n";
 			while($schs->fetch()){
-				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `expire` ASC");
+				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `expired` DESC");
 				$mypost->bind_param("s", $_SESSION["user_id"]);
 				$mypost->execute();
 				$mypost->store_result();
@@ -294,7 +294,7 @@ class UserMgmt extends CredentialStore{
 						if($pExpired == true) $pTitle = "[EXPIRED] ".htmlspecialchars($pTitle);
 						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAY(S) LEFT] ".htmlspecialchars($pTitle);
 						else $pTitle = htmlspecialchars($pTitle);
-						$pDate = htmlspecialchars($pDate);
+						$pDate = $this->getAgeInDays($pDate)." day(s) ago";
 						$pCat = htmlspecialchars($pCat);
 						$pExpired = ($pExpired == 1) ? "true" : "false";
 						$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\" expire=\"".$pExpire."\" expired=\"".$pExpired."\"/>\n";

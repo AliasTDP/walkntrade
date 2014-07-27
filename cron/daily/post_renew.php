@@ -57,15 +57,6 @@ class PostRenew extends CredentialStore {
 		return $e;
 	}
 
-	private function getAgeInDays($date_string){
-		#date format YYYY-MM-DD
-		$date1 = new DateTime($date_string);
-		$date2 = new DateTime(date("Y-m-d"));
-
-		$diff = $date2->diff($date1)->format("%a");
-		return $diff;
-	}
-
 	private function enqueUserEmail($email, $pTitle, $expired){
 		//echo $email." ".$pTitle." ".$expired."\n";
 		$status = ($expired == "true") ? " <font color=\"#FF0000\">[expired]</font>" : "";
