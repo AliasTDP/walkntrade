@@ -17,7 +17,10 @@ switch($getIntent){
 		$offset= htmlspecialchars($_POST["offset"]);
 		$sort= htmlspecialchars($_POST["sort"]);
 		$amount= htmlspecialchars($_POST["amount"]);
-		echo $wt->getPosts($query, $school, $category, $sort, $offset, $amount);
+		if(isset($_POST["ellipse"]))
+			echo $wt->getPosts($query, $school, $category, $sort, $offset, $amount, 1);
+		else
+			echo $wt->getPosts($query, $school, $category, $sort, $offset, $amount, 0);
 		break;
 	case "getPostByIdentifier":
 		require_once "../framework/Walkntrade.php";
