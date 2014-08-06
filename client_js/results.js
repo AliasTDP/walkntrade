@@ -8,7 +8,7 @@ window.scrolling = false;
 window.inhibitUpdate = false;
 
 var apiURL = "/api/";
-$.ajaxSetup({url:apiURL, dataType:"xml", type:"POST", timeout:10000});
+$.ajaxSetup({url:apiURL, dataType:"xml", type:"POST", timeout:15000});
 
 
 //-----------------------------------------------------------Events and handlers

@@ -8,7 +8,7 @@ var jumpTo;
 
 window.avatar;
 window.username;
-$.ajaxSetup({url:apiURL, type:"POST", timeout:5000});
+$.ajaxSetup({url:apiURL, type:"POST", timeout:15000});
 
 // Pre load all modules and user info before allowing readystate
 $.holdReady(true);
