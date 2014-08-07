@@ -539,7 +539,7 @@ class UserMgmt extends CredentialStore{
 									$archiveSTMT->bind_param("ssss", $_SESSION{"emailAddress"}, $email, $message, $dateTime);
 									$archiveSTMT->execute();
 									if($androidDeviceId != "")
-										$this->GCMPush($uid, $androidDeviceId, $remoteMessageId, $message);
+										$this->GCMPush($uid, $androidDeviceId, $remoteMessageId, $title, $message, $dateTime);
 								}
 								if($emailPref){
 									$subject = "New message from a user on walkntrade";
@@ -592,14 +592,16 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	private function GCMPush($uid, $androidDeviceId, $remoteMessageId, $message){
+	private function GCMPush($uid, $androidDeviceId, $remoteMessageId, $title, $message, $dateTime){
 		$registrationIDs = array($androidDeviceId);
 		$apiKey = "AIzaSyCOlxC1pWV-MAVDyGE_NcdKfk1hCVJ7ZcQ";
 		$imgUrl = "user_images/uid_".$_SESSION["user_id"].".jpg";
 
 		$post_string["id"]=$remoteMessageId;
 		$post_string["user"]=$_SESSION["username"];
+		$post_string["subject"]=$title;
 		$post_string["message"]=$message;
+		$post_string["date"]=$dateTime;
 		$post_string["userImageURL"]= (file_exists("../".$imgUrl)) ? $imgUrl : "colorful/Anonymous_User.jpg";
 
 	    // Set POST variables
