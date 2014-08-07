@@ -407,10 +407,7 @@ class Walkntrade {
 			}
 		}
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> a831a1038a56843d20d4fea09b94969f578099b1
 	public function getAgeInDays($date_string){
 		#date format YYYY-MM-DD
 		$date1 = new DateTime($date_string);
