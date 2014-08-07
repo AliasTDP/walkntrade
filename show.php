@@ -281,7 +281,8 @@ if($loggedIn){
 						</div>
 						<div class="cInfo">
 							<i>Posted by: <?php echo $uName ?></i><br>
-							<i>Date: <?php echo $cs->getAgeInDays($date)." Day(s) ago" ?></i><br>
+
+							<i><?php echo $cs->getAgeInDays($date); ?> day(s) ago</i><br>
 							<i>Viewed <?php echo $views ?> time(s)</i><br>
 						</div>
 						<?php

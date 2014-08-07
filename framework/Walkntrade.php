@@ -92,7 +92,8 @@ class Walkntrade {
 		}
 	}
 
-	public function getPosts($query, $school, $category, $sort, $offset, $amount){
+	public function getPosts($query, $school, $category, $sort, $offset, $amount, $ellipse){
+		$ellipse = ($ellipse == 1) ? true : false;
 		$lc = $this->listingConnection;
 		if(!isset($school) || $school == "" || $this->getSchoolName($school) == null){
 			//No School
@@ -158,18 +159,17 @@ class Walkntrade {
 
 		while($stmt->fetch()){
 			$obsId = $school.":".$identifier;
-			$title = (strlen($title) >= 23)? substr($title, 0, 23)."..." : $title;
-			
-			$details = (strlen($details) >= 80)? substr($details, 0, 80)."..." : $details;
-			$username = (strlen($username) >= 30)? substr($username, 0, 30)."..." : $username;
+			if($ellipse){
+				$title = (strlen($title) >= 23)? substr($title, 0, 23)."..." : $title;
+				$details = (strlen($details) >= 80)? substr($details, 0, 80)."..." : $details;
+				$username = (strlen($username) >= 30)? substr($username, 0, 30)."..." : $username;
+			}
 			$price = ($price != 0)? "$".round($price, 2) : "";
-			$id = htmlspecialchars($id);
 			$image = (file_exists("../post_images/".$school."/".$identifier."-thumb.jpeg")) ? "/post_images/".$school."/".$identifier."-thumb.jpeg" : "/colorful/tfe_no_thumb.png";
-
 			$title = htmlspecialchars($title);
 			$details = htmlspecialchars($details);
 			$username = htmlspecialchars($username);
-			$date = $this->getAgeInDays($date)." Day(s) Ago";
+
 			$string = $string."\t<listing id=\"$id\" obsId=\"$obsId\" title=\"$title\" category=\"$cat\" details=\"$details\" username=\"$username\" price=\"$price\" image=\"$image\" userid=\"$userid\" date=\"$date\" views=\"$views\"/>\n";
 		}
 		$string = $string."</results>";
@@ -393,13 +393,13 @@ class Walkntrade {
 				$concatenated = "<post>\n";
 					$concatenated .= "\t<id>".$_pId."</id>";
 					$concatenated .= "\t<category>".$_pCategory."</category>\n";
-					$concatenated .= "\t<title>".$_pTitle."</title>\n";
-					$concatenated .= "\t<author>".$_pAuthor."</author>\n";
-					$concatenated .= "\t<details>".$_pDetails."</details>\n";
+					$concatenated .= "\t<title>".htmlspecialchars($_pTitle)."</title>\n";
+					$concatenated .= "\t<author>".htmlspecialchars($_pAuthor)."</author>\n";
+					$concatenated .= "\t<details>".htmlspecialchars($_pDetails)."</details>\n";
 					$concatenated .= "\t<price>".$_pPrice."</price>\n";
 					$concatenated .= "\t<isbn>".$_pIsbn."</isbn>\n";
-					$concatenated .= "\t<tags>".$_pTags."</tags>\n";
-					$concatenated .= "\t<username>".$_pUsername."</username>\n";
+					$concatenated .= "\t<tags>".htmlspecialchars($_pTags)."</tags>\n";
+					$concatenated .= "\t<username>".htmlspecialchars($_pUsername)."</username>\n";
 					$concatenated .= "\t<date>".$_pDate."</date>\n";
 					$concatenated .= "\t<views>".$_pViews."</views>\n";
 				$concatenated .= "</post>";
@@ -407,6 +407,10 @@ class Walkntrade {
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> a831a1038a56843d20d4fea09b94969f578099b1
 	public function getAgeInDays($date_string){
 		#date format YYYY-MM-DD
 		$date1 = new DateTime($date_string);

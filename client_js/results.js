@@ -8,7 +8,7 @@ window.scrolling = false;
 window.inhibitUpdate = false;
 
 var apiURL = "/api/";
-$.ajaxSetup({url:apiURL, dataType:"xml", type:"POST", timeout:10000});
+$.ajaxSetup({url:apiURL, dataType:"xml", type:"POST", timeout:15000});
 
 
 //-----------------------------------------------------------Events and handlers
@@ -100,7 +100,7 @@ function updatePage(){
 }
 
 function pageLoad(query, school, cat, sort, callback) {
-	$.ajax({data:"intent=getPosts&query=" + query + "&school=" + school + "&cat=" + cat + "&offset=" + window.offset + "&sort=" + sort + "&amount=" + window.perPage}).success(function(xml){
+	$.ajax({data:"intent=getPosts&query=" + query + "&school=" + school + "&cat=" + cat + "&offset=" + window.offset + "&sort=" + sort + "&amount=" + window.perPage +"&ellipse=1"}).success(function(xml){
 		var parentElement = $("#dump").find("ul");
 		$(xml).find("listing").each(function(){
 			var resultObjectXML = $(this);

@@ -115,7 +115,7 @@ $avatarUrl = getAvatarOf($uid);
 									$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
 									$html_blacklist = "/< >/";
 									$pTitle = htmlspecialchars($pTitle);
-									$pDate = htmlspecialchars($pDate);
+									$pDate = $um->getAgeInDays($pDate)." day(s) ago";
 									$pCat = htmlspecialchars($pCat);
 									$concatenated .= "<tr><td><a href='/show?".$link."'>".$pTitle."</a></td><td class='right'>".$pDate."</td>";
 									$count++;

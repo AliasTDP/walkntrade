@@ -8,7 +8,7 @@ var jumpTo;
 
 window.avatar;
 window.username;
-$.ajaxSetup({url:apiURL, type:"POST", timeout:5000});
+$.ajaxSetup({url:apiURL, type:"POST", timeout:15000});
 
 // Pre load all modules and user info before allowing readystate
 $.holdReady(true);
@@ -259,7 +259,7 @@ function getUserPosts(){
 				contentElement.find("table").append($("<tr/>", {"id":shortName}));
 				contentElement.find("table #"+shortName).append($("<th/>", {"width":"60%", "colspan":"3"})).append($("<th/>", {"width":"30%"})).append($("<th/>", {"width":"10%"}));
 				contentElement.find("table #"+shortName+" th:first").text(longName);
-				contentElement.find("table #"+shortName+" th:nth-child(2)").text("Date");
+				contentElement.find("table #"+shortName+" th:nth-child(2)").text("Posted");
 				contentElement.find("table #"+shortName+" th:nth-child(3)").text("views");
 				var schoolPostsElement = contentElement.find("table");
 				$(this).find("post").each(function(){
@@ -272,11 +272,18 @@ function getUserPosts(){
 					var expire = $(this).attr("expire");
 					var expired = $(this).attr("expired");
 					if(expired == "false"){
-						if(expire == -1) schoolPostsElement.append('<tr id="'+link+'" class="'+category+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
-						else schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expiring"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+						if(expire == -1) {
+							schoolPostsElement.append('<tr id="'+link+'" class="'+category+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+						}
+						else {
+							schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expiring"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+							console.error("attention");
+						}
 					}
-					else schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
-					//$("#p_"+id).find("a :last").text(title);
+					else {
+						schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+						console.error("attention");
+					}
 				});
 			});
 		}
