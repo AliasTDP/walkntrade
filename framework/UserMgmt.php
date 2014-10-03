@@ -108,7 +108,7 @@ class UserMgmt extends CredentialStore{
 		$password = md5($password);
 
 		if (strlen($username) < 5 || strlen($username) > 20){
-			return;
+			return 9;
 		}
 		else{
 			if (!$this->checkUname($username)){
@@ -117,9 +117,13 @@ class UserMgmt extends CredentialStore{
 		}
 
 		if (strlen($email) == ""){
-			return;
+			return 7;
 		}
 		else{
+			$tld = substr($email, -3);
+			if($tld != "edu"){
+				return 100;
+			}
 			if (!$this->checkEmail($email)){
 				return 3;
 			}

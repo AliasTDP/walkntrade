@@ -3,6 +3,7 @@ var api_url = "/api/";
 function validateEmail(email){
 	var atpos=email.indexOf("@");
 	var dotpos=email.lastIndexOf(".");
+	tld = email.substring((email.length - 3), (email.length))
 	if (atpos < 1 || dotpos < atpos+2 || dotpos+2 >= email.length){
 		return false;
 	}

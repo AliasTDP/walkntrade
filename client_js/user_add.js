@@ -46,9 +46,20 @@ function user_add(){
 	}
 	//----------------------------------------email verification
 	if (email != ""){
-		if (!validateEmail(email)){
-			window.no_user_error = false;
+		var atpos=email.indexOf("@");
+		var dotpos=email.lastIndexOf(".");
+		tld = email.substring((email.length - 3), (email.length))
+		if (atpos < 1 || dotpos < atpos+2 || dotpos+2 >= email.length){
 			$("#2Err").html("*Please enter a valid email address.");
+			window.no_user_error = false;
+		}
+		else if(tld != "edu"){
+			$("#2Err").html("*Please use your student (.edu) email address.");
+			window.no_user_error = false;
+		}
+		else if(email.match(/\s/g)){
+			$("#2Err").html("*Please enter a valid email address.");
+			window.no_user_error = false;
 		}
 		else{
 			$("#2Err").html("");

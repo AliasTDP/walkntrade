@@ -432,7 +432,19 @@ switch($getIntent){
 			break;
 			case 3:
 			echo 3;
-			break;			
+			break;
+			case 7:
+			echo "Email may not be empty";
+			break;
+			case 4:
+			echo "Username is taken";
+			break;
+			case 9:
+			echo "check username string_length";
+			break;
+			case 100:
+			echo "Not student email";
+			break;						
 			default:
 			echo "An error has occured. We apoligize for the inconvience. Please report this error <a href='/feedback'>here</a> and we'll get on it. ($result)";
 			break;
