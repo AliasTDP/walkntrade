@@ -318,7 +318,7 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	public function getSentWebmail(){
+	public function getSentWebmail($quiet){
 		$wc = $this->getWebmailConnection();
 		if($this->getLoginStatus()){
 			if($webmailSTMT = $wc->prepare("SELECT `id`, `to`, `subject`, `message`, `datetime` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `from` = ? ORDER BY `id` DESC LIMIT 100")){
@@ -332,8 +332,8 @@ class UserMgmt extends CredentialStore{
 			while($webmailSTMT->fetch()){
 				$to_resolved = $this->resolveIDToUsername($to);
 				$to = ($to_resolved == null) ? "[deleted]" : $to_resolved;
-				$subject = (strlen($subject) >= 35)? substr($subject, 0, 35)."..." : $subject;
-				$message = (strlen($message) >= 40)? substr($message, 0, 40)."..." : $message;
+				$subject = (strlen($subject) >= 35 && $quiet)? substr($subject, 0, 35)."..." : $subject;
+				$message = (strlen($message) >= 40 && $quiet)? substr($message, 0, 40)."..." : $message;
 				$subject = htmlspecialchars($subject);
 				$message = htmlspecialchars($message);
 				$concatenated = $concatenated."<message id=\"".$id."\" to=\"".$to."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\"/>\n";
@@ -348,7 +348,7 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	public function getWebmail(){
+	public function getWebmail($quiet){
 		$wc = $this->getWebmailConnection();
 		if($this->getLoginStatus()){
 			if($webmailSTMT = $wc->prepare("SELECT `id`, `from`, `subject`, `message`, `datetime`, `read` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `to` = ? ORDER BY `id` DESC LIMIT 100")){
@@ -362,8 +362,8 @@ class UserMgmt extends CredentialStore{
 			while($webmailSTMT->fetch()){
 				$from_resolved = $this->resolveIDToUsername($from);
 				$from = ($from_resolved == "null") ? "[deleted]" : $from_resolved;
-				$subject = (strlen($subject) >= 35)? substr($subject, 0, 35)."..." : $subject;
-				$message = (strlen($message) >= 40)? substr($message, 0, 40)."..." : $message;
+				$subject = (strlen($subject) >= 35 && $quiet)? substr($subject, 0, 35)."..." : $subject;
+				$message = (strlen($message) >= 40 && $quiet)? substr($message, 0, 40)."..." : $message;
 				$subject = htmlspecialchars($subject);
 				$message = htmlspecialchars($message);
 				$concatenated = $concatenated."<message id=\"".$id."\" from=\"".$from."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\" read=\"".$read."\"/>\n";

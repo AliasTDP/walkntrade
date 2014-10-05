@@ -108,16 +108,18 @@ switch($getIntent){
 
 	case "getWebmail":
 		require_once "../framework/UserMgmt.php";
+		$quiet = (isset($_POST["quiet"]) && $_POST["quiet"] == "true")?true:false;
 		$um = new UserMgmt();
 		header ("Content-Type:text/xml");
-		echo $um->getWebmail();
+		echo $um->getWebmail($quiet);
 		break;
 
 	case "getSentWebmail":
 		require_once "../framework/UserMgmt.php";
+		$quiet = (isset($_POST["quiet"]) && $_POST["quiet"] == "true")?true:false;
 		$um = new UserMgmt();
 		header ("Content-Type:text/xml");
-		echo $um->getSentWebmail();
+		echo $um->getSentWebmail($quiet);
 		break;
 
 	case "getMessage":

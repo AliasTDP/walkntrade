@@ -83,7 +83,7 @@ function layoutRefresh(){
 
 function getWebmail(){
 	$("#navBarMail").html("[Waiting for mail]");
-	$.ajax({ dataType:"xml", data:"intent=getWebmail"}).success(function(xml){
+	$.ajax({ dataType:"xml", data:"intent=getWebmail&quiet=true"}).success(function(xml){
 		var pageElement = $("#webmail");
 		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
 		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total <input type='button' class='button' value='Reload' onclick='getWebmail()' >");
@@ -105,7 +105,7 @@ function getWebmail(){
 
 function getSentWebmail(){
 	$("#navBarMail").html("[Waiting for mail]");
-	$.ajax({ dataType:"xml", data:"intent=getSentWebmail"}).success(function(xml){
+	$.ajax({ dataType:"xml", data:"intent=getSentWebmail&quiet=true"}).success(function(xml){
 		var pageElement = $("#webmail");
 		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
 		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total");

@@ -1,0 +1,236 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "<?php\nrequire_once \"framework/CredentialStore.php\";\n$cs = new CredentialStore();\n$loggedIn = $cs->getLoginStatus();\n//get page args\n$args=array_keys($_GET);\n$args = split(\":\", $args[0]);\n$identifier = $args[1];\n$schoolTextId = $args[0];\n\nif($cs->getSchoolName($schoolTextId) == null || !$loggedIn){\n 	return;\n}\n\nif($identifier != null){\n	if($editSTMT = $cs->getListingConnection()->prepare(\"SELECT id, title, details, price, tags FROM \".$schoolTextId.\" WHERE identifier = ? LIMIT 1\")){\n		$editSTMT->bind_param(\"s\", $identifier);\n		$editSTMT->execute(); // Execute the prepared query.\n		$editSTMT->store_result();\n		$editSTMT->bind_result($id, $title, $details, $price, $tags);\n		$editSTMT->fetch();\n\n		if($editSTMT->num_rows < 1){\n			header('Location: ./');\n		}\n\n		$title = htmlspecialchars($title);\n		$price = ($price != 0)? \"$\".round($price, 2) : \"(no price)\";\n		$details = htmlspecialchars($details);\n	}\n}\n?>\n<!DOCTYPE html>\n<html>\n<head>\n	<title><?php echo(filter_var($title, FILTER_SANITIZE_SPECIAL_CHARS)) ?></title>\n	<link type=\"text/css\" rel=\"stylesheet\" href=\"css/style.css\">\n	<script type=\"text/javascript\">\n	function formatPrice(element){\n		value = element.value;\n		if(value != \"\"){\n			if(value.charAt(0) != \"$\"){\n				element.value = \"$\"+value,replace(/[^0-9.]/g, \"\");\n			}\n			element.value=value.replace(/[^0-9.$]/g, \"\");\n		}\n	}\n	function submit(){\n		user = confirm(\"Are you sure you want to commit these changes?\");\n		if(user){\n			if (window.XMLHttpRequest){\n				xhttp = new XMLHttpRequest();\n			}\n			else {\n				xhttp = new ActiveXObject(\"Microsoft.XMLHTTP\");//IE Compatibility\n			}\n			xhttp.open(\"POST\", \"api/\", true);\n			form = new FormData;\n			form.append(\"intent\", \"editPost\");\n			form.append(\"school\", \"<?php echo $schoolTextId; ?>\");\n			form.append(\"title\", document.editForm.title.value);\n			form.append(\"details\", document.editForm.details.value);\n			form.append(\"price\", document.editForm.price.value);\n			form.append(\"tags\", document.editForm.tags.value);\n			form.append(\"identifier\", document.editForm.identifier.value);\n			xhttp.send(form);\n			xhttp.onreadystatechange = function(){\n				if (xhttp.readyState==4 && xhttp.status==200){\n					if(xhttp.responseText == \"success\"){\n						window.close();\n						return false;\n					}\n					else{\n						alert(xhttp.responseText);\n						return false;\n					}\n				}\n			}\n		}\n	}\n	</script>\n</head>\n<body>\n	<div style=\"width:450px;margin:auto\">\n		<form name=\"editForm\" method=\"POST\" action=\"javascript:submit()\">\n			<input type=\"hidden\" name=\"identifier\" value=\"<?php echo $identifier ?>\">\n			<fieldset>\n				<legend>Edit Title</legend>\n				<input type=\"text\" class=\"inputField2\" name=\"title\" value=\"<?php echo $title ?>\">\n			</fieldset>\n			<fieldset>\n				<legend>Edit Details</legend>\n				<textarea class=\"inputField2\" style=\"resize:none;height:150px\" name=\"details\"><?php echo $details ?></textarea>\n			</fieldset>\n			<fieldset>\n				<legend>Edit Price, tags</legend>\n				<input type=\"text\" class=\"inputField2\" name=\"price\" value=\"<?php echo $price ?>\" onclick=\"this.value=''\" onkeydown=\"javascript:formatPrice(this)\" onkeyup=\"javascript:formatPrice(this)\">\n				<input type=\"text\" class=\"inputField2\" name=\"tags\" value=\"<?php echo $tags ?>\">\n			</fieldset>\n			<br><br>\n			<input type=\"submit\" value=\"Save Changes\" style=\"margin:0px 22%\">\n		</form>\n	</div>\n</body>\n</html>\n",
+			"file": "editPost.php",
+			"file_size": 3331,
+			"file_write_time": 130472348682955574,
+			"settings":
+			{
+				"buffer_size": 3331,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "contributors.txt",
+			"settings":
+			{
+				"buffer_size": 27,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/tevin/dev/repo/walkntrade"
+	],
+	"file_history":
+	[
+	],
+	"find":
+	{
+		"height": 0.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "editPost.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3331,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5,
+								5
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "contributors.txt",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 27,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "inf.sublime-project",
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
