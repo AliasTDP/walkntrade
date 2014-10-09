@@ -16,7 +16,8 @@
 }
 
 .wrapper{
-	background-color: #F1F1F1;
+	background: #F1F1F1 url("/colorful/classy_fabric_w.png");
+	z-index: 150;
 }
 
 #schoolInfo{
@@ -36,6 +37,7 @@
 #mainCWB{
 	position: relative;
 	padding: 0px;
+	box-shadow: 0 -6px 6px rgba(0, 0, 0, 0.78);
 }
 
 #mainCWB #Nav{

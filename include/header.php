@@ -2,6 +2,7 @@
 </div>
 <div id="leftHead">
 	<a href="./"><img id="logo" src="/colorful/wtlogo_dark.png"></a>
+	BETA
 </div>
 <div id="rightHead">
 	<div id="searchWrapper">

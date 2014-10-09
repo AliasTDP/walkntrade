@@ -28,7 +28,6 @@ if(!$loggedIn = $cs->getLoginStatus())
 <body>
 	<div id="screen_solid"><div id="loadingGIF2"><img src="/colorful/loading2.gif"></div></div>
 	<div id="throbber"><img src="colorful/loader.gif"></div>
-	<div style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
 	<div class="headerBar"></div>
 	<div class="wrapper">
 		<div id="pageHead">
