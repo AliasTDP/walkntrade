@@ -2,6 +2,7 @@
     background-image: url(/colorful/spritesheet.png);
     background-repeat: no-repeat;
     float: left;
+    margin-top: 12px;
     margin-right: 15px;
     display: block;
 }

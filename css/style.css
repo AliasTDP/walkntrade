@@ -205,14 +205,16 @@ input[type=submit]:hover{
 	margin: 0px;
 	position: absolute;
 	background: #F1F1F1;
-	z-index: 10;
+	z-index: 110;
+	box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+	border-bottom: 2px solid #78BE19;
 }
 
 .wrapper {
 	min-width: 1060px;
 	max-width:1920px;
-	width: 95%;
-	margin: auto;
+	
+	margin-left: 225px;
 	min-height: 100vh;
 }
 
@@ -231,7 +233,6 @@ input[type=submit]:hover{
 
 .wF{
 	overflow: auto;
-	margin-top: 30px;
 	overflow: hidden;
 }
 
@@ -292,6 +293,60 @@ input[type=submit]:hover{
 	font-weight: 900;
 	font-size: 1.5em;
 	text-align: center;
+}
+
+#sidebar{
+	width:225px;
+	min-height:800px;
+	position: absolute;
+	top:63px;
+	z-index: 100;
+}
+
+#sidebar ul{
+	margin: 0px;
+	padding: 0px;
+}
+
+#sidebar li{
+	cursor: pointer;
+	display: block;
+	height: 45px;
+}
+
+#sidebar .clickOption{
+	line-height: 45px;
+	width: calc(100% - 20px);
+	padding: 0px 10px 0px 10px;
+	white-space: nowrap;
+}
+
+#sidebar ul #userbadge{
+	background:#5A7C2C;
+}
+
+#sidebar ul #userbadge #avatar{
+	min-width: 45px;
+	height: 45px;
+	float: left;
+	background-size: 100%;
+}
+#sidebar ul #userbadge #username{
+	float: right;
+	height: 45px;
+	line-height: 45px;
+	color: #FFF;
+	text-align: center;
+	width: calc(100% - 45px);
+	font-size: 1.25em;
+}
+
+#sidebar ul #userbadge{
+
+}
+
+#sidebar .clickOption:hover{
+	color: #FFF;
 }
 
 /*footer*/

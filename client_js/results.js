@@ -37,7 +37,7 @@ $(document).ready(function() {
 			updatePage();
 		});
 	$(window).scroll(function(e){
-		if($(this).scrollTop() > 185){
+		if($(this).scrollTop() > 64){
 			var navWidth = $("#mainCWB").width();
 			$("#Nav").css({'width': navWidth}); 
 			$("#Nav").css({'position': 'fixed', 'top': '0px'}); 
@@ -93,6 +93,7 @@ function updatePage(){
 			pageLoad($("#queryBar").val(), window.school, window.category, window.sort, 
 				function(){
 					$(window.canvas).slideDown(300);
+
 					window.inhibitUpdate = false;//release page for updating
 				});
 		});

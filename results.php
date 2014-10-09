@@ -30,9 +30,8 @@
 </head>
 <body>
 <div id="throbber"><img src="/colorful/loader.gif"></div>
-<div class="blur" style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
 <div class="headerBar blur"></div>
-<div class="schoolHeaderBar">
+<!-- <div class="schoolHeaderBar">
 	<div id="accent"></div>
 	<div id="searchWrap">
 		<div id="searchWrapInner">
@@ -48,12 +47,13 @@
 			<a href="javascript:changeSchools()"><?php echo $cs->getSchoolName($schoolTextId); ?></a>
 		</div>
 	</div>
-</div>
-<div class="wrapper">
+</div> -->
+<div id="sidebar"><?php include("include/sidebar.php");?></div>
+<div class="wrapper" id="mainWrap">
 	<div id="pageHead" class="blur">
 		<?php $noLogin=false; include(ROOTPATH."/include/header.php"); ?>
 	</div>
-	<div class="wF blur boxStyle1" id="mainCWB">
+	<div class="wF" id="mainCWB">
 		<div style="height:45px">
 			<div id="Nav">
 				<ul>
