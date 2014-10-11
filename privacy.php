@@ -9,6 +9,7 @@ $loggedIn = $cs->getLoginStatus();
 	<title>walkNtrade.com | Privacy Policy</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
+	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="description" content="Privacy Policy" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />

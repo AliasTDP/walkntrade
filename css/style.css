@@ -325,27 +325,27 @@ input[type=submit]:hover{
 }
 
 #sidebar li:nth-child(2):hover{
-	background-color: #FFF;
-	color: #000;
+	background-color: #FFF290;
+	/*color: #000;*/
 }
 #sidebar li:nth-child(3):hover{
-	background-color: #CEE68D;
+	background-color: #B98989;
 	color: #FFF;
 }
 #sidebar li:nth-child(4):hover{
-	background-color: #E4973A;
+	background-color: #CEE68D;
 	color: #FFF;
 }
 #sidebar li:nth-child(5):hover{
+	background-color: #E4973A;
+	color: #FFF;
+}
+#sidebar li:nth-child(6):hover{
 	background-color: #A78DD5;
 	color: #FFF;
 }
-#sidebar li:nth-child(6):hover{
+#sidebar li:nth-child(7):hover{
 	background-color: #44D3D8;
-	color: #FFF;
-}
-#sidebar li:nth-child(6):hover{
-	background-color: #DBDBDB;
 	color: #FFF;
 }
 
@@ -411,7 +411,7 @@ input[type=submit]:hover{
 	width: 25px;
 	height: 45px;
 	float: left;
-	background-color: rgb(255, 255, 255);
+	background-color: #FFF290;
 	padding: 0px 10px;
 	margin: 0px 5px 0px 0px;
 }
@@ -456,7 +456,7 @@ input[type=submit]:hover{
 	width: 25px;
 	height: 45px;
 	float: left;
-	background-color: rgb(219, 219, 219);
+	background-color: #B98989;
 	padding: 0px 10px;
 	margin: 0px 5px 0px 0px;
 }

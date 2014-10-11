@@ -42,9 +42,7 @@ $loggedIn = $cs->getLoginStatus();
 	<div id="throbber"><img src="colorful/loader.gif"></div>
 		<div class="headerBar"></div>
 		<div class="wrapper">
-			<div id="pageHead">
-				<?php $noLogin=true; include("include/header.php"); ?>
-			</div>
+			<div id="pageHead"><?php $noLogin=true; include("include/header.php"); ?></div>
 			<div class="wF">
 			<div class="boxStyle1 float">
 				<form action="javascript:void(0)" onSubmit="user_add()" name="useradd" autocomplete="off">
