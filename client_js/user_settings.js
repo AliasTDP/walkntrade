@@ -1,7 +1,7 @@
 //initialization sector
 var includeDir = "/include/user_settings/";
 var apiURL = "/api/";
-var sections = new Array('<i class="sprite sprite-1396343029_shop"></i>Home', '<i class="sprite sprite-1396343080_mail"></i>Received Messages', '<i class="sprite sprite-1396343166_paperplane"></i>Sent Messages', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
+var sections = new Array('<i class="sprite sprite-1396343029_shop"></i>Welcome', '<i class="sprite sprite-1396343080_mail"></i>Received Messages', '<i class="sprite sprite-1396343166_paperplane"></i>Sent Messages', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
 var cpModule = new Array();
 var _preventDefault;
 var jumpTo;
@@ -65,20 +65,22 @@ $(document).ready(function(){
 			$("#"+e.target.id).attr("class", "selected");
 			$("#contentTab").slideUp(200, function(){
 				$("#contentTab").html(cpModule[e.target.id]);
-				$("#contentTab").slideDown(200, function(){
-					layoutRefresh();
-				});
+				$("#contentTab").slideDown(200);
 			});
 		});
 	}
-	$("#screen_solid").fadeOut(layoutRefresh());
+	$("#screen_solid").fadeOut();
 })
 
 //function declarations
 
-function layoutRefresh(){
-	//$("#navBar").height($("#contentTab").height()+50);
-	$("#navBar").animate({height:$("#contentTab").height()+50}, 200);
+function loadModule(e){
+	$("#navBar ul").find("li").removeAttr("class");
+	$("#"+e).attr("class", "selected");
+	$("#contentTab").slideUp(200, function(){
+		$("#contentTab").html(cpModule[e]);
+		$("#contentTab").slideDown(200);
+	});
 }
 
 function getWebmail(){

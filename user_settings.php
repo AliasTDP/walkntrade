@@ -29,10 +29,8 @@ if(!$loggedIn = $cs->getLoginStatus())
 	<div id="screen_solid"><div id="loadingGIF2"><img src="/colorful/loading2.gif"></div></div>
 	<div id="throbber"><img src="colorful/loader.gif"></div>
 	<div class="headerBar"></div>
+	<div id="pageHead"><?php $noLogin=false; include("include/header.php"); ?></div>
 	<div class="wrapper">
-		<div id="pageHead">
-			<?php $noLogin=false; include("include/header.php"); ?>
-		</div>
 	</div>
 	<div id="marginOverrun">
 			<div id="navBar">

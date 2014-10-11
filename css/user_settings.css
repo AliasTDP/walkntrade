@@ -12,10 +12,14 @@
 
 #navBar{
 	width: 279px;
-	float: left;
+	position: absolute;
+	top: 0px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	overflow: hidden;
 	background:#E0E0E0;
 	border-right: 1px solid #D3D3D3;
-	min-height: 100vh;
 }
 
 #navBar #userModule {

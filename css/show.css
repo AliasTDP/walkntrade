@@ -166,12 +166,12 @@
 }
 
 
-#marginRight #sidebar{
+#marginRight #adBoxes{
 	padding: 2px;
 	overflow: hidden;
 }
 
-#marginRight #sidebar .blurb{
+#marginRight #adBoxes .blurb{
 	font-size: .9em;
 	background: #FFF url("/colorful/pstripes.jpg");
 	padding: 5px;

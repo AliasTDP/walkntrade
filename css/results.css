@@ -16,7 +16,7 @@
 }
 
 .wrapper{
-	background: #F1F1F1 url("/colorful/classy_fabric_w.png");
+	background: #F1F1F1 url("/colorful/pattern2.jpg");
 	z-index: 150;
 }
 
@@ -37,7 +37,6 @@
 #mainCWB{
 	position: relative;
 	padding: 0px;
-	box-shadow: 0 -6px 6px rgba(0, 0, 0, 0.78);
 }
 
 #mainCWB #Nav{

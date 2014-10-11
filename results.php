@@ -1,3 +1,4 @@
+<?php $query = (isset($_GET["query"])) ? $_GET["query"] : ""; ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,12 +31,10 @@
 </head>
 <body>
 <div id="throbber"><img src="/colorful/loader.gif"></div>
-<div class="headerBar blur"></div>
+<div class="headerBar"></div>
+<div id="pageHead"><?php $noLogin=false; include(ROOTPATH."/include/header.php"); ?></div>
 <div id="sidebar"><?php include("include/sidebar.php");?></div>
 <div class="wrapper" id="mainWrap">
-	<div id="pageHead" class="blur">
-		<?php $noLogin=false; include(ROOTPATH."/include/header.php"); ?>
-	</div>
 	<div class="wF" id="mainCWB">
 		<div style="height:45px">
 			<div id="Nav">
