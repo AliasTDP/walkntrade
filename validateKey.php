@@ -1,9 +1,15 @@
-<?php $loggedIn = (isset($_SESSION["user_id"])) ? true : false; ?>
+<?php
+require_once "framework/CredentialStore.php";
+$cs = new CredentialStore();
+$schoolTextId = basename(getcwd());
+$loggedIn = $cs->getLoginStatus();
+?>
 <!DOCTYPE html>
 <html>
 <head>
 	<title>walkNtrade.com | Terms of Service</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
+	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<meta name="description" content="Terms of Service" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />

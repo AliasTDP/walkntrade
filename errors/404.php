@@ -1,16 +1,20 @@
+<?php 
+require_once "../framework/CredentialStore.php";
+$cs = new CredentialStore();
+$schoolTextId = basename(getcwd());
+$loggedIn = $cs->getLoginStatus();
+?>
 <html>
 
 <head>
 	<title>Walkntrade.com - Buy and sell the simple way</title>
 	<link type="text/css" rel="stylesheet" href="/css/style.css">
-	<link type="text/css" rel="stylesheet" href="/css/show.css">
 	<link type="text/css" rel="stylesheet" href="/css/login_window.css">
-	<link type="text/css" rel="stylesheet" href="/css/sketch_map.css">
+	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<script type="text/javascript" src="/js/brain.js"></script>
-	<script type="text/javascript" src="/js/users.js"></script>
-	<script type="text/javascript" src="/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/client_js/include.js"></script>
+	<script type="text/javascript" src="/client_js/jquery.min.js"></script>
 	<script>
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -23,6 +27,11 @@
 	</script>
 	
 	<style type="text/css">
+		#pageHead #rightHead #searchWrapper{
+			padding: 0px 0px;
+			float: right;
+			width:300px;
+		}
 		#wtlogo{
 			position:relative;
 			left:950px;
@@ -51,12 +60,9 @@
 	
 	<body style="background:none">
 	<div id="throbber"><img src="/colorful/loader.gif"></div>
-	<div class="blur" style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
 	<div class="headerBar blur"></div>
+	<div id="pageHead" class="blur"><?php $noLogin=false; include("../include/header.php"); ?></div>
 	<div class="wrapper">
-		<div id="pageHead" class="blur">
-			<?php $noLogin=false; include("../include/header.php"); ?>
-		</div>
 		<h1>Page not Found</h1>
 		<div id="container">
 			<div id="errorHeader">Uhh...</div>
