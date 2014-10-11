@@ -8,6 +8,7 @@
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link type="text/css" rel="stylesheet" href="/css/results.css">
 	<link type="text/css" rel="stylesheet" href="/css/feedback_slider.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta name="description" content="Walkntrade at <?php echo $cs->getSchoolName($schoolTextId); ?>">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />

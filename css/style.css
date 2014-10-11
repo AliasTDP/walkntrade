@@ -501,6 +501,10 @@ input[type=submit]:hover{
 	text-align: center;
 	font-size: .75em;
 }
+
+#sidebar ul #userbadge #userBadgeMyAccount a:hover{
+	text-decoration: underline;
+}
 /*footer*/
 
 .footerBar, .push{
