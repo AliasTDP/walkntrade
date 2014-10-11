@@ -20,7 +20,7 @@
 	float: left;
 	overflow: hidden;
 	margin: 0px 30px;
-	width: 600px;
+	width: calc(60% - 60px);
 }
 
 #pageHead #rightHead {
@@ -30,6 +30,7 @@
 	overflow: hidden;
 	margin: 0px 30px;
 	color: #000;
+	width: calc(40% - 60px);
 }
 
 #queryBar{
@@ -46,13 +47,13 @@
 
 #pageHead #rightHead #searchWrapper{
 	padding: 12px 0px;
-	float: left;
+	float: right;
 	width:300px;
 }
 
 #pageHead #userAccountBar{
 	float: right;
-	width: 50%;
+	width: calc(100% - 310px);
 	border-left: 1px solid #E9E9E9;
 	height: 63px;
 }
@@ -71,12 +72,12 @@
 }
 
 #pageHead #userAccountBar .item:hover{
-	background-color: rgba(0,0,0,.1);
+	background-color: rgba(0,0,0,.05);
 }
 
 #pageHead #userAccountBar .item .indicatorIcon{
 	position: relative;
-	top:40%;
+	top:45%;
 	left:50%;
 	margin: -10px 0px 0px -10px;
 }
@@ -86,7 +87,7 @@
 	width: 20px;
 	height: 20px;
 	position: relative;
-	top: 60%;
+	top: 65%;
 	left: 50%;
 	margin: -10px 0px 0px -10px;
 	line-height: 20px;

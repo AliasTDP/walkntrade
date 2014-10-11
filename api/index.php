@@ -516,6 +516,6 @@ switch($getIntent){
 		echo $cs->getPhoneNum();
 		break;
 	default:
-		echo var_dump($_POST);
+		echo "Hi there!";
 	break;
 }?>

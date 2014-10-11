@@ -1,8 +1,15 @@
+<?php
+require_once "framework/CredentialStore.php";
+$cs = new CredentialStore();
+$schoolTextId = basename(getcwd());
+$loggedIn = $cs->getLoginStatus();
+?>
 <!DOCTYPE html>
 <html>
 <head>
 	<title>walkNtrade.com | Terms of Service</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
+	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<meta name="description" content="Terms of Service" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />
@@ -20,15 +27,17 @@
 	ga('send', 'pageview');
 
 	</script>
+	<style type="text/css">
+		.wrapper{
+			margin-left: 0px;
+		}
+	</style>
 </head>
 <body>
 	<div id="throbber"><img src="colorful/loader.gif"></div>
-	<div style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
 	<div class="headerBar"></div>
+	<div id="pageHead"><?php $noLogin=false; include("include/header.php"); ?></div>
 	<div class="wrapper">
-		<div id="pageHead">
-			<?php $noLogin=false; include("include/header.php"); ?>
-		</div>
 		<div class="wF">
 			<div class="boxStyle1" style="position:absolute;width:450px;text-align:center;left:50%;margin-left:-225px;">
 					<?php

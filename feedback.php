@@ -10,6 +10,7 @@ $loggedIn = $cs->getLoginStatus();
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="css/feedback_slider.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
+	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<style type="text/css">
 		form{
 			width: 100%;

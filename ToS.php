@@ -9,6 +9,7 @@ $loggedIn = $cs->getLoginStatus();
 	<title>walkNtrade.com | Terms of Service</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
+	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<meta name="description" content="Terms of Service" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />
 	<meta http-equiv="Content-Language" content="en">
