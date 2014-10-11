@@ -30,8 +30,8 @@ function popup(url) {
 }
 
 function changeSchools(){
-	setCookie("sPref", "", "-1");
-	window.location = "/";
+	// setCookie("sPref", "", "-1");
+	window.location = "/selector.php";
 }
 
 function dialog(message,nobutton,callback1,callback2){

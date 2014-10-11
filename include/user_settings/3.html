@@ -6,6 +6,7 @@ $(document).ready(function(){
 <style type="text/css">
 #yourPosts{
 	min-height: 400px;
+	padding: 0px;
 }
 
 #yourPosts h3{
@@ -72,13 +73,9 @@ table .clearfix1{
 table .clearfix1 a{
 	text-decoration: underline;
 }
-
-.boxStyle1 div {
-	padding: 0px;
-}
 </style>
 <div class="boxStyle1">
-	<div class="settingsHeader">Manage your posts.</div>
+	<div class="settingsHeader">Manage your posts.<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
 	<div id="yourPosts">
 	</div>
 </div>

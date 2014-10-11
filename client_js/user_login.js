@@ -111,7 +111,7 @@ function user_login(){
 		}).success(function(r){
 		switch(r){
 			case("success"):
-			window.location = "/user_settings";
+			window.location = "/";
 			break;
 			case("reset"):
 			dialog("<p><h1>It seems like you're having trouble</h1> If you forgot your password click the link below to reset it.</p><p><a href='javascript:resetPassword()'>Send me a new password!</a></p>");
