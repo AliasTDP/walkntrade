@@ -8,11 +8,11 @@ class BinaryHandler extends UserMgmt{
 	public function uploadAvatar($binImage){
 		if($this->getLoginStatus()){
 			if($binImage['error'] == 0){
-				if($binImage["size"] < 524288){
+				if($binImage["size"] < 1024288){
 					if($binImage["type"] == "image/jpeg"){
 						$uploaddir = '../user_images/';
 						$uploadFileName = $uploaddir . "uid_".$_SESSION['user_id'] . ".jpg";
-						if($this->scaleImage($_FILES["avatar"]["tmp_name"], $uploadFileName, 100, 100, false)){
+						if($this->scaleImage($_FILES["avatar"]["tmp_name"], $uploadFileName, 300, 300, false)){
 							echo 0;
 						}
 					}
