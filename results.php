@@ -1,3 +1,4 @@
+<?php $query = (isset($_GET["query"])) ? $_GET["query"] : ""; ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,30 +31,11 @@
 </head>
 <body>
 <div id="throbber"><img src="/colorful/loader.gif"></div>
-<div class="blur" style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
-<div class="headerBar blur"></div>
-<div class="schoolHeaderBar">
-	<div id="accent"></div>
-	<div id="searchWrap">
-		<div id="searchWrapInner">
-			<form name="search" action="" onsubmit="updatePage(); return false" method="GET">
-			<?php $preFill = (isset($query) && $query != null) ? $query : "Find something!"; ?>
-			<input id="queryBar" placeholder="<?php echo $preFill ?>">
-			<input type="submit" value="search">
-		</form>
-		</div>
-	</div>
-	<div id="schoolInfo">
-		<div id="schoolWrapper">
-			<a href="javascript:changeSchools()"><?php echo $cs->getSchoolName($schoolTextId); ?></a>
-		</div>
-	</div>
-</div>
-<div class="wrapper">
-	<div id="pageHead" class="blur">
-		<?php $noLogin=false; include(ROOTPATH."/include/header.php"); ?>
-	</div>
-	<div class="wF blur boxStyle1" id="mainCWB">
+<div class="headerBar"></div>
+<div id="pageHead"><?php $noLogin=false; include(ROOTPATH."/include/header.php"); ?></div>
+<div id="sidebar"><?php include("include/sidebar.php");?></div>
+<div class="wrapper" id="mainWrap">
+	<div class="wF" id="mainCWB">
 		<div style="height:45px">
 			<div id="Nav">
 				<ul>
@@ -67,7 +49,7 @@
 		</div>
 		<div id="dynamicWrapper">
 			<div id="dynamicContent">
-				<div id="filterBar">Sort by: <a href="javascript:(w_sort(1))">Newest First</a> | <a href="javascript:(w_sort(2))">Oldest First</a> | <a href="javascript:(w_sort(4))">Lowest Price</a> | <a href="javascript:(w_sort(3))">Highest Price</a></div>
+				<div id="filterBar"><font style="font-size:1.35em"><?php echo $cs->getSchoolName($schoolTextId);?></font>: <a href="javascript:(w_sort(1))">Newest First</a> | <a href="javascript:(w_sort(2))">Oldest First</a> | <a href="javascript:(w_sort(4))">Lowest Price</a> | <a href="javascript:(w_sort(3))">Highest Price</a></div>
 				<div id="message">
 					No results :(
 					<p style="font-size:.5em;line-height:2em">We're sorry we couldn't find what you're looking for... <br>Try refining your search or selecting a different category or school.</p>

@@ -9,6 +9,7 @@ $loggedIn = $cs->getLoginStatus();
 	<title>walkNtrade.com | Terms of Service</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
+	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<meta name="description" content="Terms of Service" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />
 	<meta http-equiv="Content-Language" content="en">
@@ -28,12 +29,12 @@ $loggedIn = $cs->getLoginStatus();
 </head>
 <body>
 	<div id="throbber"><img src="colorful/loader.gif"></div>
-	<div style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
 		<div class="headerBar"></div>
-		<div class="wrapper">
-			<div id="pageHead">
+		<div id="pageHead">
 				<?php $noLogin=true; include("include/header.php"); ?>
-			</div>
+		</div>
+		<div id="sidebar"><?php include("include/sidebar.php");?></div>
+		<div class="wrapper">
 			<div class="wF">
 				<div class="boxStyle1 justifyCenter75">
 					<style type="text/css">span{margin: 0em 1em 0em 0em;}</style>

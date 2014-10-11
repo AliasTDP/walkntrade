@@ -42,7 +42,7 @@ $avatarUrl = getAvatarOf($uid);
 	<style type="text/css">
 
 	.boxStyle1{
-		width: 60%;
+		width: 80%;
 		margin: 30px auto;
 	}
 	.wF table{
@@ -82,12 +82,10 @@ $avatarUrl = getAvatarOf($uid);
 </head>
 <body>
 	<div id="throbber"><img src="colorful/loader.gif"></div>
-	<div style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
 	<div class="headerBar"></div>
+	<div id="pageHead"><?php $noLogin=true; include("include/header.php"); ?></div>
+	<div id="sidebar"><?php include("include/sidebar.php");?></div>
 	<div class="wrapper">
-		<div id="pageHead">
-			<?php $noLogin=true; include("include/header.php"); ?>
-		</div>
 		<div class="wF">
 			<div class="boxStyle1">
 				<p><h1><?php echo $userName ?>'s posts:</h1></p>
