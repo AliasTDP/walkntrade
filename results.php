@@ -40,10 +40,10 @@
 		<div style="height:45px">
 			<div id="Nav">
 				<ul>
-					<li id="all">All</li>
+					<li id="all" class="selected">Everything</li>
 					<li id="book">Textbooks</li>
-					<li id="tech">Tech</li>
 					<li id="housing">Housing</li>
+					<li id="tech">Tech</li>
 					<li id="misc">Miscellaneous</li>
 				</ul>
 			</div>

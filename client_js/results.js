@@ -29,7 +29,7 @@ $(document).ready(function() {
 	resizeListings();
 	pageLoad($("#queryBar").val(), window.school, window.category, window.sort, null);
 	$("#dump").append("<ul></ul>");
-	updateHeader();
+	//updateHeader();
 	$("#filterBar").find("a").click(updatePage);
 	$("#Nav li").click(
 		function(){
