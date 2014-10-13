@@ -14,6 +14,7 @@ if (!isset($_GET["i"])){
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="description" content="Feedback" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />
@@ -35,13 +36,11 @@ if (!isset($_GET["i"])){
 <body>
 	<?php if(!$loggedIn){include("include/login_window.html");} ?>
 	<div id="throbber"><img src="colorful/loader.gif"></div>
-	<div class="blur" style="position:absolute;left:-3px;top:0px;z-index:50;width:78px;height:75px;background:url('http://cdn.choopia.com/images/beta-ribbon.png') no-repeat"></div>
 		<div class="headerBar"></div>
+		<div id="pageHead" class="blur"><?php include("include/header.php"); ?></div>
 		<div class="wrapper">
-			<div id="pageHead" class="blur">
-				<?php include("include/header.php"); ?>
-			</div>
-			<div class="wF blur">
+			
+			<div class="wF boxStyle1">
 				<div style="width:500px;margin:auto;text-align:center">
 					<?php
 					switch ($_GET["i"]) {
@@ -93,4 +92,9 @@ if (!isset($_GET["i"])){
 			<?php include("include/footer.html"); ?>
 		</div>
 </body>
+<style type="text/css">
+	.wrapper{
+		margin-left: 0px;
+	}
+</style>
 </html>

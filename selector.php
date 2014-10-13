@@ -6,7 +6,7 @@
 	<link type="text/css" rel="stylesheet" href="css/landing.css">
 	<link type="text/css" rel="stylesheet" href="css/spritesheet.css">
 	<link type="text/css" rel="stylesheet" href="css/selector2.css">
-	<link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
 	<noscript><meta http-equiv="refresh" content="0;url=noscript.html"></noscript>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="description" content="We make it easy to trade and sell on campus!">
@@ -97,7 +97,7 @@ $("#parallax").height($(document).height());
 
 $("#clearFix0 button").click(function(){
 	var scrollTarget = $("#clearFix3").offset().top;
-	$("html, body").animate({ scrollTop: scrollTarget}, 1500, function(){$("#schoolSearch").focus();});
+	$("html, body").animate({ scrollTop: scrollTarget}, 900, function(){$("#schoolSearch").focus();});
 });
 
 $(window).scroll(function () {

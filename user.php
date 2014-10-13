@@ -24,6 +24,7 @@ $avatarUrl = getAvatarOf($uid);
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="css/feedback_slider.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="description" content="User Profile overview" >
 	<meta http-equiv="Content-Language" content="en">
@@ -113,7 +114,7 @@ $avatarUrl = getAvatarOf($uid);
 									$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
 									$html_blacklist = "/< >/";
 									$pTitle = htmlspecialchars($pTitle);
-									$pDate = $um->getAgeInDays($pDate)." day(s) ago";
+									$pDate = $um->getAgeInDays($pDate);
 									$pCat = htmlspecialchars($pCat);
 									$concatenated .= "<tr><td><a href='/show?".$link."'>".$pTitle."</a></td><td class='right'>".$pDate."</td>";
 									$count++;

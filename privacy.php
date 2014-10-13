@@ -10,6 +10,7 @@ $loggedIn = $cs->getLoginStatus();
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="description" content="Privacy Policy" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />

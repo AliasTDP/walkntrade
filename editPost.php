@@ -35,6 +35,7 @@ if($identifier != null){
 <head>
 	<title><?php echo(filter_var($title, FILTER_SANITIZE_SPECIAL_CHARS)) ?></title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<script type="text/javascript">
 	function formatPrice(element){
 		value = element.value;

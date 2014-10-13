@@ -16,6 +16,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<link type="text/css" rel="stylesheet" href="css/addlisting.css">
 	<link type="text/css" rel="stylesheet" href="/css/feedback_slider.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
 	<script type="text/javascript" src="/client_js/include.js"></script>	
@@ -51,7 +52,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 	<div id="sidebar"><?php include("include/sidebar.php");?></div>
 	<div class="wrapper">
 		<div id="addTable" class="boxStyle1">
-			<p><h1 style="text-align:center">Textbooks</h1></p>
+			<p><h1 style="text-align:center">Post a textbook advertisement.</h1></p>
 		<table style="width:100%" cellpadding="15">
 			<form action="javascript:void(0)" method="POST" name="books" onSubmit="addBook()">
 				<tr>

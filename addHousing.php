@@ -16,6 +16,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<link type="text/css" rel="stylesheet" href="css/addlisting.css">
 	<link type="text/css" rel="stylesheet" href="/css/feedback_slider.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="en" />
 	<script type="text/javascript" src="/client_js/include.js"></script>	
@@ -61,13 +62,13 @@ if(!$loggedIn = $cs->getLoginStatus())
 		<div class="wrapper">
 			<div id="addTable" class="boxStyle1">
 				<p>
-					<h1 style="text-align:center">Services</h1>
+					<h1 style="text-align:center">Post a housing or roommate advertisement.</h1>
 				</p>
 				<table style="width:100%">
-					<form action="javascript:void(0)" method="POST" name="service" onSubmit="addService()">
+					<form action="javascript:void(0)" method="POST" name="housing" onSubmit="addHousing()">
 						<tr>
 					<td colspan="2">
-						<input type="text" name="Name" placeholder="*Short name of the service you're advertising">
+						<input type="text" name="Name" placeholder="*The title of your post">
 					</td>
 				</tr>
 				<tr class="errorClass">
@@ -75,7 +76,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 				</tr>
 				<tr>
 					<td colspan="2">
-						<textarea name="Details" placeholder="*Short to medium length description of the service"></textarea>
+						<textarea name="Details" placeholder="*A short description of your advertisement."></textarea>
 					</td>
 				</tr>
 				<tr class="errorClass">
@@ -83,11 +84,14 @@ if(!$loggedIn = $cs->getLoginStatus())
 				</tr>
 				<tr>
 					<td colspan="2">
-						<div id="imgDrop"><h3 style="color:#A0A0A0">Drag and drop images here or select them below (limit 4 images each less than 5MB)</h3></div>
+						<div id="imgDrop"><h3 style="color:#A0A0A0">Drag and drop at least two images here or select them below (limit 4 images each less than 5MB)</h3></div>
 						<input type="file" accept="image/jpeg" multiple="multiple" onchange="getImages(this)"></input>
 						<br>
 						<br>
 					</td>
+				</tr>
+				<tr class="errorClass">
+					<td id="errImage"></td>
 				</tr>
 				<tr>
 					<td width="50%" >
@@ -102,7 +106,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 				</tr>
 				<tr>
 					<td colspan="2">
-						<input type="text" name="Tags" placeholder="*Descriptive tags about your service">
+						<input type="text" name="Tags" placeholder="*Descriptive tags about your advertisement">
 					</td>
 				</tr>
 				<tr class="errorClass">

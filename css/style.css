@@ -228,7 +228,6 @@ input[type=submit]:hover{
 	height: 25px;
 	font-size: 15px;
 	color:#FF0000;
-	text-align: center;
 }
 
 .wF{
@@ -336,7 +335,7 @@ input[type=submit]:hover{
 }
 
 #sidebar li:nth-child(1){
-	margin-top: 0px;
+	margin-top: 7px;
 }
 
 #sidebar li:nth-child(2):hover{
@@ -373,8 +372,7 @@ input[type=submit]:hover{
 	background:#9CCC65;
 	height: 65px;
 	line-height: 45px;
-	width: calc(100% - 30px);
-	padding: 0px 20px 0px 0px;
+	width: calc(100% - 10px);
 	white-space: nowrap;
 	cursor: pointer;
 	margin: 5px 5px;
@@ -391,8 +389,7 @@ input[type=submit]:hover{
 	background:#9CCC65;
 	height: 65px;
 	line-height: 45px;
-	width: calc(100% - 30px);
-	padding: 0px 20px 0px 0px;
+	width: calc(100% - 10px);
 	white-space: nowrap;
 	cursor: pointer;
 	margin: 5px 5px;
@@ -479,6 +476,7 @@ input[type=submit]:hover{
 #sidebar ul #userbadge{
 	background:#9CCC65;
 	height: 95px;
+	margin-top: 0px;
 }
 
 #sidebar ul #userbadge #avatar{

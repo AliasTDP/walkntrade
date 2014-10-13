@@ -72,7 +72,8 @@ function w_sort(sort){
 }
 
 function resizeListings(){
-	if($(window).width() > 1400){
+	console.log($(window).width());
+	if($(window).width() > 1366){
 		window.perPage = 21;
 		$("#mainCWB #dynamicWrapper #dynamicContent #dump li").css("width", "calc(14% - 19px)");
 	}
@@ -85,6 +86,7 @@ function resizeListings(){
 function updatePage(){
 	if(!window.inhibitUpdate){//only allow page update if an update is not  already in progress.
 		window.inhibitUpdate = true;//lock other update threads
+		$("html, body").animate({ scrollTop: 0}, 500);
 		updateHeader();
 		$(window.canvas).slideUp(300, function(){
 			$("#dump").find("ul").empty();
@@ -123,7 +125,7 @@ function pageLoad(query, school, cat, sort, callback) {
 				case("tech"):
 				color = "rgba(55,9,137,.75)";
 				break;
-				case("service"):
+				case("housing"):
 				color = "rgba(255,140,0,.75)"; 
 				break;
 				case("misc"):

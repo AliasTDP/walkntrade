@@ -1,18 +1,18 @@
 function pollNewMessages(){
-	if(window.location.pathname != "/user_settings"){
-		$("#messageIndicator").attr("onclick", "window.location = '/user_settings#1'");
-		$("#postIndicator").attr("onclick", "window.location = '/user_settings#3'");
-		$("#settingsIndicator").attr("onclick", "window.location = '/user_settings#4'");
-	}
-	else{
+	if(window.location.pathname == "/user_settings" || window.location.pathname == "/user_settings.php"){
 		$("#messageIndicator").attr("onclick", "javascript:loadModule('1')");
 		$("#postIndicator").attr("onclick", "javascript:loadModule('3')");
 		$("#settingsIndicator").attr("onclick", "javascript:loadModule('4')");
 	}
+	else{
+		$("#messageIndicator").attr("onclick", "window.location = '/user_settings#1'");
+		$("#postIndicator").attr("onclick", "window.location = '/user_settings#3'");
+		$("#settingsIndicator").attr("onclick", "window.location = '/user_settings#4'");
+	}
 	$.ajax({url: "/api/", dataType: "html", type:"POST", data:"intent=pollNewWebmail"}).success(function(responseText){
 		var checkVal = parseInt(responseText);
 		if(checkVal !== "NaN" && checkVal > 0){
-			$("#mNum").show().html(checkVal).css("background", "#9CCC65");
+			$("#mNum").slideDown().html(checkVal).css("background", "#9CCC65");
 		}
 	});
 }

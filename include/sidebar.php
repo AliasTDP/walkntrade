@@ -12,7 +12,7 @@
 		<li class="clickOption" style="" onclick="javascript:window.location=\'/\'"><div id="option0"><i class="sprite sprite-1396343029_shop"></i></div>Home</li>
 		<li class="clickOption" style="" onclick="javascript:changeSchools()"><div id="option5"><i class="sprite sprite-1396344637_search"></i></div>Change School</li>
 	    <li class="clickOption" style="" onclick="javascript:window.location=\'/addBook\'"><div id="option1"><i class="sprite sprite-1396344657_vallet"></i></div>Post Textbooks</li>
-	    <li class="clickOption" style="" onclick="javascript:window.location=\'/addService\'"><div id="option2"><i class="sprite sprite-1396344746_truck"></i></div>Post Services</li>
+	    <li class="clickOption" style="" onclick="javascript:window.location=\'/addHousing\'"><div id="option2"><i class="sprite sprite-1396344746_truck"></i></div>Post Housing</li>
 	    <li class="clickOption" style="" onclick="javascript:window.location=\'/addElectronics\'"><div id="option3"><i class="sprite sprite-1396344673_phone"></i></div>Post Tech/Games</li>
 		<li class="clickOption" style="" onclick="javascript:window.location=\'/addMisc\'"><div id="option4"><i class="sprite sprite-1396345059_stack"></i></div>Post Miscellaneous</li>
 	</ul>');
@@ -23,7 +23,7 @@
 		<li id="loggedOutSignup" style="" onclick="javascript:window.location=\'/signup.php\'">Signup</li>
 	    <li class="clickOption" style="" onclick="javascript:changeSchools()"><div id="option5"><i class="sprite sprite-1396344637_search"></i></div>Change School</li>
 		<li class="clickOption unavailable" style=""><div id="option1"><i class="sprite sprite-1396344657_vallet"></i></div>Post Textbooks</li>
-	    <li class="clickOption unavailable" style=""><div id="option2"><i class="sprite sprite-1396344746_truck"></i></div>Post Services</li>
+	    <li class="clickOption unavailable" style=""><div id="option2"><i class="sprite sprite-1396344746_truck"></i></div>Post Housing</li>
 	    <li class="clickOption unavailable" style=""><div id="option3"><i class="sprite sprite-1396344673_phone"></i></div>Post Tech/Games</li>
 		<li class="clickOption unavailable" style=""><div id="option4"><i class="sprite sprite-1396345059_stack"></i></div>Post Miscellaneous</li>
 	</ul>');

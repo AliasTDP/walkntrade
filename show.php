@@ -114,7 +114,7 @@ switch ($category) {
 	$color = "#370989";
 	break;
 
-	case("service"):
+	case("housing"):
 	$color = "#ff8c00"; 
 	break;
 	case("misc"):
@@ -152,7 +152,8 @@ if($loggedIn){
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
 	<link type="text/css" rel="stylesheet" href="/css/feedback_slider.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
-	<link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
+	<link href='https://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta property="og:title" content="<?php echo $title ?>">
 	<meta property="og:description" content="<?php echo $details ?>">
@@ -280,7 +281,7 @@ if($loggedIn){
 						<div class="cInfo">
 							<i>Posted by: <?php echo $uName ?></i><br>
 
-							<i><?php echo $cs->getAgeInDays($date); ?> day(s) ago</i><br>
+							<i><?php echo $cs->getAgeInDays($date); ?></i><br>
 							<i>Viewed <?php echo $views ?> time(s)</i><br>
 						</div>
 						<?php

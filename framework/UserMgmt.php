@@ -283,7 +283,7 @@ class UserMgmt extends CredentialStore{
 			$schs->bind_result($school);
 			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<results>\n";
 			while($schs->fetch()){
-				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `expired` DESC");
+				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `date` DESC");
 				$mypost->bind_param("s", $_SESSION["user_id"]);
 				$mypost->execute();
 				$mypost->store_result();
@@ -299,7 +299,7 @@ class UserMgmt extends CredentialStore{
 						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAY(S) LEFT] ".htmlspecialchars($pTitle);
 						else $pTitle = htmlspecialchars($pTitle);
 						
-						$pDate = $this->getAgeInDays($pDate)." day(s) ago";
+						$pDate = $this->getAgeInDays($pDate);
 
 						$pCat = htmlspecialchars($pCat);
 						$pExpired = ($pExpired == 1) ? "true" : "false";

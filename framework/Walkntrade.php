@@ -137,8 +137,8 @@ class Walkntrade {
 			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ? OR `username` LIKE ?) AND `expired` = 0 ORDER BY ".$sort." LIMIT ?,?");
 			$stmt->bind_param("ssssii",$category, $query, $query, $query, $offset, $amount);
 			break;
-			case 'service':
-			$category = "service";
+			case 'housing':
+			$category = "housing";
 			$stmt = $lc->prepare("SELECT `id`, `identifier`, `title`, `category`, `author`, `details`, `price`, `userid`, `username`, `date`, `views` FROM `" . $school . "` WHERE `category` = ? AND (`title` LIKE ? OR `tags` LIKE ? OR `username` LIKE ?) AND `expired` = 0 ORDER BY ".$sort." LIMIT ?,?");
 			$stmt->bind_param("ssssii",$category, $query, $query, $query, $offset, $amount);
 			break;
@@ -414,7 +414,8 @@ class Walkntrade {
 		$date2 = new DateTime(date("Y-m-d"));
 
 		$diff = $date2->diff($date1)->format("%a");
-		return $diff;
+		$string = ($diff == 0) ? "Today" : $diff ." day(s) ago";
+		return $string;
 	}
 }
 ?>

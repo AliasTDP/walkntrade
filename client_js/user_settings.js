@@ -261,7 +261,7 @@ function getUserPosts(){
 				contentElement.find("table").append($("<tr/>", {"id":shortName}));
 				contentElement.find("table #"+shortName).append($("<th/>", {"width":"60%", "colspan":"3"})).append($("<th/>", {"width":"30%"})).append($("<th/>", {"width":"10%"}));
 				contentElement.find("table #"+shortName+" th:first").text(longName);
-				contentElement.find("table #"+shortName+" th:nth-child(2)").text("Posted");
+				contentElement.find("table #"+shortName+" th:nth-child(2)").text("Posted/Renewed");
 				contentElement.find("table #"+shortName+" th:nth-child(3)").text("views");
 				var schoolPostsElement = contentElement.find("table");
 				$(this).find("post").each(function(){

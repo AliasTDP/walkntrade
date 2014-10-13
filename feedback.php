@@ -11,6 +11,7 @@ $loggedIn = $cs->getLoginStatus();
 	<link type="text/css" rel="stylesheet" href="css/feedback_slider.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
+	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<style type="text/css">
 		form{
 			width: 100%;

@@ -204,14 +204,15 @@ function addElectronics() {
 	}
 }
 
-function addService(){
-	var title = service.elements["Name"].value;
-	var details = service.elements["Details"].value;
-	var price = service.elements["Price"].value;
-	var tags = service.elements["Tags"].value;
+function addHousing(){
+	var title = housing.elements["Name"].value;
+	var details = housing.elements["Details"].value;
+	var price = housing.elements["Price"].value;
+	var tags = housing.elements["Tags"].value;
 
 	var errTitle = document.getElementById("errTitle");
 	var errDescription = document.getElementById("errDescription");
+	var errImage = document.getElementById("errImage");
 	var errPrice = document.getElementById("errPrice");
 	var errTags = document.getElementById("errTags");
 	
@@ -253,7 +254,7 @@ function addService(){
 		}
 	}
 	else{
-		errDescription.innerHTML="Please enter details about your listing.";
+		errDescription.innerHTML="Please enter details about your advertisement.";
 		cont = false;
 	}
 	
@@ -272,13 +273,17 @@ function addService(){
 		errTags.innerHTML="Please enter tags to describe your post";
 		cont = false;
 	}
+	if(uploadedImages < 2){
+		errImage.innerHTML="You must have at least 2 images for this type of post";
+		cont = false;
+	}
 	
 	if(cont){
 		$.ajax({
 		url:api_url, 
 		dataType:"html", 
 		type:"POST", 
-		data:"intent=addPost&cat=service&title="+title+"&details="+details+"&price="+price+"&tags="+tags
+		data:"intent=addPost&cat=housing&title="+title+"&details="+details+"&price="+price+"&tags="+tags
 		}).success(handleResponse);
 	}
 }
@@ -553,9 +558,6 @@ function sendFiles(identifier) {
 				if(xhttp.responseText == "0"){
 					if (typeof callback == "function"){
 						return fileUpload(blob, iteration - 1, identifier, callback);
-					}
-					else{
-						console.log("callback malformed");
 					}
 				}
 				else{

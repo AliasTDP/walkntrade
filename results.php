@@ -42,8 +42,8 @@
 				<ul>
 					<li id="all">All</li>
 					<li id="book">Textbooks</li>
-					<li id="service">Services</li>
-					<li id="tech">Tech/Games</li>
+					<li id="tech">Tech</li>
+					<li id="housing">Housing</li>
 					<li id="misc">Miscellaneous</li>
 				</ul>
 			</div>
