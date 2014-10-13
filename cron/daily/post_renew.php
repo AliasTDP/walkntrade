@@ -18,8 +18,8 @@ class PostRenew extends CredentialStore {
 				//action here
 				if($postExpireInt == -1){ //if the post is not marked for deletion
 					$postAge = $this->getAgeInDays($date); //determine the age of the post
-					if($postAge >= 30){
-						$expireSTMT = $this->getlistingConnection()->prepare("UPDATE `".$school."` SET `expire` = 3 WHERE `id` =  ?");//if it's over a month old prepare SQL query to mark for 3 day deletion
+					if($postAge >= 60){
+						$expireSTMT = $this->getlistingConnection()->prepare("UPDATE `".$school."` SET `expire` = 3 WHERE `id` =  ?");//if it's over 2 months old prepare SQL query to mark for 3 day deletion
 						$expireSTMT->bind_param("i", $pId);
 						$expireSTMT->execute();
 						$email = $this->getEmailFromUserID($pUserid);
@@ -91,7 +91,7 @@ class PostRenew extends CredentialStore {
 						<td  colspan=\"2\" align=\"center\"><h1 style=\"color: #45B407;\">Keep your posts alive!</h1></td>
 					</tr>
 					<tr>
-						<td colspan=\"2\">Here at Walkntrade we have adopted a new 30 day post renewal policy. We are contacting you because one or more of your posts are expiring or have already expired. To fix this please log into your account and renew the posts that you want to keep listed. Posts expire after three days from their first warning.</td>
+						<td colspan=\"2\">Here at Walkntrade we have 2 month post renewal policy. We are contacting you because one or more of your posts are expiring or have already expired. To fix this please log into your account and renew the posts that you want to keep listed. Posts expire after three days from their first warning.</td>
 					</tr>
 					<tr>
 						<td colspan=\"2\"><a href=\"http://walkntrade.com/user_settings#3\">Access my account</a></td>
