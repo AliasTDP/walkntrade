@@ -157,6 +157,7 @@ function pageLoad(query, school, cat, sort, callback) {
 			$("#p_"+id+" li").find(".details").text(details);
 
 			$("#p_"+id+" li").find(".categoryTab").text(category);
+			resizeListings();
 		});
 		if($(xml).find("listing").length == 0){
 			if(window.offset==0)
