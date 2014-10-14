@@ -2,11 +2,6 @@ Options -Indexes
 ErrorDocument 404 /errors/404.php
 ErrorDocument 403 /errors/redirect.php
 
-<IfModule mod_security.c>
-	SecFilterEngine Off
-	SecFilterScanPOST Off
-</IfModule>
-
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteCond %{DOCUMENT_ROOT}/$1.php -f
