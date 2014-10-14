@@ -95,7 +95,7 @@
 #mainCWB #Nav li#tech.selected{
 	background: rgba(167, 141, 213, .6) url(/colorful/selected_header.png) center no-repeat;
 }
-#mainCWB #Nav li#housing.selected{
+#mainCWB #Nav li#service.selected{
 	background: rgba(228, 151, 58, .6) url(/colorful/selected_header.png) center no-repeat;
 }
 #mainCWB #Nav li#misc.selected{
