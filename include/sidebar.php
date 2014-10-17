@@ -8,7 +8,7 @@
 		}
 		echo('<ul>
 		<li id="userbadge"><div id="avatar" style="background:url('.$image.');background-size: 100%;background-repeat: no-repeat;background-position-y: 50%;"></div><div id="username">'.$_SESSION["username"].'</div>
-		<div id="userBadgeMyAccount"><a href="/user_settings.php">My Account</a><br><a href="javascript:user_logout()">Log out</a></div></li>
+		<div id="userBadgeMyAccount"><a href="/user_settings">My Account</a><br><a href="javascript:user_logout()">Log out</a></div></li>
 		<li class="clickOption" style="" onclick="javascript:window.location=\'/\'"><div id="option0"><i class="sprite sprite-1396343029_shop"></i></div>Home</li>
 		<li class="clickOption" style="" onclick="javascript:changeSchools()"><div id="option5"><i class="sprite sprite-1396344637_search"></i></div>Change School</li>
 	    <li class="clickOption" style="" onclick="javascript:window.location=\'/addBook\'"><div id="option1"><i class="sprite sprite-1396344657_vallet"></i></div>Post Textbooks</li>
@@ -20,7 +20,7 @@
 	else {
 		echo('<ul>
 		<li id="loggedOutLogin" style="" onclick="javascript:createLoginWindow()">Login</li>
-		<li id="loggedOutSignup" style="" onclick="javascript:window.location=\'/signup.php\'">Signup</li>
+		<li id="loggedOutSignup" style="" onclick="javascript:window.location=\'/signup\'">Signup</li>
 	    <li class="clickOption" style="" onclick="javascript:changeSchools()"><div id="option5"><i class="sprite sprite-1396344637_search"></i></div>Change School</li>
 		<li class="clickOption unavailable" style=""><div id="option1"><i class="sprite sprite-1396344657_vallet"></i></div>Post Textbooks</li>
 	    <li class="clickOption unavailable" style=""><div id="option2"><i class="sprite sprite-1396344746_truck"></i></div>Post Housing</li>

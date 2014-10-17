@@ -1,5 +1,4 @@
 @import url("header.css");
-@import url("sprites.css");
 
 @font-face {
   font-family: 'Open Sans';
@@ -527,4 +526,50 @@ input[type=submit]:hover{
 	margin-left: -400px;
 	text-align: center;
 	color:#777;
+}
+
+#feedbackWrapper{
+	width: 400px;
+	height: 330px;
+	position: fixed;
+	margin-right: -350px;
+	top:165px;
+	right: 0px;
+	z-index: 90;
+}
+
+#feedbackButton{
+	width: 50px;
+	height: 100%;
+	float: left;
+}
+
+#feedbackButton img{
+	float: right;
+	cursor: pointer;
+}
+
+#feedbackContent{
+	width: 338px;
+	height: 100%;
+	float: left;
+	background: white;
+	padding: 5px;
+	text-align: center;
+	border: 1px solid #909090;
+}
+
+#feedbackContent input, #feedbackContent textarea{
+	width: 75%;
+	margin: auto;
+	margin-bottom: 20px;
+	resize:none;
+}
+
+#feedbackContent textarea{
+	height: 100px;
+}
+
+#feedbackContent input[type="submit"]{
+	width: 25%;
 }

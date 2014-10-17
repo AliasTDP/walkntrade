@@ -15,19 +15,6 @@ $loggedIn = $cs->getLoginStatus();
 	<meta name="description" content="Privacy Policy" >
 	<meta name="robots" content="NOINDEX, NOFOLLOW" />
 	<meta http-equiv="Content-Language" content="en">
-	<script type="text/javascript" src="/client_js/include.js"></script>	
-	<script type="text/javascript" src="/client_js/jquery.min.js"></script>
-	<script type="text/javascript" src="/client_js/user_login.js"></script>
-	<script>
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-	ga('create', 'UA-42896980-1', 'walkntrade.com');
-	ga('send', 'pageview');
-
-	</script>
 </head>
 <body>
 	<div id="throbber"><img src="colorful/loader.gif"></div>
@@ -68,3 +55,5 @@ $loggedIn = $cs->getLoginStatus();
 		</div>
 </body>
 </html>
+<script type="text/javascript" src="/client_js/jquery.min.js"></script>
+<script type="text/javascript" src="/js_minified/min.js"></script>

@@ -18,16 +18,16 @@ ErrorDocument 403 /errors/redirect.php
 </IfModule>
 
 <IfModule mod_expires.c>
-	ExpiresActive On
-	ExpiresByType text/html "modification"
-	ExpiresByType image/gif "modification"
-	ExpiresByType image/jpeg "modification"
-	ExpiresByType image/png "modification"
-	ExpiresByType image/x-icon "modification"
-	ExpiresByType text/css "modification"
-	ExpiresByType text/javascript "modification"
-	ExpiresByType application/x-javascript "modification"
-	ExpiresByType application/x-shockwave-flash "modification"
+   ExpiresActive on
+   ExpiresDefault "modification
+   ExpiresByType application/javascript "modification"
+   ExpiresByType image/x-ico "modification"
+   ExpiresByType image/jpg "modification"
+   ExpiresByType image/png "modification"
+   ExpiresByType image/jpeg "modification"
+   ExpiresByType image/gif "modification"
+   ExpiresByType image/png "modification"
+   ExpiresByType text/css "modification"
 </IfModule>
 
 <IfModule mod_suphp.c>
