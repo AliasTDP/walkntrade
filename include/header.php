@@ -1,7 +1,7 @@
 <div id="newMessageWrapper">
 </div>
 <div id="leftHead">
-	<a href="./"><img id="logo" src="/colorful/wtlogo_dark.png"></a>
+	<a href="./"><img id="logo" width="250px" height="50px" src="/colorful/wtlogo_dark.png"></a>
 	BETA
 	<?php
 	if($loggedIn){
@@ -15,18 +15,13 @@
 	?>
 </div>
 <div id="rightHead">
-	<script type="text/javascript">
-		$(document).ready(function(){
-			pollNewMessages();
-		});
-	</script>
 	<div id="searchWrapper">
 		<div id="searchA">
 			<?php 
 				$preFill = (isset($query) && $query != null) ? $query : "Find something!";
 				$value = (isset($query) && $query != null) ? $query : "";
 			?>
-			<form action='javascript:if(typeof(updatePage) === "function"){updatePage();}else{window.location = "/?query="+this.queryBar.value}'>
+			<form action='javascript:if(resultsPageActive){updatePage();}else{window.location = "/?query="+this.queryBar.value}'>
 			<input type="text" id="queryBar" value="<?php echo $value ?>" placeholder="<?php echo $preFill ?>">
 			<input type="submit" id="queryBarSubmit" value="Search">
 			</form>

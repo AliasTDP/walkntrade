@@ -150,60 +150,15 @@ if($loggedIn){
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="css/show.css">
 	<link type="text/css" rel="stylesheet" href="css/login_window.css">
-	<link type="text/css" rel="stylesheet" href="/css/feedback_slider.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<link href='https://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta property="og:title" content="<?php echo $title ?>">
 	<meta property="og:description" content="<?php echo $details ?>">
-	<script type="text/javascript" src="/client_js/include.js"></script>	
-	<script type="text/javascript" src="/client_js/jquery.min.js"></script>
-	<script type="text/javascript" src="/client_js/user_login.js"></script>
-	<script type="text/javascript" src="/client_js/message_users.js"></script>
-	<script type="text/javascript" src="/client_js/feedback_slider.js"></script>	
-	<script type="text/javascript">
-	messaegUserId = "<?php echo $userid ?>";
-	messageTitle = "<?php echo $title ?>";
-	messageUserName = "<?php echo $uName ?>";
-	messageMessage = "<?php echo $message ?>";
-	$(document).ready(function(e){
-		$("#imageOne img").click(blowupImage);
-		$("#moreImages img").click(blowupImage);
-	});
-	function blowupImage(e){
-		if(e.target.id == "noImg")
-			return;
-		var imgUrl = $("#"+e.target.id).attr("src");
-		$("body").prepend("<div id='screen'><div id=\"imageLargeFloat\"><img src=\""+imgUrl+"\"></div></div>");
-		$("#screen").css("display", "none");
-		$("#screen").fadeIn();
-		$("#screen").click(function(){
-			$("#screen").fadeOut(function(){
-				$("#screen").remove();
-			});
-		})
-		$("body").keydown(function(e){
-			if(e.keyCode==27)
-				$("#screen").fadeOut(function(){
-					$("#screen").remove();
-				});
-		});
-	}
-	</script>
-	<div id="fb-root"></div>
-	
-	<!--FaceBook Social Plugin Root -->
-	<script>(function(d, s, id) {
-		var js, fjs = d.getElementsByTagName(s)[0];
-		if (d.getElementById(id)) return;
-		js = d.createElement(s); js.id = id;
-		js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-		fjs.parentNode.insertBefore(js, fjs);
-	}(document, 'script', 'facebook-jssdk'));</script>
 	<style type="text/css">
-	.colorAttr{color:<?php echo $color ?>;}
-	.colorBg{background-color:<?php echo $color ?>;}
+		.colorAttr{color:<?php echo $color ?>;}
+		.colorBg{background-color:<?php echo $color ?>;}
 	</style>
 </head>
 <body>
@@ -236,9 +191,9 @@ if($loggedIn){
 								</div>
 							</div>
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="fb-share-button" data-href="<?php 
-								$link =  "//$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-								$escaped_link = htmlspecialchars($link, ENT_QUOTES, 'UTF-8');
-								echo $escaped_link?>"></div>
+							$link =  "//$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+							$escaped_link = htmlspecialchars($link, ENT_QUOTES, 'UTF-8');
+							echo $escaped_link?>"></div>
 							<p><?php echo $details?></p>
 						</div>
 						<div id="imgBox">
@@ -270,12 +225,12 @@ if($loggedIn){
 					<div class="contact">
 						<div class="cImage ">
 							<a href="/user?uid=<?php echo $userid ?>">
-							<?php
-							if(file_exists("user_images/uid_".$userid.".jpg"))
-								echo("<img src='user_images/uid_".$userid.".jpg'>");
-							else
-								echo "<img src='colorful/Anonymous_User.jpg'>";
-							?>
+								<?php
+								if(file_exists("user_images/uid_".$userid.".jpg"))
+									echo("<img src='user_images/uid_".$userid.".jpg'>");
+								else
+									echo "<img src='colorful/Anonymous_User.jpg'>";
+								?>
 							</a>
 						</div>
 						<div class="cInfo">
@@ -290,14 +245,14 @@ if($loggedIn){
 								$string = $schoolTextId.":".$identifier;
 								echo('
 									<div class="cContact">
-									<input type="button" value="Edit Post" onclick="javascript:popup(\'editPost.php?'.$string.'\')" class="button gray">
+										<input type="button" value="Edit Post" onclick="javascript:popup(\'editPost.php?'.$string.'\')" class="button gray">
 									</div>
 									');
 							}
 							else{
 								echo('
 									<div class="cContact">
-									<input type="button" value="Contact User" onclick=\'javascript:createMessageWindow(messaegUserId, messageTitle, messageUserName, messageMessage)\' class="button">
+										<input type="button" value="Contact User" onclick=\'javascript:createMessageWindow(messaegUserId, messageTitle, messageUserName, messageMessage)\' class="button">
 									</div>
 									');
 							}
@@ -305,7 +260,7 @@ if($loggedIn){
 						else{
 							echo('
 								<div class="cContact">
-								<input type="button" value="Log-in to inquire" onclick="javascript:createLoginWindow()" class="button gray">
+									<input type="button" value="Log-in to inquire" onclick="javascript:createLoginWindow()" class="button gray">
 								</div>
 								');
 						}
@@ -330,3 +285,22 @@ if($loggedIn){
 	</div>
 </body>
 </html>
+<script type="text/javascript" src="/client_js/jquery.min.js"></script>
+<script type="text/javascript" src="/js_minified/min.js"></script>
+<script type="text/javascript">
+	messaegUserId = "<?php echo $userid ?>";
+	messageTitle = "<?php echo $title ?>";
+	messageUserName = "<?php echo $uName ?>";
+	messageMessage = "<?php echo $message ?>";
+	initShowPage();
+</script>
+<div id="fb-root"></div>
+
+<!--FaceBook Social Plugin Root -->
+<script>(function(d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
