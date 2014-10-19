@@ -171,7 +171,7 @@ $loggedIn = $cs->getLoginStatus();
 			<div class="pad">
 				<h1 class="green"><p>We're in Beta</p></h1>
 				<hr>
-				<p class="italic">This means that not everything you see here will be 100%, which is why we need you. You're feedback is the most important thing to us, so send us a message at <b>feedback@walkntrade.com</b> and let us know what you think.</p>
+				<p class="italic">This means that not everything you see here will be 100%, which is why we need you. Your feedback is the most important thing to us, so send us a message at <b>feedback@walkntrade.com</b> and let us know what you think.</p>
 			</div>
 		</div>
 	</div>
