@@ -71,7 +71,7 @@
 			<div class="fl">
 				<h2>Find exactly what you need.</h2>
 				<p><i class="sprite sprite-1396377528_target"></i></p>
-				<p>Everyone on your school's walkntrade page shares a common community, which makes it easier for you to find exactly what you need!</p>
+				<p>Everyone on your school's Walkntrade page shares a common community, which makes it easier for you to find exactly what you need!</p>
 			</div>
 		</div>
 	</div>

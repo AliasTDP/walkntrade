@@ -71,8 +71,8 @@ $loggedIn = $cs->getLoginStatus();
 							<form name="code" method="GET" action="validateKey">
 							<p>
 								<h1> We\'ve sent you an email</h1>
-								<p>Check your in-box and click the link provided in order to activate your account.</p>
-								<p>you may also enter your verification code here</p>
+								<p>Check your inbox and click the link provided in order to activate your account.</p>
+								<p>You may also enter your verification code here.</p>
 								<br>
 								<input name="token" placeholder="xxxxxx" maxlength="6" class="codeInput" style="width:6em"></p>
 							</p>
