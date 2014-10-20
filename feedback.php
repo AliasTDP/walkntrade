@@ -65,7 +65,7 @@ $loggedIn = $cs->getLoginStatus();
 					<hr>
 					<h1>Leave us some feedback would you please :)</h1>
 					<img src="http://s133702574.onlinehome.us/pictures/blog/puppyface.jpg" height="200px">
-					<p>We'll put on our best puppy dog face in hope that you will tell us what you think about the site. It could be about anything really... whether you like the colors of the logo, or you found a random bug, please, let us know about it. Heck, even if you just wana say hi we want to hear it!</p>
+					<p>We'll put on our best puppy dog face in hope that you will tell us what you think about the site. It could be about anything really... whether you like the colors of the logo, or you found a random bug, please, let us know about it. Heck, even if you just wanna say hi we want to hear it!</p>
 					<form name='feedbackFormEMB' action='javascript:submitFeedbackEMB()'>
 						<p><input name='email' type='text' placeholder='email address (optional)'></p>
 						<p><textarea name='message' placeholder='your message here' resize='none'></textarea></p>
