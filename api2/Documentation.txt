@@ -1,0 +1,13 @@
+Documentation walkntrade.com/api2/
+
+Refactoring complete:
+getPosts
+getPostByIdentifier
+getSchools
+checkPassword
+checkUsername
+
+Status indications
+200: OK
+404: NOT FOUND
+406: Not Acceptable

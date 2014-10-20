@@ -111,24 +111,22 @@ $(document).ready(function(){
 		var listDOM = document.getElementById("schools")
 		if(ss.val() != ""){
 			$.ajax({
-				url:"/api/", 
-				dataType:"html", 
+				url:"/api2/", 
+				dataType:"json", 
 				type:"POST", 
 				data:"intent=getSchools&query="+ss.val()
-				}).success(function(response){
-					var results = new DOMParser().parseFromString(response, "application/xml");
-					var schools = results.getElementsByTagName("school");
+				}).success(function(json){
 					listDOM.innerHTML="";
-					if(schools.length > 0){
-						$("#schools").animate({height: (schools.length * 45) + "px"}, { queue:false, duration:200 });
+					if(json.payload.length > 0){
+						$("#schools").animate({height: (json.payload.length * 45) + "px"}, { queue:false, duration:200 });
 					}
 					else{
 						$("#schools").animate({height: "0px"}, { queue:false, duration:200 });
 					}
 
-					for(var i = 0; i < schools.length; i++){
-						var textId = schools[i].getAttribute("textId");
-						var sName = schools[i].getAttribute("name");
+					for(var i = 0; i < json.payload.length; i++){
+						var textId = json.payload[i].textId;
+						var sName = json.payload[i].name;
 
 						element = addChildTo("schools", "li");
 						element.innerHTML = sName;
