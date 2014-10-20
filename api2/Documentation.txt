@@ -6,8 +6,10 @@ getPostByIdentifier
 getSchools
 checkPassword
 checkUsername
+getPostsCurrentUser
 
 Status indications
 200: OK
+401: NOT AUTHORIZED
 404: NOT FOUND
 406: Not Acceptable

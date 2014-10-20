@@ -4,7 +4,6 @@
 function genJSON($status, $message, $payload){
 	$payload = str_replace("\n", "", $payload);
 	$message = str_replace("\n", "", $message);
-	$status = filter_var(FILTER_SANITIZE_NUMBER_INT, $status);
 	$output = "{";
 	$output .= "\"status\":\"".$status."\",";
 	$output .= "\"message\":\"".$message."\",";
@@ -12,6 +11,7 @@ function genJSON($status, $message, $payload){
 	$output .= "}";
 	return $output;
 }
+
 if(isset($_POST["intent"]))
 	$getIntent = htmlspecialchars($_POST["intent"]);
 else
@@ -117,15 +117,22 @@ switch($getIntent){
 		else
 			echo genJSON(406, "Username Taken", "");
 		break;
-
-	case "getPostsCurrentUser"://left off here
-		require_once "../framework/UserMgmt.php";
+	case "getPostsCurrentUser":
+		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		header ("Content-Type:text/xml");
-		echo $um->getPostsCurrentUser();
+		$payload=$um->getPostsCurrentUser();
+		switch ($payload) {
+			case 1:
+				echo genJSON(401, "Not authorized", "");
+				break;
+			
+			default:
+				echo genJSON(200, "", $payload);
+				break;
+		}
 		break;
-
-	case "getUserProfile":
+	case "getUserProfile"://left off here
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
 		$uid = (isset($_POST["uid"])) ? filter_var($_POST["uid"], FILTER_SANITIZE_NUMBER_INT) : null;
@@ -133,7 +140,6 @@ switch($getIntent){
 		if($uid != null)
 			echo $um->getUserProfile($uid);
 		break;
-
 	case "getWebmail":
 		require_once "../framework/UserMgmt.php";
 		$quiet = (isset($_POST["quiet"]) && $_POST["quiet"] == "true")?true:false;
@@ -141,7 +147,6 @@ switch($getIntent){
 		header ("Content-Type:text/xml");
 		echo $um->getWebmail($quiet);
 		break;
-
 	case "getSentWebmail":
 		require_once "../framework/UserMgmt.php";
 		$quiet = (isset($_POST["quiet"]) && $_POST["quiet"] == "true")?true:false;
@@ -149,7 +154,6 @@ switch($getIntent){
 		header ("Content-Type:text/xml");
 		echo $um->getSentWebmail($quiet);
 		break;
-
 	case "getMessage":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -163,27 +167,23 @@ switch($getIntent){
 			echo $um->getMessage($id);
 		}	
 		break;
-
 	case "pollNewWebmail":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
 		header ("Content-Type:text/xml");
 		echo $um->pollNewWebmail();
 		break;
-
 	case "setEmailPref":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
 		$pref = (isset($_POST["pref"])) ? htmlspecialchars($_POST["pref"], FILTER_SANITIZE_NUMBER_INT) : null;
 		echo $um->setEmailPref($pref);
 		break;
-
 	case "getEmailPref":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
 		echo $um->getEmailPref();
 		break;
-
 	case "removeMessage":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -197,7 +197,6 @@ switch($getIntent){
 			echo $um->removeMessage($id);
 		}	
 		break;
-
 	case "login":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -228,7 +227,6 @@ switch($getIntent){
 			}
 		}
 		break;
-
 	case "logout":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -238,13 +236,11 @@ switch($getIntent){
 			$um->removeAndroidDeviceId();
 		$um->logout();
 		break;
-
 	case "getAvatar":
 		require_once "../framework/BinaryHandler.php";
 		$bh = new BinaryHandler();
 		echo $bh->getAvatar();
 		break;
-
 	case "uploadAvatar":
 		if(!isset($_FILES["avatar"])){
 			echo "You gotta' choose a new image first!";
@@ -254,13 +250,11 @@ switch($getIntent){
 		$bh = new BinaryHandler();	
 		$bh->uploadAvatar($_FILES['avatar']);
 		break;
-
 	case "getUserName":
 		require_once "../framework/CredentialStore.php";
 		$cs = new CredentialStore();
 		echo $cs->getUserName();
 		break;
-
 	case "addPost":
 		require_once "../framework/PostQuery.php";
 		$pq = new PostQuery();
@@ -288,7 +282,6 @@ switch($getIntent){
 				break;
 			}
 		break;
-
 	case "removePost":
 		require_once "../framework/PostQuery.php";
 		$pq = new PostQuery();
@@ -308,7 +301,6 @@ switch($getIntent){
 			break;
 		}
 		break;
-
 	case "renewPost":
 		require_once "../framework/PostQuery.php";
 		$pq = new PostQuery();
@@ -328,7 +320,6 @@ switch($getIntent){
 			break;
 		}
 		break;
-
 	case "addAndroidDeviceId":
 		require_once "../framework/UserMgmt.php";
 		$wt = new UserMgmt();
@@ -348,7 +339,6 @@ switch($getIntent){
 				break;
 		}
 		break;
-
 	case "uploadPostImages":
 		require_once "../framework/BinaryHandler.php";
 		$bh = new BinaryHandler();
@@ -360,7 +350,6 @@ switch($getIntent){
 		return "501: Request malformed";
 		echo $bh->uploadPostImages($binImage, $iteration, $identifier, $school);
 		break;
-
 	case "editPost":
 		require_once "../framework/PostQuery.php";
 		$pq = new PostQuery();
@@ -403,7 +392,6 @@ switch($getIntent){
 			break;
 		}
 		break;
-
 	case "messageUser":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -447,7 +435,6 @@ switch($getIntent){
 		}
 		else echo "Invalid recipient!";
 		break;
-
 	case "addUser":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -480,7 +467,6 @@ switch($getIntent){
 			break;
 		}
 		break;
-
 	case "verifyKey":
 		require_once "../framework/Walkntrade.php";
 		$wt = new Walkntrade();
@@ -500,7 +486,6 @@ switch($getIntent){
 			break;
 		}
 		break;
-
 	case "resetPassword":
 		require_once "../framework/Walkntrade.php";
 		$wt = new Walkntrade();
@@ -520,7 +505,6 @@ switch($getIntent){
 			break;
 		}
 		break;
-
 	case "sendFeedback":
 		require_once "../framework/Walkntrade.php";
 		$wt = new Walkntrade();
@@ -537,7 +521,6 @@ switch($getIntent){
 			}
 		}
 		break;
-
 	case "getPhoneNum":
 		require_once "../framework/CredentialStore.php";
 		$cs = new CredentialStore();

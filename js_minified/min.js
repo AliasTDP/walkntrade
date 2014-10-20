@@ -469,70 +469,69 @@ function replyTo(){
 function getUserPosts(){
 	$("#yourPosts").append($("<h3/>"));
 	$("#yourPosts h3").text("Loading...");
-	$.ajax({ dataType:"xml", data:"intent=getPostsCurrentUser"}).success(function(xml){
+	$.ajax({url:api_url2, dataType:"json", data:"intent=getPostsCurrentUser"}).success(function(json){
 		var contentElement = $("#yourPosts");
 		contentElement.html("");
-		if($(xml).find("school").length == 0 ){
+		if(json.payload.length == 0 ){
 			$("#yourPosts").append($("<h3/>"));
 			$("#yourPosts h3").text("You have nothing to show here yet, but you can post something now!");
 		}
 		else{
 			contentElement.html("");
 			contentElement.append($("<table/>", {"cellpadding":"0", "cellspacing":"0"}));
-			$(xml).find("school").each(function(){
-				var shortName = $(this).attr("shortName");
-				var longName = $(this).attr("longName");
-				contentElement.find("table").append($("<tr/>", {"id":shortName}));
-				contentElement.find("table #"+shortName).append($("<th/>", {"width":"60%", "colspan":"3"})).append($("<th/>", {"width":"30%"})).append($("<th/>", {"width":"10%"}));
-				contentElement.find("table #"+shortName+" th:first").text(longName);
-				contentElement.find("table #"+shortName+" th:nth-child(2)").text("Posted/Renewed");
-				contentElement.find("table #"+shortName+" th:nth-child(3)").text("views");
-				var schoolPostsElement = contentElement.find("table");
-				$(this).find("post").each(function(){
-					var id = $(this).attr("id");
-					var link = $(this).attr("link");
-					var category = $(this).attr("category");
-					var title = $(this).attr("title");
-					var date = $(this).attr("date");
-					var views = $(this).attr("views");
-					var expire = $(this).attr("expire");
-					var expired = $(this).attr("expired");
-					if(expired == "false"){
-						if(expire == -1) {
-							schoolPostsElement.append('<tr id="'+link+'" class="'+category+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
-						}
-						else {
-							schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expiring"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
-							console.error("attention");
-						}
+		}
+		for(i=0;i<json.payload.length;i++){
+			var shortName = json.payload[i].shortName;
+			var longName = json.payload[i].longName;
+			contentElement.find("table").append($("<tr/>", {"id":shortName}));
+			contentElement.find("table #"+shortName).append($("<th/>", {"width":"60%", "colspan":"3"})).append($("<th/>", {"width":"30%"})).append($("<th/>", {"width":"10%"}));
+			contentElement.find("table #"+shortName+" th:first").text(longName);
+			contentElement.find("table #"+shortName+" th:nth-child(2)").text("Posted/Renewed");
+			contentElement.find("table #"+shortName+" th:nth-child(3)").text("views");
+			var schoolPostsElement = contentElement.find("table");
+			for(j=0;j<json.payload[i].post.length;j++){
+				var id = json.payload[i].post[j].id;
+				var link = json.payload[i].post[j].link;
+				var category = json.payload[i].post[j].category;
+				var title = json.payload[i].post[j].title;
+				var date = json.payload[i].post[j].date;
+				var views = json.payload[i].post[j].views;
+				var expire = json.payload[i].post[j].expire;
+				var expired = json.payload[i].post[j].expired;
+				if(expired == "false"){
+					if(expire == -1) {
+						schoolPostsElement.append('<tr id="'+link+'" class="'+category+'"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
 					}
 					else {
-						schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
-						console.error("attention");
+						schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expiring"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"><a href="javascript:popup(\'editPost?'+link+'\')"><i class="sprite sprite-1396379288_90"></i></a></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
 					}
-				});
-			});
-		}
-		function clrAll(){
-			$("table .CFExpired, .CFExpiring").remove();
-			$("table tr").css({background:"",color:""});
-		}
+				}
+				else {
+					schoolPostsElement.append('<tr id="'+link+'" class="'+category+', expired"><td width="2%"><a href="javascript:deletePost(\''+link+'\')"><i class="sprite sprite-1396379273_86"></i></a></td> <td width="2%"></td> <td><a href="show?'+link+'">'+title+'</a></td><td>'+date+'</td><td>'+views+'</td></tr>');
+				}
 
-		$(".expired").mouseenter(function(){
-			clrAll();
-			id=$(this).attr("id");
-			$(this).css({background:"#FF3D3D",color:"#FFFFFF"});
-			if($(this).next().attr("class") != "CFExpired")
-				$('<tr class="CFExpired"><td colspan="5">This post has expired. Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
-		})
+				function clrAll(){
+					$("table .CFExpired, .CFExpiring").remove();
+					$("table tr").css({background:"",color:""});
+				}
 
-		$(".expiring").mouseenter(function(){
-			clrAll();
-			id=$(this).attr("id");
-			$(this).css({background:"#FFBA42",color:"#FFFFFF"});
-			if($(this).next().attr("class") != "CFExpiring")
-				$('<tr class="CFExpiring"><td colspan="5">This post will expire soon. Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
-		})
+				$(".expired").mouseenter(function(){
+					clrAll();
+					id=$(this).attr("id");
+					$(this).css({background:"#FF3D3D",color:"#FFFFFF"});
+					if($(this).next().attr("class") != "CFExpired")
+						$('<tr class="CFExpired"><td colspan="5">This post has expired. Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+				})
+
+				$(".expiring").mouseenter(function(){
+					clrAll();
+					id=$(this).attr("id");
+					$(this).css({background:"#FFBA42",color:"#FFFFFF"});
+					if($(this).next().attr("class") != "CFExpiring")
+						$('<tr class="CFExpiring"><td colspan="5">This post will expire soon. Click <a href="javascript:renewPost(\''+id+'\')">here</a> to restore it.</td></tr>').insertAfter($(this));
+				})
+			}
+		}
 	});
 }
 

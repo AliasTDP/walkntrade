@@ -282,7 +282,8 @@ class UserMgmt extends CredentialStore{
 			$schs->execute();
 			$schs->store_result();
 			$schs->bind_result($school);
-			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<results>\n";
+			$concatenated = '';
+			$i = 0;
 			while($schs->fetch()){
 				$mypost = $lc->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views`, `expire`, `expired` FROM `".$school."` WHERE `userid` = ? ORDER BY `date` DESC");
 				$mypost->bind_param("s", $_SESSION["user_id"]);
@@ -290,8 +291,8 @@ class UserMgmt extends CredentialStore{
 				$mypost->store_result();
 				$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews, $pExpire, $pExpired);
 				if($mypost->num_rows > 0){
-					$concatenated = $concatenated."\t<school shortName=\"".$school."\" longName=\"".$this->getSchoolName($school)."\">";
-
+					$postConcat="";
+					$j = 0;
 					while($mypost->fetch()){
 						$link =  $school.":".$identifier;
 						$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
@@ -304,13 +305,16 @@ class UserMgmt extends CredentialStore{
 
 						$pCat = htmlspecialchars($pCat);
 						$pExpired = ($pExpired == 1) ? "true" : "false";
-						$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\" expire=\"".$pExpire."\" expired=\"".$pExpired."\"/>\n";
+						if($j>0) $postConcat.=",";
+						$postConcat.='{"id":"'.$pId.'","link":"'.$link.'","category":"'.$pCat.'","title":"'.$pTitle.'","date":"'.$pDate.'","views":"'.$pViews.'","expire":"'.$pExpire.'","expired":"'.$pExpired.'"}';
+						$j++;
 					}
-					$concatenated = $concatenated."\t</school>\n";
+					if($i>0) $concatenated.=",";
+					$concatenated.='{"shortName":"'.$school.'","longName":"'.$this->getSchoolName($school).'","post":['.$postConcat.']}';
+					$i++;
 				}
 				$mypost->close();
 			}
-			$concatenated = $concatenated."</results>";
 			return $concatenated;
 		}
 		else{
