@@ -1010,7 +1010,7 @@ function user_login(){
 }
 
 function allowMe(){
-	$("#verbose").html("<form action='javascript:void(0)' onSubmit='resendEmail(this.emailField.value)'><input name='emailField'><input type='submit'></form>");
+	$("#verbose").html("<form action='javascript:void(0)' onSubmit='resendEmail(this.emailField.value)'><input placeholder='Enter your email' name='emailField'><input type='submit'></form>");
 }
 
 function checkUname(uname){

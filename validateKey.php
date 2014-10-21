@@ -85,8 +85,3 @@ $loggedIn = $cs->getLoginStatus();
 </html>
 <script type="text/javascript" src="/client_js/jquery.min.js"></script>
 <script type="text/javascript" src="/js_minified/min.js"></script>
-<script type="text/javascript">
-	function allowMe(){
-		$("#verbose").html("<form action='javascript:void(0)' onSubmit='resendEmail(this.emailField.value)'><input name='emailField'><input type='submit'></form>");
-	}
-</script>
