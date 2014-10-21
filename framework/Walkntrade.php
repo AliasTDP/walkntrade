@@ -224,22 +224,52 @@ class Walkntrade {
 				//get email params and send confirmation email
 				$email = filter_var($email, FILTER_SANITIZE_EMAIL);
 				$subject = "WalkNtrade Email Verification";
-				$string = '
-				<img src="http://walkntrade.com/colorful/wtlogo.png">
-				<h1>Walkntrade email verification</h1>
-				<h2>Please visit the following link to verify your email address</h2>
-				<i>http://walkntrade.com/validateKey?token='.$seed.'</i>
-				<h2>Or you may enter the code below if prompted.</h2>
-				<h1><span class="tab">'.$seed.'</span></h1>
-				<p>
-				If you believe that this email was sent in error, you may ignore it or email wt@walkntrade.com and we will investigate the issue.
-				</p>
-				</p>
-				';
-				$headers = "MIME-Version: 1.0" . "\r\n";
-				$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-				$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
-				if(mail($email, $subject, $string, $headers)){
+				
+				$boundary = uniqid('np');
+
+				$headers = 'From: "Walkntrade.com"<no-reply@walkntrade.com>' . "\r\n";
+				$headers .= "MIME-Version: 1.0" . "\r\n";
+				$headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
+
+				$messageTEXT = 'Walkntrade email verification:
+
+Please visit the following link to verify your email address
+http://walkntrade.com/validateKey?token='.$seed.'
+Or you may enter the code below if prompted.
+'.$seed.'
+If you believe that this email was sent in error, you may ignore it or email wt@walkntrade.com and we will investigate the issue.';
+				$messageHTML = '<html>
+<head>
+</head>
+<body>
+<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
+<h1>Walkntrade email verification</h1>
+<h2>Please visit the following link to verify your email address</h2>
+<i>http://walkntrade.com/validateKey?token='.$seed.'</i>
+<h2>Or you may enter the code below if prompted.</h2>
+<h1><span class="tab">'.$seed.'</span></h1>
+<p>
+If you believe that this email was sent in error, you may ignore it or email wt@walkntrade.com and we will investigate the issue.
+</p>
+</p>
+</body>
+</html>';
+
+				//here is the content body
+				$message = "This is a MIME encoded message.";
+				$message .= "\r\n\r\n--" . $boundary . "\r\n";
+				$message .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
+
+				//Plain text body
+				$message .= $messageTEXT;
+				$message .= "\r\n\r\n--" . $boundary . "\r\n";
+				$message .= "Content-type: text/html;charset=utf-8\r\n\r\n";
+
+				//Html body
+				$message .= $messageHTML;
+				$message .= "\r\n\r\n--" . $boundary . "--";
+
+				if(mail($email, $subject, $message, $headers)){
 					//success
 					return 0;
 				}

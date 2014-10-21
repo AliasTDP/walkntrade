@@ -550,7 +550,6 @@ switch($getIntent){
 		$cs = new CredentialStore();
 		echo $cs->getPhoneNum();
 		break;
-
 	default:
 		echo "Hi there!";
 	break;
