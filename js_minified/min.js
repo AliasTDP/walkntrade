@@ -996,7 +996,11 @@ function user_login(){
 				<p>\
 				<input type="submit" class="button" style="color:#FFF" value="OK">\
 				</p>\
-				</form>', false);
+				<hr>\
+				</form>\
+				<p id="verbose">\
+				<i>Didn\'t recieve the email? Click <a style="text-decoration:underline" href="javascript:allowMe()">here</a> and we\'ll send you a new one</i>\
+				</p>', false);
 			break;
 			default:
 			$("#response").html("<font color=\"#FF0000\">"+r+"</font>");
@@ -1005,19 +1009,24 @@ function user_login(){
 	});
 }
 
+function allowMe(){
+	$("#verbose").html("<form action='javascript:void(0)' onSubmit='resendEmail(this.emailField.value)'><input name='emailField'><input type='submit'></form>");
+}
+
 function checkUname(uname){
 	$.ajax({url:api_url2, 
 		dataType:"json", 
-		type:"POST", 
+		type:"POST",
+		async: false, 
 		data:"intent=checkUsername&username=" + uname
 		}).success(function(json){
 		if(json.status == 200){
 			document.getElementById('1Err').innerHTML = "";
-			window.no_user_error = true;
+			window.unameOK = true;
 		}
 		else{
 			document.getElementById('1Err').innerHTML = '*'+uname+' is taken.';
-			window.no_user_error = false;
+			window.unameOK = false;
 		}
 	});
 }
@@ -1032,13 +1041,15 @@ function user_add(){
 	//-------------------------------------username verification
 	if (uname != ""){
 		checkUname(uname);
+		if(!unameOK)
+			return;
 		if(uname.length < 5 || uname.length > 20){
 			$("#1Err").html("*Username must be between 5 and 20 characters.");
-			window.no_user_error = false;
+			return;
 		}
 		else if(uname.match(/\s/g)){
 			$("#1Err").html("*Username may not contain spaces.");
-			window.no_user_error = false;
+			return;
 		}
 		else{
 			$("#1Err").html("");
@@ -1046,7 +1057,7 @@ function user_add(){
 	}
 	else{
 		$("#1Err").html("*Please enter a username.");
-		window.no_user_error = false;
+		return;
 	}
 	//----------------------------------------email verification
 	if (email != ""){
@@ -1055,23 +1066,24 @@ function user_add(){
 		tld = email.substring((email.length - 3), (email.length))
 		if (atpos < 1 || dotpos < atpos+2 || dotpos+2 >= email.length){
 			$("#2Err").html("*Please enter a valid email address.");
-			window.no_user_error = false;
+			return;
 		}
 		else if(tld != "edu"){
 			$("#2Err").html("*Please use your student (.edu) email address.");
-			window.no_user_error = false;
+			return;
 		}
 		else if(email.match(/\s/g)){
 			$("#2Err").html("*Please enter a valid email address.");
-			window.no_user_error = false;
+			return;
 		}
 		else{
 			$("#2Err").html("");
+			alert("e good");
 		}
 	}
 	else{
 		$("#2Err").html("*Please enter an email address.");
-		window.no_user_error = false;
+		return;
 	}
 
 	//----------------------------------------phone verification
@@ -1080,7 +1092,7 @@ function user_add(){
 	if (phone != ""){
 		if(phone.length != 10){
 			$("#phoneErr").html("Please enter a valid phone number.");
-			window.no_user_error = false;
+			return;
 		}
 		else{
 			$("#phoneErr").html("");
@@ -1094,7 +1106,7 @@ function user_add(){
 	//-------------------------------------password verification
 	if (pword != ""){
 		if (pword.length < 8) {
-			window.no_user_error = false;
+			return;
 			$("#3Err").html("*password must be at least 8 characters.");
 		}
 
@@ -1103,39 +1115,36 @@ function user_add(){
 		}
 	}
 	else{
-		window.no_user_error = false;
+		return;
 		$("#3Err").html("*Please enter a password.");
 	}
 	
 	if (pword != pword2){
-		window.no_user_error = false;
+		return;
 		$("#4Err").html("*Passwords do not match.");
 	} 
 	else{
 		$("#4Err").html("");
 	}
-
-	if(window.no_user_error){
-		$.ajax({url:api_url, 
-			dataType:"html", 
-			type:"POST", 
-			data:"intent=addUser&username="+uname+"&email="+email+"&password="+pword+"&phone="+phone
-			}).success(function(r){
-			switch(r){
-				case("0"):
-				window.location = "/validateKey";
-				break;
-				case("3"):
-				$("#2Err").html("This email address is in use!");
-				break;
-				default:
-				dialog(r);
-				window.location("./");
-				break;
-			}
-		});
-	}
-	else window.no_user_error = true;
+	alert();
+	$.ajax({url:api_url, 
+		dataType:"html", 
+		type:"POST", 
+		data:"intent=addUser&username="+uname+"&email="+email+"&password="+pword+"&phone="+phone
+		}).success(function(r){
+		switch(r){
+			case("0"):
+			window.location = "/validateKey";
+			break;
+			case("3"):
+			$("#2Err").html("This email address is in use!");
+			break;
+			default:
+			dialog(r);
+			window.location("./");
+			break;
+		}
+	});
 }
 
 function handleResponse(response){
@@ -1655,3 +1664,21 @@ function blowupImage(e){
 				});
 		});
 	}
+
+function resendEmail(email){
+	if(!validateEmail(email)){
+		$("#verbose").text("This is not a valid email");
+		return;
+	}
+	$(document).ajaxStart(function(){
+		$("#verbose").text("Please Wait...");
+	});
+
+	$(document).ajaxError(function(){
+		$("#verbose").text("ERROR");
+	});
+
+	$.ajax({url:api_url2, dataType: "json", type:"POST", data:"intent=verifyEmail&email="+email}).done(function(json){
+		$("#verbose").text(json.message);
+	});
+}

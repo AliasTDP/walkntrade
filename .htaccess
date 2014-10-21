@@ -7,7 +7,7 @@ ErrorDocument 403 /errors/redirect.php
 	RewriteCond %{DOCUMENT_ROOT}/$1.php -f
 	RewriteRule ^([a-zA-Z0-9_-]+)/?$ /$1.php [QSA]
 
-	RewriteCond %{HTTPS} !=on
+	RewriteCond %{HTTPS} !=off
 	# This checks to make sure the connection is not already HTTPS
 
 	RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]

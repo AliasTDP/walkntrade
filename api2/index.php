@@ -132,6 +132,30 @@ switch($getIntent){
 				break;
 		}
 		break;
+	case "verifyEmail":
+		require_once "../framework2/Walkntrade.php";
+		$wt=new Walkntrade();
+		if(isset($_POST["email"])){
+			$status=$wt->verifyEmail(htmlspecialchars($_POST["email"]));
+			switch ($status) {
+				case 0:
+					echo genJSON(200, "Ok, We sent it again.", "");
+					break;
+				case "e1":
+					echo genJSON(500, "No such email exists", "");
+					break;
+				case "e2":
+					echo genJSON(500, "Unable to update database", "");
+					break;
+				case "e3":
+					echo genJSON("500", "Unable to connect to mail server", "");
+					break;
+				default:
+					echo genJSON("500", "General server error", "");
+					break;
+			}
+		}
+		break;
 	case "getUserProfile"://left off here
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -526,6 +550,7 @@ switch($getIntent){
 		$cs = new CredentialStore();
 		echo $cs->getPhoneNum();
 		break;
+
 	default:
 		echo "Hi there!";
 	break;

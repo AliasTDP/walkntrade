@@ -58,6 +58,7 @@ $loggedIn = $cs->getLoginStatus();
 							<form name="code" method="GET" action="validateKey">
 							<p>
 								<h1> We\'ve sent you an email</h1>
+								<hr>
 								<p>Check your inbox and click the link provided in order to activate your account.</p>
 								<p>You may also enter your verification code here.</p>
 								<br>
@@ -67,6 +68,10 @@ $loggedIn = $cs->getLoginStatus();
 								<input type="submit" class="button" style="color:#FFF" value="OK">
 							</p>
 							</form>
+							<hr>
+							<p id="verbose">
+								<i>Didn\'t recieve the email? Click <a style="text-decoration:underline" href="javascript:allowMe()">here</a> and we\'ll send you a new one</i>
+							</p>
 							');
 					}
 				?>
@@ -80,3 +85,8 @@ $loggedIn = $cs->getLoginStatus();
 </html>
 <script type="text/javascript" src="/client_js/jquery.min.js"></script>
 <script type="text/javascript" src="/js_minified/min.js"></script>
+<script type="text/javascript">
+	function allowMe(){
+		$("#verbose").html("<form action='javascript:void(0)' onSubmit='resendEmail(this.emailField.value)'><input name='emailField'><input type='submit'></form>");
+	}
+</script>
