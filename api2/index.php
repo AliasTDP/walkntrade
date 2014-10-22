@@ -505,22 +505,16 @@ switch($getIntent){
 		}
 		break;
 	case "resetPassword":
-		require_once "../framework/Walkntrade.php";
+		require_once "../framework2/Walkntrade.php";
 		$wt = new Walkntrade();
 		$r = $wt->resetPassword(filter_var($_POST["email"], FILTER_SANITIZE_EMAIL));
 		switch ($r) {
 			case '0':
-			echo "Thanks! Check your inbox for the new password";
-			break;
-			case '3':
-			echo "We had an issue sending the email, your password has not been changed. This is our fault, please try again in a few minutes. If the problem persists please report this error <a href='/feedback'>here</a>.";
-			break;
-			case "5":
-			echo "We couldn't find that email in our system... O_o";
-			break;
+				echo genJSON(200, "Password successfully reset", "");
+				break;
 			default:
-			echo "An error has occured, your password has not been changed. Please report this error <a href='/feedback'>here</a> (".$r.")";
-			break;
+				echo genJSON(500, "Internal Server Error (".$r.")", "");
+				break;
 		}
 		break;
 	case "sendFeedback":

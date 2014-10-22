@@ -935,12 +935,12 @@ function resetPassword(){
 function commitPwReset(val){
 	var email = document.passwordResetForm.email.value;
 	if(validateEmail(email)){
-		$.ajax({url:api_url, 
-			dataType:"html", 
+		$.ajax({url:api_url2, 
+			dataType:"json", 
 			type:"POST", 
 			data:"intent=resetPassword&email="+email
-			}).success(function(r){
-				dialog(r,true);
+			}).success(function(json){
+				dialog(json.message,true);
 		})
 	}
 }

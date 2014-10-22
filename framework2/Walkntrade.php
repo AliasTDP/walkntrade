@@ -284,7 +284,7 @@ class Walkntrade {
 		}
 		else{
 			//error connection to mail server
-			return "e3";
+			return 3;
 		}
 	}
 
@@ -314,52 +314,45 @@ class Walkntrade {
 				$resetPasswordSTMT->bind_param("ss", $obscure_passwordMD5, $email);
 				$resetPasswordSTMT->execute();
 				if(($resetPasswordSTMT->affected_rows) == 1){
-					//get email params and send confirmation email
-					$subject = "WalkNtrade Password reset";
-					$string = '
+					$subject = "Walkntrade.com password reset request";
+					$messageTEXT = '
+					Dear Walkntrade user,
+
+					Someone (hopefully you) has requested a password change for your account. You can now login with this password
+
+					"'.$obscure_password.'"
+
+					It is strongly recommended that you change your password to something easier to remember after you login to your account.
+					';
+					$messageHTML = '
+					<html>
+					<head></head>
+					<body>
 					<p>
 					<img src="http://walkntrade.com/colorful/wtlogo.png">
-					<h1>WalkNtrade Password reset</h1>
-					<h2>You have requested a new password</h2>
-					<p>Here\'s a new temporary password. You can use it to login, but it is recommended that you change it to something a little easier to remember.</p>
+					<h1>Walkntrade.com password reset request</h1>
+					<h2>Someone (hopefully you) has requested a password change for your account.</h2>
+					<p>Here\'s a new temporary password. You can use it to login, but it is recommended that you change it to something a little easier to remember afterwards.</p>
 					<h2>'.$obscure_password.'</h2>
 					</p>
+					</body>
+					</html>
 					';
-					$headers = "MIME-Version: 1.0" . "\r\n";
-					$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-					$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
-					if(mail($email, $subject, $string, $headers)){
-					//success
-						$resetPasswordSTMT->close();
-						return 0;
-					}
-					else{
-					//error connection to mail server
-						if($revertPasswordSTMT = $this->userConnection->prepare("UPDATE `users` SET `password` = ?  WHERE `email` = ? LIMIT 1")){
-							$revertPasswordSTMT->bind_param("ss", $oldPassword, $email);
-							$revertPasswordSTMT->execute();
-							$revertPasswordSTMT->close();
-						}
-							return 3;
-						}
-					}
-					else{
-						$resetPasswordSTMT->close();
-						return 2;
-					}
+					return $this->sendmailMultipart($email, $subject, $messageTEXT, $messageHTML);
 				}
 				else{
 					return 1;
 				}
 			}
 		}
+	}
 
-		public function verifyKey($key){
-			$seed = (strlen($key) == 6) ? $key  : "-1";
-			if($check_stmt = $this->userConnection->prepare("SELECT `id` FROM `users` WHERE `seed` = ? LIMIT 1")){
-				$check_stmt->bind_param("i", $seed);
-				$check_stmt->execute();
-				$check_stmt->store_result();
+	public function verifyKey($key){
+		$seed = (strlen($key) == 6) ? $key  : "-1";
+		if($check_stmt = $this->userConnection->prepare("SELECT `id` FROM `users` WHERE `seed` = ? LIMIT 1")){
+			$check_stmt->bind_param("i", $seed);
+			$check_stmt->execute();
+			$check_stmt->store_result();
 			if(($check_stmt->num_rows) == 1){//if the seed is legit
 				$check_stmt->close();
 				if($verify_stmt = $this->userConnection->prepare("UPDATE `users` SET `verified` = 1, `seed` = 0 WHERE `seed` = ? LIMIT 1")){

@@ -9,6 +9,7 @@ checkUsername
 getPostsCurrentUser
 verifyEmail
 sendFeedback
+resetPassword
 
 Status indications
 200: OK
