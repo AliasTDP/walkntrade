@@ -253,26 +253,63 @@ class Walkntrade {
 		}
 	}
 
-	public function sendFeedback($from, $message){
-		//get email params and send confirmation email
-		$email = "wt@walkntrade.com";
-		$subject = "feedback from walkntrade";
-		$string = '
-		<h2>A user on walkntrade sent feedback</h2>
-		<p><i>'.$from.':</i></p>
-		<p>'.$message.'</p>
-		';
-		$headers = "MIME-Version: 1.0" . "\r\n";
-		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-		$headers .= 'From: <no-reply@walkntrade.com>' . "\r\n";
-		if(mail($email, $subject, $string, $headers)){
+	public function sendmailMultipart($email, $subject, $messageTEXT, $messageHTML){
+		if($stmt = $this->userConnection->prepare("UPDATE `users` SET `seed` =  ? WHERE `email` = ? LIMIT 1")){
+			//generate random seed
+			$seed = rand(100000,999999);
+			$stmt->bind_param("is", $seed, $email);
+			$stmt->execute();
+			//if database was updated
+			if($stmt->affected_rows == 1){
+				//get email params and send confirmation email
+				$email = filter_var($email, FILTER_SANITIZE_EMAIL);
+				
+				$boundary = uniqid('np');
+
+				$headers = 'From: "Walkntrade.com"<no-reply@walkntrade.com>' . "\r\n";
+				$headers .= "MIME-Version: 1.0" . "\r\n";
+				$headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
+
+				//here is the content body
+				$message = "This is a MIME encoded message.";
+				$message .= "\r\n\r\n--" . $boundary . "\r\n";
+				$message .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
+
+				//Plain text body
+				$message .= $messageTEXT;
+				$message .= "\r\n\r\n--" . $boundary . "\r\n";
+				$message .= "Content-type: text/html;charset=utf-8\r\n\r\n";
+
+				//Html body
+				$message .= $messageHTML;
+				$message .= "\r\n\r\n--" . $boundary . "--";
+
+				if(mail($email, $subject, $message, $headers)){
 					//success
-			return 0;
+					return 0;
+				}
+				else{
+					//error connection to mail server
+					return "e3";
+				}
+			}
+			else{
+				//error updating table
+				return "e2";
+			}
 		}
 		else{
-					//error connection to mail server
-			return 3;
+			//SQL error
+			return "e1";
 		}
+	}
+
+	public function sendFeedback($from, $message){
+		$messageTEXT = $from.' : '.$message;
+		if($this->sendmailMultipart("wt@walkntrade.com", "Feedback from Walkntrade", $messageTEXT, $messageTEXT) == 0)
+			return true;
+		else
+			return false;
 	}
 
 	public function resetPassword($email){
