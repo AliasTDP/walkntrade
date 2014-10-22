@@ -530,19 +530,14 @@ switch($getIntent){
 		}
 		break;
 	case "sendFeedback":
-		require_once "../framework/Walkntrade.php";
+		require_once "../framework2/Walkntrade.php";
 		$wt = new Walkntrade();
 		if(isset($_POST["message"])){
 			$email = (isset($_POST["email"])) ? $_POST["email"] : "";
-			$r = $wt->sendFeedback($email, $_POST["message"]);
-			switch ($r) {
-				case 0:
-				echo "Thanks for your feedback!";
-				break;
-				case 3:
-				echo "An error has occured... Can you try again? If it still doesn't work you can email us at wt@walkntrade.com and we'll get on it! :)";
-			break;
-			}
+			if($wt->sendFeedback($email, $_POST["message"]))
+				echo genJSON(200, "Thanks for the feedback!", "");
+			else
+				echo genJSON(500, "Internal Error", "");
 		}
 		break;
 	case "getPhoneNum":

@@ -8,6 +8,7 @@ checkPassword
 checkUsername
 getPostsCurrentUser
 verifyEmail
+sendFeedback
 
 Status indications
 200: OK

@@ -291,9 +291,9 @@ function submitFeedback(){
 		}
 
 		if(message != ""){
-			$.ajax({url:"/api/", dataType:"html", type:"POST", data:"intent=sendFeedback&email="+email+"&message="+message}).success(function(r){
+			$.ajax({url:api_url2, dataType:"json", type:"POST", data:"intent=sendFeedback&email="+email+"&message="+message}).success(function(json){
 				$("#feedbackWrapper").animate({right: 0});
-				dialog(r,true);
+				dialog(json.message,true);
 			})
 		}
 	}
