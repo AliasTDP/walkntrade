@@ -1,6 +1,6 @@
 Documentation walkntrade.com/api2/
 
-Refactoring complete:
+Refactoring complete for the following methods:
 getPosts
 getPostByIdentifier
 getSchools
@@ -11,9 +11,12 @@ verifyEmail
 sendFeedback
 resetPassword
 
-Status indications
+Status indications:
 200: OK
 401: NOT AUTHORIZED
 404: NOT FOUND
 406: Not Acceptable
 500: INTERNAL SERVER ERROR
+
+Example:
+{"status":"200","message":"Request OK","payload":[JSON array]}

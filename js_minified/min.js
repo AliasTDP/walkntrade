@@ -940,7 +940,17 @@ function commitPwReset(val){
 			type:"POST", 
 			data:"intent=resetPassword&email="+email
 			}).success(function(json){
-				dialog(json.message,true);
+				switch(json.status){
+					case "200":
+						dialog("Your password has been reset. Check your inbox at "+email+"to find your new password",true);
+						break;
+					case "404":
+						dialog("You have not signed up with the email "+email+". Please ensure that you use the correct address.", true);
+						break;
+					default:
+						dialog("An internal error has occurred ("+json.message+"). Please try again later", true);
+						break;
+				}
 		})
 	}
 }
@@ -999,7 +1009,7 @@ function user_login(){
 				<hr>\
 				</form>\
 				<p id="verbose">\
-				<i>Didn\'t recieve the email? Click <a style="text-decoration:underline" href="javascript:allowMe()">here</a> and we\'ll send you a new one</i>\
+				<i>Didn\'t receive the email? Click <a style="text-decoration:underline" href="javascript:allowMe()">here</a> and we\'ll send you a new one</i>\
 				</p>', false);
 			break;
 			default:

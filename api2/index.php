@@ -142,7 +142,7 @@ switch($getIntent){
 					echo genJSON(200, "Ok, We sent it again.", "");
 					break;
 				case -1:
-					echo genJSON(401, "User nonexisting or email already verified.", "");
+					echo genJSON(401, "User non-existing or email already verified.", "");
 					break;
 				default:
 					echo genJSON("500", "General server error (".$status.")", "");
@@ -293,7 +293,7 @@ switch($getIntent){
 				echo "Not authorized";
 				break;
 				case 2:
-				echo "An internal error has occured. Please try again later ($response)";
+				echo "An internal error has occurred. Please try again later ($response)";
 				break;
 				default:
 				echo $response;
@@ -353,7 +353,7 @@ switch($getIntent){
 				break;
 			
 			default:
-				echo "An internal error has occured.";
+				echo "An internal error has occurred.";
 				break;
 		}
 		break;
@@ -406,7 +406,7 @@ switch($getIntent){
 			echo "success";
 			break;
 			default:
-			echo "An internal error has occured. Please try again later. ($result)";
+			echo "An internal error has occurred. Please try again later. ($result)";
 			break;
 		}
 		break;
@@ -481,7 +481,7 @@ switch($getIntent){
 			echo "Not student email";
 			break;						
 			default:
-			echo "An error has occured. We apoligize for the inconvience. Please report this error <a href='/feedback'>here</a> and we'll get on it. ($result)";
+			echo "An error has occurred. We apologize for the inconvenience. Please report this error <a href='/feedback'>here</a> and we'll get on it. ($result)";
 			break;
 		}
 		break;
@@ -509,8 +509,11 @@ switch($getIntent){
 		$wt = new Walkntrade();
 		$r = $wt->resetPassword(filter_var($_POST["email"], FILTER_SANITIZE_EMAIL));
 		switch ($r) {
-			case '0':
+			case 0:
 				echo genJSON(200, "Password successfully reset", "");
+				break;
+			case 5:
+				echo genJSON(404, "User not found", "");
 				break;
 			default:
 				echo genJSON(500, "Internal Server Error (".$r.")", "");
