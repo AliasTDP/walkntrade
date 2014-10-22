@@ -141,17 +141,11 @@ switch($getIntent){
 				case 0:
 					echo genJSON(200, "Ok, We sent it again.", "");
 					break;
-				case "e1":
-					echo genJSON(500, "No such email exists", "");
-					break;
-				case "e2":
-					echo genJSON(500, "Unable to update database", "");
-					break;
-				case "e3":
-					echo genJSON("500", "Unable to connect to mail server", "");
+				case -1:
+					echo genJSON(401, "User nonexisting or email already verified.", "");
 					break;
 				default:
-					echo genJSON("500", "General server error", "");
+					echo genJSON("500", "General server error (".$status.")", "");
 					break;
 			}
 		}

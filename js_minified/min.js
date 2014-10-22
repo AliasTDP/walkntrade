@@ -1667,7 +1667,7 @@ function blowupImage(e){
 
 function resendEmail(email){
 	if(!validateEmail(email)){
-		$("#verbose").text("This is not a valid email");
+		$("#verbose").text("Please try again with a valid email address.");
 		return;
 	}
 	$(document).ajaxStart(function(){
@@ -1675,10 +1675,12 @@ function resendEmail(email){
 	});
 
 	$(document).ajaxError(function(){
-		$("#verbose").text("ERROR");
+		dialog("<h2>Hmmm, something's not right here</h2><p>We are having a problem connecting to walkNtrade. Please check your internet connection and try again.</p>",true);
 	});
 
 	$.ajax({url:api_url2, dataType: "json", type:"POST", data:"intent=verifyEmail&email="+email}).done(function(json){
-		$("#verbose").text(json.message);
+		if(json.status==401)
+			dialog("<font style=\"font-size:2em\">Can you double check that email?</font><p>Either you have not made an account with that email address, or your account has already been verified and you should try logging in again.</p><p>If you're having trouble send us a quick message with the feedback button on the right. Be sure to include your email address so we can get back to you.</p>", true);
+		else $("#verbose").text(json.message);
 	});
 }
