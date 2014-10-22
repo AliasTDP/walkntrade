@@ -253,54 +253,34 @@ class Walkntrade {
 		}
 	}
 
-	public function sendmailMultipart($email, $subject, $messageTEXT, $messageHTML){
-		if($stmt = $this->userConnection->prepare("UPDATE `users` SET `seed` =  ? WHERE `email` = ? LIMIT 1")){
-			//generate random seed
-			$seed = rand(100000,999999);
-			$stmt->bind_param("is", $seed, $email);
-			$stmt->execute();
-			//if database was updated
-			if($stmt->affected_rows == 1){
-				//get email params and send confirmation email
-				$email = filter_var($email, FILTER_SANITIZE_EMAIL);
-				
-				$boundary = uniqid('np');
+	public function sendmailMultipart($email, $subject, $messageTEXT, $messageHTML){			
+		$boundary = uniqid('np');
 
-				$headers = 'From: "Walkntrade.com"<no-reply@walkntrade.com>' . "\r\n";
-				$headers .= "MIME-Version: 1.0" . "\r\n";
-				$headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
+		$headers = 'From: "Walkntrade.com"<no-reply@walkntrade.com>' . "\r\n";
+		$headers .= "MIME-Version: 1.0" . "\r\n";
+		$headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
 
-				//here is the content body
-				$message = "This is a MIME encoded message.";
-				$message .= "\r\n\r\n--" . $boundary . "\r\n";
-				$message .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
+		//here is the content body
+		$message = "This is a MIME encoded message.";
+		$message .= "\r\n\r\n--" . $boundary . "\r\n";
+		$message .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
 
-				//Plain text body
-				$message .= $messageTEXT;
-				$message .= "\r\n\r\n--" . $boundary . "\r\n";
-				$message .= "Content-type: text/html;charset=utf-8\r\n\r\n";
+		//Plain text body
+		$message .= $messageTEXT;
+		$message .= "\r\n\r\n--" . $boundary . "\r\n";
+		$message .= "Content-type: text/html;charset=utf-8\r\n\r\n";
 
-				//Html body
-				$message .= $messageHTML;
-				$message .= "\r\n\r\n--" . $boundary . "--";
+		//Html body
+		$message .= $messageHTML;
+		$message .= "\r\n\r\n--" . $boundary . "--";
 
-				if(mail($email, $subject, $message, $headers)){
-					//success
-					return 0;
-				}
-				else{
-					//error connection to mail server
-					return "e3";
-				}
-			}
-			else{
-				//error updating table
-				return "e2";
-			}
+		if(mail($email, $subject, $message, $headers)){
+			//success
+			return 0;
 		}
 		else{
-			//SQL error
-			return "e1";
+			//error connection to mail server
+			return "e3";
 		}
 	}
 
