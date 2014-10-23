@@ -942,7 +942,7 @@ function commitPwReset(val){
 			}).success(function(json){
 				switch(json.status){
 					case "200":
-						dialog("Your password has been reset. Check your inbox at "+email+"to find your new password",true);
+						dialog("Your password has been reset. Check your inbox at "+email+" to find your new password",true);
 						break;
 					case "404":
 						dialog("You have not signed up with the email "+email+". Please ensure that you use the correct address.", true);

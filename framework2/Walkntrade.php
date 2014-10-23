@@ -83,8 +83,11 @@ class Walkntrade {
 			$sList->bind_result($schoolName, $textId);
 			if($sList->num_rows > 0){
 				$output="";
+				$i=0;
 				while($sList->fetch()){
+					if($i>0) $output.=",";
 					$output .= '{"name":"'.$schoolName.'","textId":"'.$textId.'"}';
+					$i++;
 				}
 				return $output;
 			}
@@ -329,7 +332,7 @@ class Walkntrade {
 					<head></head>
 					<body>
 					<p>
-					<img src="http://walkntrade.com/colorful/wtlogo.png">
+					<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
 					<h1>Walkntrade.com password reset request</h1>
 					<h2>Someone (hopefully you) has requested a password change for your account.</h2>
 					<p>Here\'s a new temporary password. You can use it to login, but it is recommended that you change it to something a little easier to remember afterwards.</p>
