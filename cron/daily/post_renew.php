@@ -1,5 +1,5 @@
 <?php
-require_once "../../framework/CredentialStore.php";
+require_once "../../framework2/CredentialStore.php";
 class PostRenew extends CredentialStore {
 	private $emailQueue = array();	
 	private $postTitles = array();
@@ -75,7 +75,7 @@ class PostRenew extends CredentialStore {
 		//var_dump($this->postTitles);
 
 		foreach ($this->emailQueue as $email) {
-			$text = "
+			$messageHTML = "
 			<html>
 			<head></head>
 			<body bgcolor=\"#FFFFFF\" style=\"-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; height: 100%; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; width: 100% !important\">
@@ -99,11 +99,13 @@ class PostRenew extends CredentialStore {
 					<tr>
 						<td  colspan=\"2\">The following posts are in trouble:</td>
 					</tr>";
+			$messageTEXT="Keep your posts alive!\r\nHere at Walkntrade we have 2 month post renewal policy. We are contacting you because one or more of your posts are expiring or have already expired. To fix this please log into your account and renew the posts that you want to keep listed. Posts expire after three days from their first warning.\r\nThe following posts are in trouble:\r\n\r\n";
 			$index = array_search($email, $this->emailQueue);
 			foreach ($this->postTitles[$index] as $postTitle) {
-				$text.="<tr><td style=\"padding:3px\">&#149;</td><td  style=\"padding:3px\"><b>".$postTitle."</b></td></tr>";
+				$messageHTML.="<tr><td style=\"padding:3px\">&#149;</td><td  style=\"padding:3px\"><b>".$postTitle."</b></td></tr>";
+				$messageTEXT.=$postTitle."\r\n";
 			}
-			$text.="
+			$messageHTML.="
 			<tr>
 				<td colspan=\"2\">This is done as an effort to keep Walkntrade relevant and useful to you. Thanks for your time, and as always thank you for using walkntrade.</td>
 			</tr>
@@ -115,21 +117,10 @@ class PostRenew extends CredentialStore {
 			</tr>
 			</table>
 			</td></tr></table></body></html>";
-			$this->alertViaEmail($text, $email);
+			$messageTEXT.="This is done as an effort to keep Walkntrade relevant and useful to you. Thanks for your time, and as always thank you for using walkntrade.";
+			if($this->sendmailMultipart($email, "Your posts are expiring!", $messageTEXT, $messageHTML)==0)
+				echo("contacted: ".$email);
 		}
-	}
-
-	private function alertViaEmail($string, $email){
-		$subject = "Your posts are expiring!";
-		$headers = "MIME-Version: 1.0" . "\r\n";
-		$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-		$headers .= 'From: Walkntrade <no-reply@walkntrade.com>' . "\r\n";
-		if(mail($email, $subject, $string, $headers)){
-			echo "Emailed ".$email."\n";
-			return 0;
-		}
-		else
-		 	echo "Email ".$email." failed!\n";
 	}
 }
 

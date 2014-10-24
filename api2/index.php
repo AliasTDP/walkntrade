@@ -411,7 +411,7 @@ switch($getIntent){
 		}
 		break;
 	case "messageUser":
-		require_once "../framework/UserMgmt.php";
+		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$uid = (isset($_POST["uid"])) ? filter_var($_POST["uid"], FILTER_SANITIZE_NUMBER_INT) : null;
 		$userName = (isset($_POST["userName"])) ? filter_var($_POST["userName"], FILTER_SANITIZE_STRING) : null;
@@ -421,13 +421,13 @@ switch($getIntent){
 			$result = $um->messageUser($uid, $title, $message);
 			switch($result){
 				case 0:
-				echo "success";
+				echo genJSON(200, "Your message has been delivered", "");
 				break;
 				case 5:
-				echo "Foul language is not tolerated here! You have been warned.";
+				echo genJSON(530, "Foul language is not tolerated here! You have been warned.", "");
 				break;
 				default:
-				echo "An internal error has occured. Please report this error <a href='/feedback'>here</a> ($result)";
+				echo genJSON(500, "An internal error has occured. Please report this error <a href='/feedback'>here</a> ($result)", "");
 				break;
 			}
 			return;
@@ -438,20 +438,20 @@ switch($getIntent){
 				$result = $um->messageUser($uid, $title, $message);
 				switch($result){
 					case 0:
-					echo "success";
+					echo genJSON(200, "Your message has been delivered", "");
 					break;
 					case 5:
-					echo "Foul language is not tolerated here! You have been warned.";
+					echo genJSON(530, "Foul language is not tolerated here! You have been warned.", "");
 					break;
 					default:
-					echo "An internal error has occured. Please report this error <a href='/feedback'>here</a> ($result)";
+					echo genJSON(500, "An internal error has occured. Please report this error <a href='/feedback'>here</a> ($result)", "");
 					break;
 				}
 			}
-			else echo "There is no user by this name in our system.";
+			else echo genJSON(404, "We can't find that user here.", "");
 			return;
 		}
-		else echo "Invalid recipient!";
+		else echo genJSON(406, "Invalid user!", "");;
 		break;
 	case "addUser":
 		require_once "../framework/UserMgmt.php";

@@ -299,13 +299,13 @@ function submitFeedback(){
 	}
 
 function loadModule(e){
-		$("#navBar ul").find("li").removeAttr("class");
-		$("#"+e).attr("class", "selected");
-		$("#contentTab").slideUp(200, function(){
-			$("#contentTab").html(cpModule[e]);
-			$("#contentTab").slideDown(200);
-		});
-	}
+	$("#navBar ul").find("li").removeAttr("class");
+	$("#"+e).attr("class", "selected");
+	$("#contentTab").slideUp(200, function(){
+		$("#contentTab").html(cpModule[e]);
+		$("#contentTab").slideDown(200);
+	});
+}
 
 function getWebmail(){
 	$("#navBarMail").html("[Waiting for mail]");
@@ -424,16 +424,11 @@ function sendReply(userName){
 	}
 	else act();
 	function act(){
-		$.ajax({
-		dataType:"text", 
-		data:"intent=messageUser&userName="+userName+"&title="+title+"&message="+message,
-		context:getWebmail
-		}
-		).success(function(r){
-			if(r == "success")
+		$.ajax({url: api_url2, dataType:"json", data:"intent=messageUser&userName="+userName+"&title="+title+"&message="+message,context:getWebmail}).success(function(json){
+			if(json.status == "200")
 				dialog("Your message has been sent", true, null,  this());
 			else
-				dialog(r,true, null);
+				dialog(json.message,true, null);
 		});
 	}
 }
@@ -849,20 +844,16 @@ function messageUser(){
 	else{
 		$("#response").html("");
 	}
-	$.ajax({url:"/api/", 
-		dataType:"html", 
-		type:"POST", 
-		data:"intent=messageUser&uid="+id+"&title="+title+"&message="+message
-		}).success(function(r){
+	$.ajax({url:api_url2, dataType:"json", type:"POST", data:"intent=messageUser&uid="+id+"&title="+title+"&message="+message}).success(function(json){
 			var responseObj = document.getElementById("response");
-			switch(r){
-				case("success"):
+			switch(json.status){
+				case("200"):
 					dialog("Your message was sent successfully",true,null,function(){
 						window.location = "./";
 					});
 				break;
 				default:
-				dialog(r,false);
+				dialog(json.message,false);
 				break;
 			}
 	});
@@ -1088,7 +1079,6 @@ function user_add(){
 		}
 		else{
 			$("#2Err").html("");
-			alert("e good");
 		}
 	}
 	else{
@@ -1136,7 +1126,6 @@ function user_add(){
 	else{
 		$("#4Err").html("");
 	}
-	alert();
 	$.ajax({url:api_url, 
 		dataType:"html", 
 		type:"POST", 
@@ -1656,24 +1645,24 @@ function formatPrice(element) {
 }
 
 function blowupImage(e){
-		if(e.target.id == "noImg")
-			return;
-		var imgUrl = $("#"+e.target.id).attr("src");
-		$("body").prepend("<div id='screen'><div id=\"imageLargeFloat\"><img src=\""+imgUrl+"\"></div></div>");
-		$("#screen").css("display", "none");
-		$("#screen").fadeIn();
-		$("#screen").click(function(){
+	if(e.target.id == "noImg")
+		return;
+	var imgUrl = $("#"+e.target.id).attr("src");
+	$("body").prepend("<div id='screen'><div id=\"imageLargeFloat\"><img src=\""+imgUrl+"\"></div></div>");
+	$("#screen").css("display", "none");
+	$("#screen").fadeIn();
+	$("#screen").click(function(){
+		$("#screen").fadeOut(function(){
+			$("#screen").remove();
+		});
+	})
+	$("body").keydown(function(e){
+		if(e.keyCode==27)
 			$("#screen").fadeOut(function(){
 				$("#screen").remove();
 			});
-		})
-		$("body").keydown(function(e){
-			if(e.keyCode==27)
-				$("#screen").fadeOut(function(){
-					$("#screen").remove();
-				});
-		});
-	}
+	});
+}
 
 function resendEmail(email){
 	if(!validateEmail(email)){
@@ -1691,6 +1680,10 @@ function resendEmail(email){
 	$.ajax({url:api_url2, dataType: "json", type:"POST", data:"intent=verifyEmail&email="+email}).done(function(json){
 		if(json.status==401)
 			dialog("<font style=\"font-size:2em\">Can you double check that email?</font><p>Either you have not made an account with that email address, or your account has already been verified and you should try logging in again.</p><p>If you're having trouble send us a quick message with the feedback button on the right. Be sure to include your email address so we can get back to you.</p>", true);
+		else if(json.status==500){
+			dialog("Something went wrong on our end... Chances are we're working on it right now. Please try again later or send us a message with the feedback tab on the right.<br>("+json.message+")", true);
+			$("#verbose").text(json.message);
+		}
 		else $("#verbose").text(json.message);
 	});
 }

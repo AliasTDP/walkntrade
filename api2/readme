@@ -10,13 +10,15 @@ getPostsCurrentUser
 verifyEmail
 sendFeedback
 resetPassword
+messageUser
 
 Status indications:
 200: OK
 401: NOT AUTHORIZED
 404: NOT FOUND
-406: Not Acceptable
+406: REQUEST INVALID
 500: INTERNAL SERVER ERROR
+530: INFRACTMENT
 
 Example:
 {"status":"200","message":"Request OK","payload":[JSON array]}
