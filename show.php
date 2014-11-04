@@ -156,6 +156,15 @@ if($loggedIn){
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta property="og:title" content="<?php echo $title ?>">
 	<meta property="og:description" content="<?php echo htmlspecialchars($details) ?>">
+	<meta property="og:site_name" content="Walkntrade">
+	<meta property="og:image" content="http://walkntrade.com/<?php
+								if(file_exists("post_images/".$schoolTextId."/".$identifierFromPost."-0.jpeg")){
+									echo"post_images/".$schoolTextId."/".$identifierFromPost."-0.jpeg";
+								}
+								else{
+									echo"colorful/wtlogo_dark.png";
+								}
+								?>">
 	<style type="text/css">
 		.colorAttr{color:<?php echo $color ?>;}
 		.colorBg{background-color:<?php echo $color ?>;}
