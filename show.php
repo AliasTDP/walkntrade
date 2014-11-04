@@ -155,7 +155,7 @@ if($loggedIn){
 	<link href='https://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta property="og:title" content="<?php echo $title ?>">
-	<meta property="og:description" content="<?php echo $details ?>">
+	<meta property="og:description" content="<?php echo htmlspecialchars($details) ?>">
 	<style type="text/css">
 		.colorAttr{color:<?php echo $color ?>;}
 		.colorBg{background-color:<?php echo $color ?>;}

@@ -257,7 +257,7 @@ switch($getIntent){
 	case "getAvatar":
 		require_once "../framework/BinaryHandler.php";
 		$bh = new BinaryHandler();
-		echo $bh->getAvatar();
+		echo genJSON(200, $bh->getAvatar(), "");
 		break;
 	case "uploadAvatar":
 		if(!isset($_FILES["avatar"])){
@@ -269,9 +269,13 @@ switch($getIntent){
 		$bh->uploadAvatar($_FILES['avatar']);
 		break;
 	case "getUserName":
-		require_once "../framework/CredentialStore.php";
+		require_once "../framework2/CredentialStore.php";
 		$cs = new CredentialStore();
-		echo $cs->getUserName();
+		$un =  $cs->getUserName();
+		if($un != "")
+			echo genJSON(200, $un, "");
+		else
+			echo genJSON(404, "User does not exist", "");
 		break;
 	case "addPost":
 		require_once "../framework/PostQuery.php";

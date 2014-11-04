@@ -91,11 +91,11 @@ function initCP(){
 		$.ajax({url: includeDir+i+".html", dataType: "html", type:"GET", context:Array(i, sections.length)}).done(function(r){
 			cpModule[this[0]] = r;
 			if(this[0] == (this[1] - 1)){
-				$.ajax({ data:"intent=getUserName"}).done(function(username){
-					$.ajax({ data:"intent=getAvatar"}).done(function(imgSrc){
+				$.ajax({url:api_url2, dataType:"json", data:"intent=getUserName"}).done(function(username){
+					$.ajax({url:api_url2, dataType:"json", data:"intent=getAvatar"}).done(function(imgSrc){
 						window.avatar = new Image();
-						window.avatar.src = imgSrc;
-						window.username = username;
+						window.avatar.src = imgSrc.message;
+						window.username = username.message;
 						$.holdReady(false);//open readystate on last module load
 					});
 				});
