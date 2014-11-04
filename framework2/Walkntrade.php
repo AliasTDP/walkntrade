@@ -173,8 +173,7 @@ class Walkntrade {
 			$price = ($price != 0)? "$".round($price, 2) : "";
 			$image = (file_exists("../post_images/".$school."/".$identifier."-thumb.jpeg")) ? "/post_images/".$school."/".$identifier."-thumb.jpeg" : "/colorful/tfe_no_thumb.png";
 			$title = htmlspecialchars($title);
-			$details = htmlspecialchars($details);
-			$details = htmlspecialchars($details);
+			$details = htmlspecialchars(preg_replace( "/\r|\n/", "", $details ););
 			$username = htmlspecialchars($username);
 
 			$string .= '{"id":"'.$id.'","obsId":"'.$obsId.'","title":"'.$title.'","category":"'.$cat.'","details":"'.$details.'","username":"'.$username.'","price":"'.$price.'","image":"'.$image.'","userid":"'.$userid.'","date":"'.$date.'","views":"'.$views.'"}';
