@@ -257,7 +257,7 @@ switch($getIntent){
 	case "getAvatar":
 		require_once "../framework/BinaryHandler.php";
 		$bh = new BinaryHandler();
-		echo genJSON(200, "" , $bh->getAvatar());
+		echo genJSON(200, $bh->getAvatar(), "");
 		break;
 	case "uploadAvatar":
 		if(!isset($_FILES["avatar"])){
@@ -273,7 +273,7 @@ switch($getIntent){
 		$cs = new CredentialStore();
 		$un =  $cs->getUserName();
 		if($un != "")
-			echo genJSON(200, "", $un);
+			echo genJSON(200, $un, "");
 		else
 			echo genJSON(404, "User does not exist", "");
 		break;
