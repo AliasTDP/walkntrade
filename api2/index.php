@@ -98,7 +98,7 @@ switch($getIntent){
 			echo "Internal error. Please report this <a href='/feedback'>here</a>.";
 			break;
 		}
-		break;//Skipped Refactoring to JSON unitl later
+		break;//Skipped Refactoring to JSON until later
 	case "checkPassword":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -257,7 +257,7 @@ switch($getIntent){
 	case "getAvatar":
 		require_once "../framework/BinaryHandler.php";
 		$bh = new BinaryHandler();
-		echo genJSON(200, $bh->getAvatar(), "");
+		echo genJSON(200, "" , $bh->getAvatar());
 		break;
 	case "uploadAvatar":
 		if(!isset($_FILES["avatar"])){
@@ -273,7 +273,7 @@ switch($getIntent){
 		$cs = new CredentialStore();
 		$un =  $cs->getUserName();
 		if($un != "")
-			echo genJSON(200, $un, "");
+			echo genJSON(200, "", $un);
 		else
 			echo genJSON(404, "User does not exist", "");
 		break;
