@@ -98,7 +98,7 @@ switch($getIntent){
 			echo "Internal error. Please report this <a href='/feedback'>here</a>.";
 			break;
 		}
-		break;//Skipped Refactoring to JSON unitl later
+		break;//Skipped Refactoring to JSON until later
 	case "checkPassword":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
