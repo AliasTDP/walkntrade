@@ -1,0 +1,95 @@
+/* Background  */
+.wt-landing-bg {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    content: "";
+    background: url("../img/bg/landing.jpg") #53A852 no-repeat 0/cover;
+    -webkit-filter: blur(0.15em);
+    -moz-filter: blur(0.15em);
+    -ms-filter: blur(0.15em);
+    filter: blur(0.15em);
+    box-shadow: 0 -1em 1em 0 #000000 inset;
+}
+
+/* Overlay on background */
+.wt-content-landing-outer:before {
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    content: "";
+    background: #000;
+    opacity: 0.6;
+}
+
+/* Align Landing page content */
+.wt-content-landing-outer {
+    display: block;
+    z-index: 0;
+}
+
+.wt-content-landing-middle {
+    vertical-align: middle;
+}
+
+.wt-content-landing-inner {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Landing page-specific element styles */
+.landing-search {
+    width: 100%;
+    height: 3em;
+}
+.landing-search > input[type=search] {
+    width: 40%;
+    height: 100%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.landing-search > button {
+    width:10%;
+    height: 100%;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Allow inline form elements on all viewports */
+.landing-search > input[type=search] {
+    display: inline-block;
+}
+.landing-search > button {
+    display: inline-block;
+}
+
+/* 
+    Phone CSS. Assume 900px as cutoff as High DPI devices tend to 
+    report 1/2 the pixels they actually have for scaling purposes.
+    Check max-height to set overrides when Android keyboard is active.
+*/
+@media screen and (max-device-width:900px) and (min-height:320px) {
+    .wt-content-landing-outer            { padding-top: 2em; }
+}
+@media screen and (max-device-width:900px) {
+    .landing-search > input[type=search] { width: 75%; }
+    .landing-search > button             { width: 25%; }
+}
+
+/* Tablets and Desktops recieve similar styles */
+@media screen and (min-device-width:900px) and (min-height:500px) {
+    .wt-content-landing-outer            { padding-top: 10em; }
+    .landing-search > input[type=search] { width: 50%; }
+    .landing-search > button             { width: 15%; }
+}
+
+/* Specifically to override styles when Android keyboard is active. */
+@media screen and (max-height: 400px) {
+    body { background-color: #000000; }
+}

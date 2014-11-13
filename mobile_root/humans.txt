@@ -1,0 +1,20 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    <name> -- <role> -- <twitter>
+    Tevin Phillip       Founder / Lead Web Developer
+    Nathan Louis        Founder / Lead Android Developer
+    Alnoor Ali          Founder / Lead Marketing
+    Giuseppe Scoppino   Web Developer / Consultant
+    Jonathan Chery      Marketing / Consultant
+    
+# THANKS
+
+    <name>
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3
+    jQuery, Modernizr
