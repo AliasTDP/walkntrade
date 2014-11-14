@@ -30,7 +30,7 @@ $('document').ready(function() {
             $.ajax({
                 'type': 'POST',
                 'crossDomain': true,
-                'url': 'https://walkntrade.com/api2/',
+                'url': '/api2/',
                 'data': {
                     'intent': 'getSchools',
                     'query': query
