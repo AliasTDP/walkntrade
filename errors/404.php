@@ -7,7 +7,7 @@ $loggedIn = $cs->getLoginStatus();
 <html>
 
 <head>
-	<title>Walkntrade.com - Buy and sell the simple way</title>
+	<title>Walkntrade - Buy and sell on campus!</title>
 	<link type="text/css" rel="stylesheet" href="/css/style.css">
 	<link type="text/css" rel="stylesheet" href="/css/login_window.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">

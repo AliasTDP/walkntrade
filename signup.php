@@ -6,7 +6,7 @@ $loggedIn = $cs->getLoginStatus();
 <!DOCTYPE html>
 <html>
 <head>
-	<title>walkNtrade.com | Find what you need... Loose what you don't!</title>
+	<title>Walkntrade - Buy and sell on campus!</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">

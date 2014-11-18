@@ -10,7 +10,7 @@ if(!$loggedIn = $cs->getLoginStatus())
 <!DOCTYPE html>
 <html>
 <head>
-	<title>walkNtrade.com | My Account</title>
+	<title>Walkntrade | My Account</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="css/user_settings.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
