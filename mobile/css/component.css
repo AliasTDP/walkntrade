@@ -3,6 +3,10 @@
     Walkntrade, such as headers, footers, menus, etc.
 */
 
+body {
+    font-family: "Garamond", Helvetica, Arial, sans-serif;
+}
+
 /* Header */
 .wt-header {
     background-color: #FFF;
@@ -24,10 +28,6 @@
     text-align:center;
     width:100%;
     height: 100%;
-}
-.wt-header-logo-wrapper > img {
-    max-width:100%;
-    height: auto;
 }
 
 .wt-header-content-wrapper {
@@ -113,4 +113,13 @@
     text-decoration: none;
     color: #000;
     vertical-align: middle;
+}
+
+/* User makes a selection from pre-set options */
+.input-option-selected {
+    background-color: rgb(250, 255, 189);
+}
+.button-option-selected {
+    background-color: #53A852;
+    color: #FFF;
 }

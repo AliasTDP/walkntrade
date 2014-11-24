@@ -8,13 +8,26 @@ html,body {
     width: 100%;
 }
 
+h1, h2 {
+    margin-top: 0.40em;
+    margin-bottom: 0.40em;
+}
+
+li {
+    font-size: 20px;
+}
+
 input[type=search] {
     box-shadow: 0;
-    transition: box-shadow 0.15s;
+    transition: box-shadow 0.05s;
 }
 input[type=search]:focus {
     box-shadow: 0 0 0.3em 0.2em #34d132 inset;
 } 
 input[type=search]:required {
     border: none;
+}
+
+button.pure-button:disabled {
+    opacity: 1.0;
 }
