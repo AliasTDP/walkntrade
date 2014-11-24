@@ -20,7 +20,7 @@ $avatarUrl = getAvatarOf($uid);
 <!DOCTYPE html>
 <html>
 <head>
-	<title>"<?php echo $userName ?>" at walkNtrade</title>
+	<title>"<?php echo $userName ?>" at Walkntrade</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="/css/spritesheet.css">
 	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />

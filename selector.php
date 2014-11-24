@@ -11,7 +11,7 @@ $needles = array("Android", "iPhone", "iPad", "Windows Phone");
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>Walkntrade.com - BUY AND SELL ON CAMPUS!</title>
+	<title>Walkntrade - Buy and sell on campus!</title>
 	<link type="text/css" rel="stylesheet" href="css/style.css">
 	<link type="text/css" rel="stylesheet" href="css/landing.css">
 	<link type="text/css" rel="stylesheet" href="css/spritesheet.css">
