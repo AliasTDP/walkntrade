@@ -9,10 +9,23 @@ $identifier = htmlspecialchars($args[1]);
 $schoolTextId = htmlspecialchars($args[0]);
 $myPost = false;
 
+$serverName = basename($_SERVER["SERVER_NAME"]);
+$serverURI = $_SERVER['REQUEST_URI'];
+$validDomains = array("walkntrade.com", "dev.wt");
+$redirect = true;
+foreach ($validDomains as $domain) {
+	if($serverName === $domain){
+		$redirect=false;
+	}
+}
+if($redirect)
+	header( 'Location: https://walkntrade.com'.$serverURI, true, 301 );
+
 if($cs->getSchoolName($schoolTextId) == null){
 	header('Location: ./');
 	return;
 }
+
 
 if($identifier != null){
 	//get details of the post
