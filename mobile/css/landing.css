@@ -139,11 +139,13 @@ ul#schools > li:hover {
 #clearSearch {
     display: none;
     position: absolute;
+    padding: 0.2em;
     margin-left: -1.5em;
-    margin-top: 0.75em;
-    margin-bottom: 0.75em;
+    margin-top: 0.55em;
+    margin-bottom: 0.55em;
+    border-radius: 1em;
     color: black;
 }
 #clearSearch:hover {
-    background-color: #53A852;
+    background-color: grey;
 }
