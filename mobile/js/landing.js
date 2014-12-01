@@ -13,10 +13,11 @@ $('document').ready(function() {
                which will hide the search results. */
             event.stopImmediatePropagation();
 
+            var search_value = $(this).prop('value');
+            
             if (event.type !== 'click' && event.keyCode !== 13) {
                 // user pressed a key other than Return/Enter
-                if ($(this).prop('value') !== '') {
-                    //$('.wt-content-landing-inner > h1').fadeOut();
+                if (search_value !== '') {
                     $('.wt-content-landing-inner > h2').slideUp(100);
                     $('input#searchSchools').blur();
                     $('input#searchSchools').focus();
@@ -36,9 +37,9 @@ $('document').ready(function() {
                 }
             }
             if (event.type === 'click' || event.keyCode !== 13) {
-                if ($(this).prop('value') !== '') {
+                if (search_value !== '') {
                     $('#clearSearch').css('display', 'inline');
-                    getSchools($(this).prop('value'));
+                    getSchools(search_value);
                 } else {
                     $('ul#schools').slideUp();
                     $('#clearSearch').css('display', 'none');
@@ -46,9 +47,9 @@ $('document').ready(function() {
                 return; // Exit the function before value can be submitted
             }
 
-            // Enter key was pressed or search performed, submit the value if not undefined
-            if ($(this).prop('value') !== '') {
-                searchSchools($(this).prop('value'));
+            // Enter key was pressed or search performed, submit the value if not blank
+            if (search_value !== '') {
+                searchSchools(search_value);
             }
         });
 
