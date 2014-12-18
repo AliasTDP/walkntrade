@@ -675,7 +675,7 @@ class UserMgmt extends CredentialStore{
 	}
 
 	public function getAvatarOf($userid){
-		if(file_exists("user_images/uid_".$userid.".jpg"))
+		if(file_exists("../user_images/uid_".$userid.".jpg"))
 			return("/user_images/uid_".$userid.".jpg");
 		else
 			return("/colorful/Anonymous_User.jpg");
@@ -689,9 +689,7 @@ class UserMgmt extends CredentialStore{
 		$userName = $this->resolveIDToUsername($uid);
 		if($userName != null){
 			$avatarUrl = $this->getAvatarOf($uid);
-			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<userProfile>\n";
-			$concatenated .= "<username>".$userName."</username>\n";
-			$concatenated .= "<avatarUrl>".$avatarUrl."</avatarUrl>\n";
+			$postsArray = Array();
 			while($schs->fetch()){
 				$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
 				$mypost->bind_param("s", $uid);
@@ -699,8 +697,6 @@ class UserMgmt extends CredentialStore{
 				$mypost->store_result();
 				$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews);
 				if($mypost->num_rows > 0){
-					$concatenated = $concatenated."\t<school shortName=\"".$school."\" longName=\"".$this->getSchoolName($school)."\">\n";
-
 					while($mypost->fetch()){
 						$link =  $school.":".$identifier;
 						$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
@@ -708,14 +704,13 @@ class UserMgmt extends CredentialStore{
 						$pTitle = htmlspecialchars($pTitle);
 						$pDate = htmlspecialchars($pDate);
 						$pCat = htmlspecialchars($pCat);
-						$concatenated = $concatenated."\t\t<post id=\"".$pId."\" link=\"".$link."\" category=\"".$pCat."\" title=\"".$pTitle."\" date=\"".$pDate."\" views=\"".$pViews."\"/>\n";
+						$line = Array("post_identifier"=>$link,"title"=>$pTitle,"date"=>$pDate,"category"=>$pCat);
+						array_push($postsArray, $line);
 					}
-					$concatenated = $concatenated."</school>\n";
 				}
 				$mypost->close();
 			}
-			$concatenated = $concatenated."</userProfile>";
-			return $concatenated;
+			return Array("username"=>$userName,"avatarUrl"=>$avatarUrl,"posts"=>$postsArray);
 		}
 	}
 

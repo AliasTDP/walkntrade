@@ -12,6 +12,12 @@ function genJSON($status, $message, $payload){
 	return $output;
 }
 
+function statusDump($status, $message, $payload){
+	$response = Array("status"=>$status,"message"=>$message,"payload"=>$payload);
+	echo json_encode($response);
+	return;
+}
+
 if(isset($_POST["intent"]))
 	$getIntent = htmlspecialchars($_POST["intent"]);
 else
@@ -151,12 +157,12 @@ switch($getIntent){
 		}
 		break;
 	case "getUserProfile"://left off here
-		require_once "../framework/UserMgmt.php";
+		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$uid = (isset($_POST["uid"])) ? filter_var($_POST["uid"], FILTER_SANITIZE_NUMBER_INT) : null;
 		header ("Content-Type:text/xml");
 		if($uid != null)
-			echo $um->getUserProfile($uid);
+			statusDump(200, "", $um->getUserProfile($uid));
 		break;
 	case "getWebmail":
 		require_once "../framework/UserMgmt.php";
