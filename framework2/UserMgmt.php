@@ -1,6 +1,12 @@
 <?php
 require_once "CredentialStore.php";
 class UserMgmt extends CredentialStore{
+
+	private function statusDump($status, $message, $payload){
+	$response = Array("status"=>$status,"message"=>$message,"payload"=>$payload);
+	echo json_encode($response);
+	return;
+}
 	
 	public function __construct(){
 		parent::__construct();
@@ -179,27 +185,27 @@ class UserMgmt extends CredentialStore{
 						) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 						")){
 						$createInboxSTMT->execute();
-						$createInboxSTMT->close();
-					}
-					else
-						return 350;
-					return 0;
+					$createInboxSTMT->close();
 				}
-				else{
-					$insert_stmt->close();
-						//unable to send email
-					return "-3e"+$status;
-				}
+				else
+					return 350;
+				return 0;
 			}
 			else{
-					//table not updated
-				return 2;
+				$insert_stmt->close();
+						//unable to send email
+				return "-3e"+$status;
 			}
 		}
-		else {
-					//SQL error
-			return 1;
+		else{
+					//table not updated
+			return 2;
 		}
+	}
+	else {
+					//SQL error
+		return 1;
+	}
 	}
 
 	public function controlPanel($oldPw, $email, $newPw, $phone){
@@ -214,27 +220,27 @@ class UserMgmt extends CredentialStore{
 							$emailUpdate ->execute();
 							if($emailUpdate->affected_rows ==1){
 								if($this->verifyEmail($email) == 0){
-									//success
+										//success
 									$emailUpdate->close();
 								}
 								else{
-									//unable to send email
+										//unable to send email
 									$emailUpdate->close();
 									return 14;
 								}
 							}
 							else{
-								//unable to update table
+									//unable to update table
 								return 13;
 							}
 						}
 						else{
-							//SQL error
+								//SQL error
 							return 12;
 						}
 					}
 					else{
-						//email address exixts
+							//email address exixts
 						return 11;
 					}
 				}
@@ -257,21 +263,21 @@ class UserMgmt extends CredentialStore{
 				}
 				if(!$errors){
 					if($email == "" && $newPw == "" && $phone =="")
-						//No Act
+							//No Act
 						return 301;
-					//All Gud
+						//All Gud
 					return 0;
 				}
 				else
-					//Err detect
+						//Err detect
 					return 3;
 			}
 			else
-				//No Auth
+					//No Auth
 				return 2;
 		}
 		else
-			//NLI
+				//NLI
 			return 1;
 	}
 
@@ -300,7 +306,7 @@ class UserMgmt extends CredentialStore{
 						if($pExpired == true) $pTitle = "[EXPIRED] ".htmlspecialchars($pTitle);
 						elseif($pExpire != -1)  $pTitle = "[".$pExpire." DAY(S) LEFT] ".htmlspecialchars($pTitle);
 						else $pTitle = htmlspecialchars($pTitle);
-						
+
 						$pDate = $this->getAgeInDays($pDate);
 
 						$pCat = htmlspecialchars($pCat);
@@ -318,7 +324,7 @@ class UserMgmt extends CredentialStore{
 			return $concatenated;
 		}
 		else{
-			//NLI
+				//NLI
 			return 1;
 		}
 	}
@@ -348,7 +354,7 @@ class UserMgmt extends CredentialStore{
 			return $concatenated;
 		}
 		else{
-			//NLI
+				//NLI
 			return 1;
 		}
 	}
@@ -378,20 +384,20 @@ class UserMgmt extends CredentialStore{
 			return $concatenated;
 		}
 		else{
-			//NLI
+				//NLI
 			return 1;
 		}
 	}
 
 	public function pollNewWebmail(){
-		if($this->getLoginStatus()){//If user logged in
-			if($pollNewWebmailSTMT = $this->getWebmailConnection()->prepare("SELECT `id` FROM uid_".$_SESSION["user_id"]." WHERE `trash` = 0 AND `to` = ? AND `read` = 0")){
-				$pollNewWebmailSTMT->bind_param("i", $_SESSION["user_id"]);
-				$pollNewWebmailSTMT->execute();
-				$pollNewWebmailSTMT->store_result();
-				return $pollNewWebmailSTMT->num_rows();
+			if($this->getLoginStatus()){//If user logged in
+				if($pollNewWebmailSTMT = $this->getWebmailConnection()->prepare("SELECT `id` FROM uid_".$_SESSION["user_id"]." WHERE `trash` = 0 AND `to` = ? AND `read` = 0")){
+					$pollNewWebmailSTMT->bind_param("i", $_SESSION["user_id"]);
+					$pollNewWebmailSTMT->execute();
+					$pollNewWebmailSTMT->store_result();
+					return $pollNewWebmailSTMT->num_rows();
+				}
 			}
-		}
 	}
 
 	public function getMessage($messageId){
@@ -568,35 +574,35 @@ class UserMgmt extends CredentialStore{
 										<i>Please log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.</i>
 									</p>
 								</p>
-								</body>
-								</html>
+							</body>
+							</html>
 							';
 							$messageTEXT='New message from '.$_SESSION["username"].' on walkntrade\r\n'.$title.'\r\n'.$message.'\r\nPlease log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.';
 							return $this->sendmailMultipart($email, $subject, $messageTEXT, $messageHTML);
-							}
-							else return 0;
 						}
-						else{
-							$webmailSTMT->close();
-							return 120;
-						}
+						else return 0;
 					}
 					else{
-						return 100;
+						$webmailSTMT->close();
+						return 120;
 					}
 				}
 				else{
-					//user does not exist
-					return 3;
+					return 100;
 				}
 			}
 			else{
-				//SQL error
-				return 2;
+					//user does not exist
+				return 3;
 			}
 		}
 		else{
-			//NLI
+				//SQL error
+			return 2;
+		}
+		}
+		else{
+				//NLI
 			return 1;
 		}
 	}
@@ -613,7 +619,7 @@ class UserMgmt extends CredentialStore{
 		$post_string["date"]=$dateTime;
 		$post_string["userImageURL"]= (file_exists("../".$imgUrl)) ? $imgUrl : "colorful/Anonymous_User.jpg";
 
-	    // Set POST variables
+		    // Set POST variables
 		$url = 'https://android.googleapis.com/gcm/send';
 
 		$fields = array(
@@ -625,29 +631,29 @@ class UserMgmt extends CredentialStore{
 			'Content-Type: application/json'
 			);
 
-	    // Open connection
+		    // Open connection
 		$ch = curl_init();
 
-	    // Set the URL, number of POST vars, POST data
+		    // Set the URL, number of POST vars, POST data
 		curl_setopt( $ch, CURLOPT_URL, $url);
 		curl_setopt( $ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true);
-	    //curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $fields));
+		    //curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $fields));
 
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	    // curl_setopt($ch, CURLOPT_POST, true);
-	    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		    // curl_setopt($ch, CURLOPT_POST, true);
+		    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode( $fields));
 
-	    // Execute post
+		    // Execute post
 		$result = curl_exec($ch);
 
-	    // Close connection
+		    // Close connection
 		curl_close($ch);
-		// echo $result;
-	    //print_r($result);
-	    //var_dump($result);
+			// echo $result;
+		    //print_r($result);
+		    //var_dump($result);
 	}
 
 	public function resolveUsernameToID($userName){
@@ -681,37 +687,75 @@ class UserMgmt extends CredentialStore{
 			return("/colorful/Anonymous_User.jpg");
 	}
 
-	public function getUserProfile($uid){
-		$schs = $this->getListingConnection()->prepare("SELECT `textId` FROM `schools` ORDER BY `name` DESC LIMIT 100");
-		$schs->execute();
-		$schs->store_result();
-		$schs->bind_result($school);
-		$userName = $this->resolveIDToUsername($uid);
-		if($userName != null){
-			$avatarUrl = $this->getAvatarOf($uid);
-			$postsArray = Array();
-			while($schs->fetch()){
-				$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
-				$mypost->bind_param("s", $uid);
-				$mypost->execute();
-				$mypost->store_result();
-				$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews);
-				if($mypost->num_rows > 0){
-					while($mypost->fetch()){
-						$link =  $school.":".$identifier;
-						$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
-						$html_blacklist = "/< >/";
-						$pTitle = htmlspecialchars($pTitle);
-						$pDate = htmlspecialchars($pDate);
-						$pCat = htmlspecialchars($pCat);
-						$line = Array("post_identifier"=>$link,"title"=>$pTitle,"date"=>$pDate,"category"=>$pCat);
-						array_push($postsArray, $line);
+
+	public function getUserProfile($uid, $userName){
+			if($uid != ""){//get by user ID
+				$userName = $this->resolveIDToUsername($uid);
+				if ($userName==null)
+					return $this->statusDump(404, "No matching UID", null);
+
+				$schs = $this->getListingConnection()->prepare("SELECT `textId` FROM `schools` ORDER BY `name` DESC LIMIT 100");
+				$schs->execute();
+				$schs->store_result();
+				$schs->bind_result($school);
+				$postArray = Array();
+				$avatarUrl = $this->getAvatarOf($uid);
+				while($schs->fetch()){//for schools
+					$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
+					$mypost->bind_param("s", $uid);
+					$mypost->execute();
+					$mypost->store_result();
+					$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews);
+					if($mypost->num_rows > 0){
+						while($mypost->fetch()){//for posts
+							$link =  $school.":".$identifier;
+							$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
+							$html_blacklist = "/< >/";
+							$pTitle = htmlspecialchars($pTitle);
+							$pDate = htmlspecialchars($pDate);
+							$pCat = htmlspecialchars($pCat);
+							$line = Array("post_identifier"=>$link,"title"=>$pTitle,"date"=>$pDate,"category"=>$pCat,"schoolLongName"=>$this->getSchoolName($school),"schoolShortName"=>$school);
+							array_push($postArray, $line);
+						}
 					}
+					$mypost->close();
 				}
-				$mypost->close();
+			return $this->statusDump(200, "returned userdata by UID", Array("username"=>$userName,"avatarUrl"=>$avatarUrl,"posts"=>$postArray));
 			}
-			return Array("username"=>$userName,"avatarUrl"=>$avatarUrl,"posts"=>$postsArray);
-		}
+			else if($userName != ""){//get by userName
+				$uid = $this->resolveUsernameToID($userName);
+				if($uid == null)
+					return $this->statusDump(404, "No matching USERNAME", null);
+
+				$schs = $this->getListingConnection()->prepare("SELECT `textId` FROM `schools` ORDER BY `name` DESC LIMIT 100");
+				$schs->execute();
+				$schs->store_result();
+				$schs->bind_result($school);
+				$postArray = Array();
+				$avatarUrl = $this->getAvatarOf($uid);
+				while($schs->fetch()){//for schools
+					$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
+					$mypost->bind_param("s", $uid);
+					$mypost->execute();
+					$mypost->store_result();
+					$mypost->bind_result($pId, $identifier, $pCat, $pTitle, $pDate, $pViews);
+					if($mypost->num_rows > 0){
+						while($mypost->fetch()){//for posts
+							$link =  $school.":".$identifier;
+							$pTitle =(strlen($pTitle) > 55) ? substr($pTitle, 0, 55)."..." : $pTitle;
+							$html_blacklist = "/< >/";
+							$pTitle = htmlspecialchars($pTitle);
+							$pDate = htmlspecialchars($pDate);
+							$pCat = htmlspecialchars($pCat);
+							$line = Array("post_identifier"=>$link,"title"=>$pTitle,"date"=>$pDate,"category"=>$pCat,"schoolLongName"=>$this->getSchoolName($school),"schoolShortName"=>$school);
+							array_push($postArray, $line);
+						}
+					}
+					$mypost->close();
+				}
+				return $this->statusDump(200, "returned userdata by USERNAME", Array("username"=>$userName,"avatarUrl"=>$avatarUrl,"posts"=>$postArray));
+			}
+		//return error for invalid input
 	}
 
 	public function addAndroidDeviceId($deviceId){

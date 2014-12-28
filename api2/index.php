@@ -160,9 +160,9 @@ switch($getIntent){
 		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$uid = (isset($_POST["uid"])) ? filter_var($_POST["uid"], FILTER_SANITIZE_NUMBER_INT) : null;
+		$userName = (isset($_POST["userName"])) ? filter_var($_POST["userName"], FILTER_SANITIZE_STRING) : null;
 		header ("Content-Type:text/xml");
-		if($uid != null)
-			statusDump(200, "", $um->getUserProfile($uid));
+		$um->getUserProfile($uid, $userName);
 		break;
 	case "getWebmail":
 		require_once "../framework/UserMgmt.php";
