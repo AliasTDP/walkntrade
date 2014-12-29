@@ -40,6 +40,12 @@ class Walkntrade {
 		}
 	}
 
+	public function statusDump($status, $message, $payload){
+		$response = Array("status"=>$status,"message"=>$message,"payload"=>$payload);
+		echo json_encode($response);
+		return;
+	}
+
 	public function getUserConnection(){
 		return $this->userConnection;
 	}

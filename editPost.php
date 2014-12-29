@@ -47,48 +47,31 @@ if($identifier != null){
 		}
 	}
 	function submit(){
+		window.api_url = "/api/";
+		window.api_url2 = "/api2/";
+		$.ajaxSetup({url:api_url2, dataType:"json", type:"POST"});
+
+		var intent = "editPost";
+		var school = "<?php echo $schoolTextId; ?>";
+		var title = document.editForm.title.value;
+		var details = document.editForm.details.value;
+		var price = document.editForm.price.value;
+		var identifier = document.editForm.identifier.value;
+		var tags = document.editForm.tags.value;
+
 		user = confirm("Are you sure you want to commit these changes?");
 		if(user){
-			if (window.XMLHttpRequest){
-				xhttp = new XMLHttpRequest();
-			}
-			else {
-				xhttp = new ActiveXObject("Microsoft.XMLHTTP");//IE Compatibility
-			}
-			xhttp.open("POST", "api/", true);
-			form = new FormData;
-			form.append("intent", "editPost");
-			form.append("school", "<?php echo $schoolTextId; ?>");
-			form.append("title", document.editForm.title.value);
-			form.append("details", document.editForm.details.value);
-			form.append("price", document.editForm.price.value);
-			form.append("tags", document.editForm.tags.value);
-			form.append("identifier", document.editForm.identifier.value);
-			xhttp.send(form);
-			xhttp.onreadystatechange = function(){
-				if (xhttp.readyState==4 && xhttp.status==200){
-					if(xhttp.responseText == "success"){
-						window.close();
-						return false;
-					}
-					else{
-						alert(xhttp.responseText);
-						return false;
-					}
+			$.ajax({data:"intent="+intent+"&school="+school+"&title="+title+"&details="+details+"&price="+price+"&identifier="+identifier+"&tags="+tags}).success(function(json){
+				if(json.status == 200){
+					alert(json.message);
+					window.close();
 				}
-			}
+				else{
+					alert("An error has occured ("+json.message+")");
+				}
+			})
 		}
 	}
-	</script>
-	<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-42896980-1', 'auto');
-  ga('send', 'pageview');
-
 	</script>
 </head>
 <body>
@@ -114,3 +97,4 @@ if($identifier != null){
 	</div>
 </body>
 </html>
+<script type="text/javascript" src="/client_js/jquery.min.js"></script>

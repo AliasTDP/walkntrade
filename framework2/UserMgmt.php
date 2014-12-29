@@ -2,12 +2,6 @@
 require_once "CredentialStore.php";
 class UserMgmt extends CredentialStore{
 
-	private function statusDump($status, $message, $payload){
-	$response = Array("status"=>$status,"message"=>$message,"payload"=>$payload);
-	echo json_encode($response);
-	return;
-}
-	
 	public function __construct(){
 		parent::__construct();
 	}
@@ -686,7 +680,6 @@ class UserMgmt extends CredentialStore{
 		else
 			return("/colorful/Anonymous_User.jpg");
 	}
-
 
 	public function getUserProfile($uid, $userName){
 			if($uid != ""){//get by user ID

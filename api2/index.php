@@ -379,46 +379,17 @@ switch($getIntent){
 		echo $bh->uploadPostImages($binImage, $iteration, $identifier, $school);
 		break;
 	case "editPost":
-		require_once "../framework/PostQuery.php";
+		require_once "../framework2/PostQuery.php";
 		$pq = new PostQuery();
 		$school = filter_var($_POST["school"], FILTER_SANITIZE_STRING);
 		if($pq->getSchoolName($school) == null) ### Prevent from inserting into nonexisting db ###
-		return "500: Request malformed";
+		return $this->statusDump(500, "nonexisting school ID", null);
 		$title = $_POST["title"];
 		$details = $_POST["details"];
 		$price = filter_var($_POST["price"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 		$tags = $_POST["tags"];
 		$identifier = $_POST["identifier"];
-		$result = $pq->editPost($title, $details, $price, $tags, $identifier, $school);
-		switch($result){
-			case 401:
-			echo "You are not authorized to do this!";
-			break;
-			case 4:
-			echo "You have not made any changes";
-			break;
-			case 5:
-			echo "isbn length incorrect";
-			break;
-			case 6:
-			echo "details too long or too short";
-			break;
-			case 7:
-			echo "author length too long or short";
-			break;
-			case 8:
-			echo "title length too long or short";
-			break;
-			case 9:
-			echo "tags length too long or short";
-			break;
-			case 0:
-			echo "success";
-			break;
-			default:
-			echo "An internal error has occurred. Please try again later. ($result)";
-			break;
-		}
+		$pq->editPost($title, $details, $price, $tags, $identifier, $school);
 		break;
 	case "messageUser":
 		require_once "../framework2/UserMgmt.php";

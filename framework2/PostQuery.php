@@ -54,7 +54,7 @@ class PostQuery extends CredentialStore {
 						$stmt->fetch();
 						if($_SESSION["username"] != $userNm){
 							$stmt->close();
-							return 401;
+							return $this->statusDump(401, "Not authorized", null);
 						}
 						else{
 							$stmt->close();
@@ -62,7 +62,7 @@ class PostQuery extends CredentialStore {
 					}
 					else{
 						$stmt->close();
-						return 402;
+						return $this->statusDump(401, "Unable to validate user", null);
 					}
 				}
 				else{
@@ -73,24 +73,24 @@ class PostQuery extends CredentialStore {
 					$updateSTMT->bind_param("ssssss", $title, $details, $price, $tags, $identifier, $_SESSION["user_id"]);
 					$updateSTMT->execute();
 					if($updateSTMT->affected_rows == 1){
-						return 0;
+						return $this->statusDump(200, "post has been updated", null);
 					}
 					else{
-						return 4;
+						return $this->statusDump(200, "No changes have been made", null);
 					}
 				}
 				else{
-					return $updateSTMT->error;
+					return $this->statusDump(500, $updateSTMT->error, null);
 				}
 
 			}
 			else{
 			//school not set
-				return 2;
+				return $this->statusDump(401, "Request malformed (no school)", null);
 			}
 		}
 		else{
-			return 1;
+			return $this->statusDump(401, "Not authorized", null);
 		}
 	}
 
