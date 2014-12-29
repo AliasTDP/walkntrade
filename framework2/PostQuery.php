@@ -39,11 +39,11 @@ class PostQuery extends CredentialStore {
 
 	public function editPost($title, $details, $price, $tags, $identifier, $school){
 		if(strlen($tags) > 500 || strlen($tags) < 2)
-			return 9;
+			return $this->statusDump(401, "Don't forget about the tags, and remember to keep them less than 500 characters!", null);
 		if(strlen($title) > 150 || strlen($title) < 2)
-			return 8;
+			return $this->statusDump(401, "Don't forget about the title, and remember to keep it less than 150 characters!", null);
 		if(strlen($details) > 3000 || strlen($details) < 5)
-			return 6;
+			return $this->statusDump(401, "Don't forget about the details, and remember to keep it less than 3000 characters!", null);
 		if($this->getLoginStatus()){
 			if($stmt = $this->getListingConnection()->prepare("SELECT username FROM `".$school."` WHERE  identifier = ? LIMIT 1")){
 					$stmt->bind_param("s", $identifier);

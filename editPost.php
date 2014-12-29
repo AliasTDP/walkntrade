@@ -67,7 +67,7 @@ if($identifier != null){
 					window.close();
 				}
 				else{
-					alert("An error has occured ("+json.message+")");
+					alert(json.message);
 				}
 			})
 		}
