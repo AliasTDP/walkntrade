@@ -1,19 +1,23 @@
-	all;
-	Everything;
-	All the goodness that Walkntrade has to offer
+all;
+Everything;
+All the goodness that Walkntrade has to offer
+
 $newCat
-	book;
-	Textbooks;
-	Textbooks, novels, etc.
+book;
+Textbooks;
+Textbooks, novels, etc.
+
 $newCat
-	housing;
-	Housing;
-	Advertise or reauest appartment leases, roommates,  etc.
+housing;
+Housing;
+Advertise or request apartment leases, roommates,  etc.
+
 $newCat
-	tech;
-	Tech;
-	Post your gadgets!
+tech;
+Tech;
+Post your gadgets!
+
 $newCat
-	misc;
-	Miscellaneous;
-	Post anything under the sun! (Within reason of course)
+misc;
+Miscellaneous;
+Post anything under the sun! (Within reason of course)
