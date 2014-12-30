@@ -433,5 +433,18 @@ class Walkntrade {
 		$string = ($diff == 0) ? "Today" : $diff ." day(s) ago";
 		return $string;
 	}
+
+	public function getCategories(){
+		$categoriesRawString = file_get_contents("../include/categories.txt");
+		$categoriesParsed = explode('$newCat', $categoriesRawString);
+		$i = 0;
+		foreach ($categoriesParsed as $category) {
+			$catParsed = explode(';', str_replace("\n", "", $category));
+			$categoriesParsed[$i] = $catParsed;
+			$i++;
+		}
+		$response = Array("categories"=>$categoriesParsed);
+		$this->statusDump(200, "success", $response);
+	}
 }
 ?>

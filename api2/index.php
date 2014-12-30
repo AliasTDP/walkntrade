@@ -517,6 +517,11 @@ switch($getIntent){
 		$cs = new CredentialStore();
 		echo $cs->getPhoneNum();
 		break;
+	case "getCategories":
+		require_once "../framework2/Walkntrade.php";
+		$wt = new Walkntrade();
+		$wt->getCategories();
+		break;
 	default:
 		echo "Hi there!";
 	break;
