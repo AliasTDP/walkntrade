@@ -6,11 +6,13 @@ class Walkntrade {
 	private $password = "wtonlin3";
 	private $DB1 = "wtonline_users";
 	private $DB2 = "wtonline_listings";
-	private $DB3 = "wtonline_webmail";
+	private $DB3 = "wtonline_threads";
+	private $DB4 = "wtonline_thread_index";
 
 	private $userConnection;
 	private $listingConnection;
-	private $webmailConnection;
+	private $threadsConnection;
+	private $thread_indexConnection;
 
 	public function __construct(){
 		$this->dbConnect();
@@ -20,7 +22,8 @@ class Walkntrade {
 	public function __destruct(){
 		$this->userConnection->close();
 		$this->listingConnection->close();
-		$this->webmailConnection->close();
+		$this->threadsConnection->close();
+		$this->thread_indexConnection->close();
 	}
 
 	private function dbConnect(){
@@ -34,9 +37,14 @@ class Walkntrade {
 			echo ("Unable to connect to site database: (" . $this->listingConnection->connect_errno . ") " . $this->listingConnection->connect_error);
 		}
 
-		$this->webmailConnection = new mysqli($this->host, $this->userDB1, $this->password, $this->DB3);
-		if($this->webmailConnection->connect_errno){
-			echo ("Unable to connect to webmail database: (" . $this->webmailConnection->connect_errno . ") " . $this->webmailConnection->connect_error);
+		$this->threadsConnection = new mysqli($this->host, $this->userDB1, $this->password, $this->DB3);
+		if($this->threadsConnection->connect_errno){
+			echo ("Unable to access to threads: (" . $this->threadsConnection->connect_errno . ") " . $this->threadsConnection->connect_error);
+		}
+
+		$this->thread_indexConnection = new mysqli($this->host, $this->userDB1, $this->password, $this->DB4);
+		if($this->thread_indexConnection->connect_errno){
+			echo ("Unable to access to thread index: (" . $this->thread_indexConnection->connect_errno . ") " . $this->thread_indexConnection->connect_error);
 		}
 	}
 
@@ -54,8 +62,12 @@ class Walkntrade {
 		return $this->listingConnection;
 	}
 
-	public function getWebmailConnection(){
-		return $this->webmailConnection;
+	public function getThreadsConnection(){
+		return $this->threadsConnection;
+	}
+
+	public function getThread_indexConnection(){
+		return $this->thread_indexConnection;
 	}
 
 	public function getSchoolName($identifier){
@@ -445,6 +457,10 @@ class Walkntrade {
 		}
 		$response = Array("categories"=>$categoriesParsed);
 		$this->statusDump(200, "success", $response);
+	}
+
+	public function getRandomHex($valLength){
+  	return substr(md5(rand()), 0, $valLength);  
 	}
 }
 ?>

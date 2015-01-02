@@ -165,17 +165,17 @@ class UserMgmt extends CredentialStore{
 					}
 					else
 						return 450;
-					if($createInboxSTMT = $this->getWebmailConnection()->prepare("CREATE TABLE `uid_".$uuid."` (
-						`id` int(11) NOT NULL AUTO_INCREMENT,
-						`from` int(10) NOT NULL,
-						`to` int(10) NOT NULL,
-						`subject` varchar(100) NOT NULL,
-						`message` text NOT NULL,
-						`datetime` datetime NOT NULL,
-						`read` bit(1) DEFAULT b'0',
-						`trash` bit(1) DEFAULT b'0',
-						PRIMARY KEY (`id`)
-						) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+					if($createInboxSTMT = $this->getThread_indexConnection()->prepare("
+							CREATE TABLE `wtonline_thread_index`.`$uuid` (
+						  `thread_id` VARCHAR(20) NOT NULL,
+						  `last_message` VARCHAR(100) NOT NULL,
+						  `last_user_id` INT(50) NOT NULL,
+						  `post_id` VARCHAR(45) NOT NULL,
+						  `post_title` VARCHAR(100) NULL,
+						  `datetime` DATETIME NOT NULL,
+						  `new_messages` BIT NOT NULL,
+						  PRIMARY KEY (`thread_id`),
+						  UNIQUE INDEX `thread_id_UNIQUE` (`thread_id` ASC));
 						")){
 						$createInboxSTMT->execute();
 						$createInboxSTMT->close();

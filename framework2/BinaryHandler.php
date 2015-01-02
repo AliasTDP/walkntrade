@@ -75,19 +75,6 @@ class BinaryHandler extends UserMgmt{
 			echo "Not Authorized!";
 		}
 	}
-
-	public function getAvatar(){
-		if ($this->getLoginStatus()){
-			$userid = $_SESSION["user_id"];
-			if(file_exists("../user_images/uid_".$userid.".jpg"))
-				return("/user_images/uid_".$userid.".jpg");
-			else
-				return("/colorful/Anonymous_User.jpg");
-		}
-		else{
-			return null;
-		}
-	}
 	private function scaleImage($sourcePath, $destPath, $iDestWidth, $iDestHeight , $proportional){
 		$imagefile = imagecreatefromjpeg($sourcePath);
 		$iSourceWidth = imagesx($imagefile);

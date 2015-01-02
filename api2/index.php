@@ -164,39 +164,6 @@ switch($getIntent){
 		header ("Content-Type:text/xml");
 		$um->getUserProfile($uid, $userName);
 		break;
-	case "getWebmail":
-		require_once "../framework/UserMgmt.php";
-		$quiet = (isset($_POST["quiet"]) && $_POST["quiet"] == "true")?true:false;
-		$um = new UserMgmt();
-		header ("Content-Type:text/xml");
-		echo $um->getWebmail($quiet);
-		break;
-	case "getSentWebmail":
-		require_once "../framework/UserMgmt.php";
-		$quiet = (isset($_POST["quiet"]) && $_POST["quiet"] == "true")?true:false;
-		$um = new UserMgmt();
-		header ("Content-Type:text/xml");
-		echo $um->getSentWebmail($quiet);
-		break;
-	case "getMessage":
-		require_once "../framework/UserMgmt.php";
-		$um = new UserMgmt();
-		$id = (isset($_POST["message_id"])) ? htmlspecialchars($_POST["message_id"], FILTER_SANITIZE_NUMBER_INT) : null;
-		if($id == null){
-			echo "no message specified";
-			return;
-		}
-		else{
-			header ("Content-Type:text/xml");
-			echo $um->getMessage($id);
-		}	
-		break;
-	case "pollNewWebmail":
-		require_once "../framework/UserMgmt.php";
-		$um = new UserMgmt();
-		header ("Content-Type:text/xml");
-		echo $um->pollNewWebmail();
-		break;
 	case "setEmailPref":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -207,19 +174,6 @@ switch($getIntent){
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
 		echo $um->getEmailPref();
-		break;
-	case "removeMessage":
-		require_once "../framework/UserMgmt.php";
-		$um = new UserMgmt();
-		$id = (isset($_POST["message_id"])) ? htmlspecialchars($_POST["message_id"], FILTER_SANITIZE_NUMBER_INT) : null;
-		if($id == null){
-			echo "no message specified";
-			return;
-		}
-		else{
-			header ("Content-Type:text/xml");
-			echo $um->removeMessage($id);
-		}	
 		break;
 	case "login":
 		require_once "../framework/UserMgmt.php";
@@ -261,9 +215,13 @@ switch($getIntent){
 		$um->logout();
 		break;
 	case "getAvatar":
-		require_once "../framework/BinaryHandler.php";
-		$bh = new BinaryHandler();
-		echo genJSON(200, $bh->getAvatar(), "");
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		if(isset($_POST["user_id"]))
+			$user_id=$_POST["user_id"];
+		else
+			$user_id=$_SESSION["user_id"];
+		$um->getAvatarOf($user_id, false);
 		break;
 	case "uploadAvatar":
 		if(!isset($_FILES["avatar"])){
@@ -391,80 +349,14 @@ switch($getIntent){
 		$identifier = $_POST["identifier"];
 		$pq->editPost($title, $details, $price, $tags, $identifier, $school);
 		break;
-	case "messageUser":
-		require_once "../framework2/UserMgmt.php";
-		$um = new UserMgmt();
-		$uid = (isset($_POST["uid"])) ? filter_var($_POST["uid"], FILTER_SANITIZE_NUMBER_INT) : null;
-		$userName = (isset($_POST["userName"])) ? filter_var($_POST["userName"], FILTER_SANITIZE_STRING) : null;
-		$title = $_POST["title"];
-		$message = $_POST["message"];
-		if($uid != null){
-			$result = $um->messageUser($uid, $title, $message);
-			switch($result){
-				case 0:
-				echo genJSON(200, "Your message has been delivered", "");
-				break;
-				case 5:
-				echo genJSON(530, "Foul language is not tolerated here! You have been warned.", "");
-				break;
-				default:
-				echo genJSON(500, "An internal error has occured. Please report this error <a href='/feedback'>here</a> ($result)", "");
-				break;
-			}
-			return;
-		}
-		else if($userName != null){
-			$uid = $um->resolveUsernameToID($userName);
-			if($uid != null){
-				$result = $um->messageUser($uid, $title, $message);
-				switch($result){
-					case 0:
-					echo genJSON(200, "Your message has been delivered", "");
-					break;
-					case 5:
-					echo genJSON(530, "Foul language is not tolerated here! You have been warned.", "");
-					break;
-					default:
-					echo genJSON(500, "An internal error has occured. Please report this error <a href='/feedback'>here</a> ($result)", "");
-					break;
-				}
-			}
-			else echo genJSON(404, "We can't find that user here.", "");
-			return;
-		}
-		else echo genJSON(406, "Invalid user!", "");;
-		break;
 	case "addUser":
-		require_once "../framework/UserMgmt.php";
+		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$username = filter_var(strip_tags($_POST["username"]), FILTER_SANITIZE_STRING);
 		$email = filter_var(strip_tags($_POST["email"]), FILTER_SANITIZE_EMAIL);
 		$password = filter_var($_POST["password"], FILTER_SANITIZE_STRING);
 		$phone = filter_var($_POST["phone"], FILTER_SANITIZE_NUMBER_INT);
-		$result = $um->addUser($username, $email, $password, $phone);
-		switch($result){
-			case 0:
-			echo 0;
-			break;
-			case 3:
-			echo 3;
-			break;
-			case 7:
-			echo "Email may not be empty";
-			break;
-			case 4:
-			echo "Username is taken";
-			break;
-			case 9:
-			echo "check username string_length";
-			break;
-			case 100:
-			echo "Not student email";
-			break;						
-			default:
-			echo "An error has occurred. We apologize for the inconvenience. Please report this error <a href='/feedback'>here</a> and we'll get on it. ($result)";
-			break;
-		}
+		$um->addUser($username, $email, $password, $phone);
 		break;
 	case "verifyKey":
 		require_once "../framework/Walkntrade.php";
@@ -521,6 +413,42 @@ switch($getIntent){
 		require_once "../framework2/Walkntrade.php";
 		$wt = new Walkntrade();
 		$wt->getCategories();
+		break;
+	case "createMessageThread":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$message_content=(isset($_POST["message"]))?filter_var($_POST["message"], FILTER_SANITIZE_STRING):null;
+		$user_id=(isset($_POST["user_id"]))?filter_var($_POST["user_id"], FILTER_SANITIZE_NUMBER_INT):null;
+		$post_id=(isset($_POST["post_id"]))?filter_var($_POST["post_id"], FILTER_SANITIZE_NUMBER_INT):null;
+		$um->createMessageThread($message_content, $user_id, $post_id);
+		break;
+	case "getMessageThreadsCurrentUser":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$offset=(isset($_POST["offset"]))?filter_var($_POST["offset"], FILTER_SANITIZE_NUMBER_INT):0;
+		$amount=(isset($_POST["amount"]))?filter_var($_POST["amount"], FILTER_SANITIZE_NUMBER_INT):10;
+		$um->getMessageThreadsCurrentUser($offset, $amount);
+		break;
+	case "retrieveThread":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
+		$offset=(isset($_POST["offset"]))?filter_var($_POST["offset"], FILTER_SANITIZE_NUMBER_INT):0;
+		$amount=(isset($_POST["amount"]))?filter_var($_POST["amount"], FILTER_SANITIZE_NUMBER_INT):300;
+		$um->retrieveThread($thread_id, $offset, $amount);
+		break;
+	case "appendMessage":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
+		$message_content=(isset($_POST["message"]))?htmlentities($_POST["message"]):null;
+		$um->appendMessage($thread_id, $message_content, true);
+		break;
+	case "deleteThread":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
+		$um->deleteThread($thread_id);
 		break;
 	default:
 		echo "Hi there!";

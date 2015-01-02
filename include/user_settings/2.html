@@ -1,67 +1,81 @@
 <script type="text/javascript">
-	getSentWebmail();
-	function refreshAll(){
-		getSentWebmail();
-	}
+$(document).ready(function(){
+	getUserPosts();
+})
 </script>
-
 <style type="text/css">
-#messageReply{
-	text-align: left;
-}
-
-#messageReply{
-	width: 100%;
-}
-#messageReply textarea{
-	height: 150px;
-	resize:none;
-}
-.messageView{
-	text-align: left;
-	width: 100%;
-	padding: 10px;
-}
-.messageView th{
-	border-bottom: 1px solid #C0C0C0;
-}
-
-#messageWrapper{
-	height: 150px;
-	overflow: scroll;
-}
-
-#webmail{
+#yourPosts{
 	min-height: 400px;
+	padding: 0px;
 }
-#webmail table{
-	width: 100%;
+
+#yourPosts h3{
+	padding: 30px 10px 30px 10px;
 }
-#webmail table th{
+table{
+	border-bottom: 1px solid #C0C0C0;
+}
+table th{
 	text-align: left;
-	background: #F0F0F0;
-}
-#webmail table td{
-	font-size: .85em;
-	height: 30px;
-	line-height: 30px;
-	border-bottom: 1px solid #C0C0C0;
-	cursor: pointer;
-}
-.unread td{
-	color: #000;
-	font-weight:900;
-	white-space: nowrap;
-}
-#navBarMail{
-	height: 30px;
-	line-height: 30px;
+	font-style: bold;
+	padding-bottom: 5px;
+	padding-top: 5px;
 	background:#F5F5F5;
+	border-top: 1px solid #C0C0C0;
 	border-bottom: 1px solid #C0C0C0;
+}
+
+table .CFExpired a{
+	text-decoration: underline;
+}
+
+table .CFExpiring a{
+	text-decoration: underline;
+}
+
+table .CFExpired{
+	font-style: italic;
+	color: #383838;
+	background-color: #FF3D3D;
+}
+
+table .CFExpiring{
+	font-style: italic;
+	color: #383838;
+	background: #FFBA42;
+}
+
+table .expired{
+	color: #FF1515;
+	background-color: #F5F5F5;
+}
+
+
+table .expiring{
+	color: #DF8E00;
+	background-color: #F5F5F5;
+}
+
+table td{
+	margin: auto;
+	text-align: center;
+	height: 40px;
+	padding:0px 10px 0px 10px;
+	line-height: 30px;
+	text-align: left;
+	font-style: bold;
+}
+
+table .clearfix1{
+	font-style: italic;
+}
+
+table .clearfix1 a{
+	text-decoration: underline;
 }
 </style>
 <div class="boxStyle1">
-	<div class="settingsHeader">Sent Messages<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
-	<div id="navBarMail"></div>
-	<div id="webmail"></div>
+	<div class="settingsHeader">Manage your posts.<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
+	<div id="yourPosts">
+	</div>
 </div>

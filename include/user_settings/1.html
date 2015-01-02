@@ -1,7 +1,7 @@
 <script type="text/javascript">
-	getWebmail();
+	getThreads();
 	function refreshAll(){
-		getWebmail();
+		getThreads();
 	}
 </script>
 
@@ -31,23 +31,92 @@
 	overflow: scroll;
 }
 
-#webmail{
+#threads{
 	min-height: 400px;
+	width: 350px;
+	float: left;
+	border-right: 1px solid #C0C0C0;
+	padding: 0px;
 }
-#webmail table{
+
+#threads table{
 	width: 100%;
 }
-#webmail table th{
+
+#threads table th{
 	text-align: left;
 	background: #F0F0F0;
 }
-#webmail table td{
+#threads table td{
+	height: 50px;
 	font-size: .85em;
-	height: 30px;
-	line-height: 30px;
-	border-bottom: 1px solid #C0C0C0;
 	cursor: pointer;
+	margin:10px 0px;
 }
+
+#threads table tr td div{
+	max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#threads table .selected{
+	background-color: #C1F485;
+	color:#FFF;
+}
+
+#threads table .selected:hover{
+	background-color: #C1F485;
+	color:#FFF;
+}
+
+#threads table tr:hover{
+	background-color: #EDFFD8;
+}
+
+#threadViewContainer{
+	float: right;
+	width: calc(100% - 351px);
+	padding: 0;
+	overflow: auto;
+}
+
+#threadView{
+	height: 330px;
+	overflow-y: scroll;
+	overflow-x:none;
+	padding: 0px;
+}
+
+#threadView table{
+	width:100%;
+}
+
+#threadView tr{
+	width: 100%;
+}
+
+#threadView tr td{
+	margin:10px 0px 10px 0px;
+	min-height: 50px;
+	padding: 8px;
+	max-width: 300px;
+	word-wrap: break-word;
+}
+
+.myPost td{
+	float:right;
+	width: 450px;
+	background-color: #EDFFD8;
+}
+
+.othersPost td{
+	float:left;
+	width: 500px;
+	background-color: #FFFDD8;
+}
+
 .unread td{
 	color: #000;
 	font-weight:900;
@@ -59,9 +128,49 @@
 	background:#F5F5F5;
 	border-bottom: 1px solid #C0C0C0;
 }
+
+#replyBox{
+	border-top: 1px solid #C0C0C0;
+	height: 50px;
+}
+
+#messaageInput{
+	width: 80%;
+	float: left;
+	vertical-align: center;
+}
+
+#sendMessage{
+	width: 15%;
+	float: right;
+	height:32px;
+}
+.userImage{
+	padding-left: 5px;
+	float: left;
+	width: 50px;
+	height: 50px;
+}
+
+.userImage img{
+	max-width: 50px;
+	max-height: 50px;
+	padding: 0px;
+	box-shadow: 0 2px 2px rgba(0,0,0,0.2);
+}
+
+b{
+	color: #477C09;;
+}
 </style>
 <div class="boxStyle1">
-	<div class="settingsHeader">Received Messages<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
+	<div class="settingsHeader">Private Messages<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
 	<div id="navBarMail"></div>
-	<div id="webmail"></div>
+	<div id="threads"></div>
+	<div id="threadViewContainer"><div id="threadView"></div><div id="replyBox">
+		<form action='javascript:sendMessage(this.messaageInput.value)'>
+			<input type="text" id="messaageInput" value="" placeholder="reply">
+			<input type="submit" id="sendMessage" value="Send">
+			</form>
+	</div></div>
 </div>
