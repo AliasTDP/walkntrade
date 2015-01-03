@@ -307,29 +307,42 @@ function loadModule(e){
 	});
 }
 
-function loadThread(thread_id){
+function loadThread(thread_id, post_id){
+	window.post_id = post_id;
 	$("tbody").find(".threadButton").removeClass("selected");
 	$("#"+thread_id).addClass("selected");
+	var pageElement = $("#threadView");
 
-	window.thread_id = thread_id;
-	$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
-		payload = json.payload;
-		var pageElement = $("#threadView");
-		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-		for(var i=0;i<payload.length;i++){
-			var message_content = payload[i].message_content;
-			var message_id = payload[i].message_id;
-			var datetime = payload[i].datetime;
-			var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-			if(sentFromMe)
-				pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-			else
-				pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
-				$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-				$("#msg_"+message_id+" td").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");
+	$.ajax({url:api_url2, dataType:"json", data:"intent=getPostByIdentifier&"+post_id}).success(function(json){
+		if(json.status==200){
+			var postTitle = json.payload[0].title;
+			var postDetails = json.payload[0].details;
+			pageElement.html("<div class='postReminder'><h2 class='nowrap'>Post Title: "+postTitle+"</h2><p class='nowrap'>"+postDetails+"</p></div>");
+			window.thread_id = thread_id;
+			renderThread(pageElement);
 		}
-		$("#threadView").animate({ scrollTop: $("#threadView")[0].scrollHeight}, 500);
 	});
+
+	function renderThread(pageElement){
+		$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
+			payload = json.payload;
+			
+			pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
+			for(var i=0;i<payload.length;i++){
+				var message_content = payload[i].message_content;
+				var message_id = payload[i].message_id;
+				var datetime = payload[i].datetime;
+				var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
+				if(sentFromMe)
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
+				else
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+					$("#msg_"+message_id+" td").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");
+			}
+			$("#threadView").animate({ scrollTop: $("#threadView")[0].scrollHeight}, 500);
+		});
+	}
 }
 
 function deleteThread(thread_id){
@@ -339,6 +352,7 @@ function deleteThread(thread_id){
 			if(json.status != 200){
 				dialog(json.message);
 				$("#threadView").empty();
+				window.thread_id = "";
 			}
 			else{
 				$("#threadView").empty();
@@ -371,10 +385,10 @@ function getThreads(){
 				var associated_with = payload[i].associated_with;
 				var imageUrl = payload[i].associated_with_image;
 				var read = 0;
-				pageElement.find("table").append($('<tr/>', {"onclick": "loadThread('"+thread_id+"')", "id":thread_id, "class":read, "class":"threadButton"}));
-				$("#"+thread_id).append($('<td/>', {"class":"userImage"}));
+				pageElement.find("table").append($('<tr/>', {"id":thread_id, "class":read, "class":"threadButton"}));
+				$("#"+thread_id).append($('<td/>', {"class":"userImage", "onclick": "window.location='/user?uid="+associated_with+"'"}));
 				$("#"+thread_id+" .userImage").html("<img src='"+imageUrl+"'>");
-				$("#"+thread_id).append($('<td/>', {"class":"textContainer"}));
+				$("#"+thread_id).append($('<td/>', {"class":"textContainer", "onclick": "loadThread('"+thread_id+"', '"+post_id+"')"}));
 				$("#"+thread_id+" .textContainer").append($('<div/>'));
 				$("#"+thread_id+" .textContainer div").html("<b>"+associated_with_name+"</b><br>"+last_message+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
 				$("#"+thread_id).append($('<td/>', {"class":"deleteBox", "onclick":"deleteThread('"+thread_id+"')"}));
@@ -385,62 +399,16 @@ function getThreads(){
 }
 
 function sendMessage(message){
-	$.ajax({url:api_url2, dataType:"json", data:"intent=appendMessage&thread_id="+thread_id+"&message="+message}).success(function(json){
-		if(json.status == 200){
-			loadThread(thread_id);
-			$("#messaageInput").val("");
-		}
-		else
-			dialog(json.message);
-	});
-}
-
-function sendReply(userName){
-	title = document.replyForm.subject.value;
-	message = document.replyForm.message.value;
-	if($("#screen").length != 0){
-		$("#screen").fadeOut(function(){
-			$("#screen").remove();
-			act();
-		});
-	}
-	else act();
-	function act(){
-		$.ajax({url: api_url2, dataType:"json", data:"intent=messageUser&userName="+userName+"&title="+title+"&message="+message,context:getWebmail}).success(function(json){
-			if(json.status == "200")
-				dialog("Your message has been sent", true, null,  this());
+	if(thread_id != ""){
+		$.ajax({url:api_url2, dataType:"json", data:"intent=appendMessage&thread_id="+thread_id+"&message="+message}).success(function(json){
+			if(json.status == 200){
+				loadThread(thread_id, post_id);
+				$("#messaageInput").val("");
+			}
 			else
-				dialog(json.message,true, null);
+				dialog(json.message);
 		});
 	}
-}
-
-function replyTo(){
-	dialog('\
-		<form name="replyForm" action="javascript:void(0)" onSubmit="sendReply(document.replyForm.recipient.value)">\
-		<table id="messageReply">\
-		<tr>\
-		<th colspan="2">Compose message:</th>\
-		</tr>\
-		<tr>\
-		<td width="20%">To:</td>\
-		<td><input name="recipient" id="_recipient" type="text"></td>\
-		</tr>\
-		<tr>\
-		<td width="20%">Subject:</td>\
-		<td><input type="text" name="subject" id="_subject"></td>\
-		</tr>\
-		<tr>\
-		<td colspan="2"><textarea name="message"></textarea></td>\
-		</tr>\
-		<tr>\
-		<td colspan="2"><input type="submit" value="Send!"><td>\
-		</tr>\
-		</table>\
-		</form>',false, function(){
-			$("#_recipient").val(window.from);
-			$("#_subject").val("RE: "+window.subject);
-		}, null);
 }
 
 function getUserPosts(){

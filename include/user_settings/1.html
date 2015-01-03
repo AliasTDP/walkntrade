@@ -105,6 +105,17 @@
 	word-wrap: break-word;
 }
 
+.postReminder{
+	height: 100px;
+	background: -moz-linear-gradient(top,  rgba(237,255,216,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(237,255,216,1)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(237,255,216,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(237,255,216,1) 0%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(237,255,216,1) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(237,255,216,1) 0%,rgba(255,255,255,0) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#edffd8', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+}
+
 .myPost td{
 	float:right;
 	width: 450px;
@@ -164,7 +175,7 @@ b{
 }
 </style>
 <div class="boxStyle1">
-	<div class="settingsHeader">Private Messages<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
+	<div class="settingsHeader">Messages<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
 	<div id="navBarMail"></div>
 	<div id="threads"></div>
 	<div id="threadViewContainer"><div id="threadView"></div><div id="replyBox">

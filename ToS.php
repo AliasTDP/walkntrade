@@ -107,5 +107,5 @@ Subject to the first paragraph of Section [8], these terms of use[, together wit
 		</div>
 </body>
 </html>
-<script type="text/javascript" src="/client_js/jquery.min.js"></script>
-<script type="text/javascript" src="/js_minified/min.js"></script>
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+<script type="text/javascript" src="/script/walkntrade.js"></script>

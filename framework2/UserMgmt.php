@@ -571,7 +571,7 @@ class UserMgmt extends CredentialStore{
 				$associated_with = $currentUserId;
 			if(!$appendThreadSTMT = $this->getThread_indexConnection()->prepare("INSERT INTO `$owner` (thread_id, last_message, last_user_id, post_id, datetime, new_messages, associated_with) VALUES (?, ?, ?, ?, NOW(), 1, ?)"))
 				return false;
-			$appendThreadSTMT->bind_param("ssiii", $thread_id, $message_content, $currentUserId, $post_id, $associated_with);
+			$appendThreadSTMT->bind_param("ssisi", $thread_id, $message_content, $currentUserId, $post_id, $associated_with);
 			$appendThreadSTMT->execute();
 			if($appendThreadSTMT->affected_rows != 1)
 				return false;
@@ -758,7 +758,6 @@ class UserMgmt extends CredentialStore{
 		$getAssocSTMT->execute();
 		$getAssocSTMT->bind_result($associated_with);
 		$getAssocSTMT->fetch();
-
 		return $associated_with;
 	}
 
@@ -771,7 +770,7 @@ class UserMgmt extends CredentialStore{
 				return $this->statusDump(500,"Unable to prepare connection (482)", null);
 			$deleteThreadSTMT->bind_param("s", $thread_id);
 			$deleteThreadSTMT->execute();
-			return $this->statusDump(200,"Thread Deleted", null);
+			return $this->statusDump(200,"Thread closed", null);
 		}
 		else
 			return $this->statusDump(401,"User Not Authorized (2479)", null);

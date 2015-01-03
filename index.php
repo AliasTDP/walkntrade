@@ -1,7 +1,7 @@
 <?php
 $serverName = basename($_SERVER["SERVER_NAME"]);
 $serverURI = $_SERVER['REQUEST_URI'];
-$validDomains = array("walkntrade.com", "dev.wt", "50.147.246.201");
+$validDomains = array("walkntrade.com", "dev.wt", "50.147.246.201", "172.16.10.71");
 $redirect = true;
 foreach ($validDomains as $domain) {
 	if($serverName === $domain){
