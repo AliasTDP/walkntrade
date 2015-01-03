@@ -311,14 +311,14 @@ class Walkntrade {
 	public function sendFeedback($from, $message){
 		$messageTEXT = $from.' : '.$message;
 		if($this->sendmailMultipart("wt@walkntrade.com", "Feedback from Walkntrade", $messageTEXT, $messageTEXT) == 0)
-			return true;
+			return $this->statusDump(200, "Thanks for your feedback! You're awesome :)", null);
 		else
-			return false;
+			return $this->statusDump(500, "We're having some connection problems at the moment. If you wish you may send us your feedback at feedback@walkntrade.com. Thanks!", null);
 	}
 
 	public function resetPassword($email){
 		if($this->checkEmail($email))
-			return 5;
+			$this->statusDump(401, "User not found", null);
 		else{
 		//get old password in case operation fails
 			if($getOldPassSTMT = $this->userConnection->prepare("SELECT `password` FROM `users` WHERE `email` = ?")){
@@ -358,10 +358,13 @@ class Walkntrade {
 					</body>
 					</html>
 					';
-					return $this->sendmailMultipart($email, $subject, $messageTEXT, $messageHTML);
+					if($this->sendmailMultipart($email, $subject, $messageTEXT, $messageHTML)==0)
+						$this->statusDump(200, "Password succesfully reset", null);
+					else
+						$this->statusDump(500, "We cannot send the email at this time", null);
 				}
 				else{
-					return 1;
+					$this->statusDump(500, "Internal Error!", null);
 				}
 			}
 		}

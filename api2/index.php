@@ -380,28 +380,14 @@ switch($getIntent){
 	case "resetPassword":
 		require_once "../framework2/Walkntrade.php";
 		$wt = new Walkntrade();
-		$r = $wt->resetPassword(filter_var($_POST["email"], FILTER_SANITIZE_EMAIL));
-		switch ($r) {
-			case 0:
-				echo genJSON(200, "Password successfully reset", "");
-				break;
-			case 5:
-				echo genJSON(404, "User not found", "");
-				break;
-			default:
-				echo genJSON(500, "Internal Server Error (".$r.")", "");
-				break;
-		}
+		$wt->resetPassword(filter_var($_POST["email"], FILTER_SANITIZE_EMAIL));
 		break;
 	case "sendFeedback":
 		require_once "../framework2/Walkntrade.php";
 		$wt = new Walkntrade();
 		if(isset($_POST["message"])){
 			$email = (isset($_POST["email"])) ? $_POST["email"] : "";
-			if($wt->sendFeedback($email, $_POST["message"]))
-				echo genJSON(200, "Thanks for the feedback!", "");
-			else
-				echo genJSON(500, "Internal Error", "");
+			$wt->sendFeedback($email, $_POST["message"]);
 		}
 		break;
 	case "getPhoneNum":
@@ -442,7 +428,7 @@ switch($getIntent){
 		$um = new UserMgmt();
 		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
 		$message_content=(isset($_POST["message"]))?htmlentities($_POST["message"]):null;
-		$um->appendMessage($thread_id, $message_content, true);
+		$um->appendMessage($thread_id, $message_content, true, true);
 		break;
 	case "deleteThread":
 		require_once "../framework2/UserMgmt.php";

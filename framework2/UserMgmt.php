@@ -648,7 +648,7 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	public function appendMessage($thread_id, $message_content, $standAlone){
+	public function appendMessage($thread_id, $message_content, $standAlone, $sendNotification){
 		if($thread_id == "")
 			return $this->statusDump(500, "No thread Id", null);
 		if($message_content == "")
@@ -686,7 +686,8 @@ class UserMgmt extends CredentialStore{
 				return false;
 			}
 			if($standAlone){
-				$this->externamMailer($currentUserId, $message_content, $thread_id);
+				if($sendNotification)
+					$this->externamMailer($currentUserId, $message_content, $thread_id);
 				return $this->statusDump(200, "Message sent", null);
 			}
 			return true;
@@ -708,7 +709,7 @@ class UserMgmt extends CredentialStore{
 				return $this->statusDump(500, "Unable to appendThreadIndex()", null);
 			if(!$this->createThreadTable($thread_id))
 				return $this->statusDump(500, "Unable to createThreadTable()", null);
-			if(!$this->appendMessage($thread_id, $message_content, false))
+			if(!$this->appendMessage($thread_id, $message_content, false, true))
 				return $this->statusDump(500, "Unable to appendMessage()", null);
 			return $this->statusDump(200, "Message sent scessfully", null);
 		}
@@ -765,9 +766,13 @@ class UserMgmt extends CredentialStore{
 		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
 			$currentUserId = $_SESSION["user_id"];
 			$associated_with = $this->getAssoc($thread_id);
-			$this->appendMessage($thread_id, $_SESSION["username"]." has left the conversation. They will no longer recieve replies to this thread.", false);
-			if(!$deleteThreadSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$currentUserId`,`$associated_with` SET `$currentUserId`.hidden = 1, `$currentUserId`.locked = 1, `$associated_with`.locked = 1 WHERE `$currentUserId`.thread_id AND `$associated_with`.thread_id = ?"))
+			$this->appendMessage($thread_id, $_SESSION["username"]." has left the conversation. They will no longer recieve replies to this thread.", false, false);
+			if(!$deleteThreadSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$currentUserId` SET `$currentUserId`.hidden = 1, `$currentUserId`.locked=1 WHERE `$currentUserId`.thread_id = ?;"))
 				return $this->statusDump(500,"Unable to prepare connection (482)", null);
+			$deleteThreadSTMT->bind_param("s", $thread_id);
+			$deleteThreadSTMT->execute();
+			if(!$deleteThreadSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$associated_with` SET `$associated_with`.locked = 1	WHERE `$associated_with`.thread_id = ?;"))
+				return $this->statusDump(500,"Unable to prepare connection (483)", null);
 			$deleteThreadSTMT->bind_param("s", $thread_id);
 			$deleteThreadSTMT->execute();
 			return $this->statusDump(200,"Thread closed", null);
@@ -777,3 +782,4 @@ class UserMgmt extends CredentialStore{
 	}
 }
 ?>
+

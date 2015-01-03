@@ -77,7 +77,7 @@ function initResults(){
 
 function initCP(){
 	window.includeDir = "/include/user_settings/";
-	window.sections = new Array('<i class="sprite sprite-1396343029_shop"></i>Welcome', '<i class="sprite sprite-1396343080_mail"></i>Messages', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
+	window.sections = new Array('<i class="sprite sprite-1396343029_shop"></i>Welcome', '<i class="sprite sprite-1396343080_mail"></i>[BETA] Messages', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
 	window._preventDefault;
 	window.jumpTo;
 	window.cpModule = new Array();
@@ -399,15 +399,17 @@ function getThreads(){
 }
 
 function sendMessage(message){
-	if(thread_id != ""){
-		$.ajax({url:api_url2, dataType:"json", data:"intent=appendMessage&thread_id="+thread_id+"&message="+message}).success(function(json){
-			if(json.status == 200){
-				loadThread(thread_id, post_id);
-				$("#messaageInput").val("");
-			}
-			else
-				dialog(json.message);
-		});
+	if(message != ""){
+		if(thread_id != ""){
+			$.ajax({url:api_url2, dataType:"json", data:"intent=appendMessage&thread_id="+thread_id+"&message="+message}).success(function(json){
+				if(json.status == 200){
+					loadThread(thread_id, post_id);
+					$("#messaageInput").val("");
+				}
+				else
+					dialog(json.message);
+			});
+		}
 	}
 }
 
