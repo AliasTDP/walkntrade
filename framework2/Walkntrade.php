@@ -7,10 +7,12 @@ class Walkntrade {
 	private $DB1 = "wtonline_users";
 	private $DB2 = "wtonline_listings";
 	private $DB3 = "wtonline_webmail";
+	private $DB4 = "wtonline_thread_index";
 
 	private $userConnection;
 	private $listingConnection;
 	private $webmailConnection;
+	private $thread_indexConnection;
 
 	public function __construct(){
 		$this->dbConnect();
@@ -21,6 +23,7 @@ class Walkntrade {
 		$this->userConnection->close();
 		$this->listingConnection->close();
 		$this->webmailConnection->close();
+		$this->thread_indexConnection->close();
 	}
 
 	private function dbConnect(){
@@ -37,6 +40,11 @@ class Walkntrade {
 		$this->webmailConnection = new mysqli($this->host, $this->userDB1, $this->password, $this->DB3);
 		if($this->webmailConnection->connect_errno){
 			echo ("Unable to connect to webmail database: (" . $this->webmailConnection->connect_errno . ") " . $this->webmailConnection->connect_error);
+		}
+
+		$this->thread_indexConnection = new mysqli($this->host, $this->userDB1, $this->password, $this->DB4);
+		if($this->thread_indexConnection->connect_errno){
+			echo ("Unable to connect to webmail database: (" . $this->thread_indexConnection->connect_errno . ") " . $this->thread_indexConnection->connect_error);
 		}
 	}
 
@@ -56,6 +64,10 @@ class Walkntrade {
 
 	public function getWebmailConnection(){
 		return $this->webmailConnection;
+	}
+
+	public function getThread_indexConnection(){
+		return $this->thread_indexConnection;
 	}
 
 	public function getSchoolName($identifier){
