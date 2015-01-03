@@ -11,7 +11,7 @@ $myPost = false;
 
 $serverName = basename($_SERVER["SERVER_NAME"]);
 $serverURI = $_SERVER['REQUEST_URI'];
-$validDomains = array("walkntrade.com", "dev.wt");
+$validDomains = array("walkntrade.com", "dev.wt", "50.147.246.201", "172.16.10.71");
 $redirect = true;
 foreach ($validDomains as $domain) {
 	if($serverName === $domain){
@@ -284,7 +284,7 @@ if($loggedIn){
 							else{
 								echo('
 									<div class="cContact">
-										<input type="button" value="Contact User" onclick=\'javascript:createMessageWindow(messaegUserId, messageTitle, messageUserName, messageMessage)\' class="button">
+										<input type="button" value="Contact User" onclick=\'javascript:createMessageWindow(messaegUserId, post_id, messageUserName, messageMessage)\' class="button">
 									</div>
 									');
 							}
@@ -317,11 +317,11 @@ if($loggedIn){
 	</div>
 </body>
 </html>
-<script type="text/javascript" src="/client_js/jquery.min.js"></script>
-<script type="text/javascript" src="/js_minified/min.js"></script>
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+<script type="text/javascript" src="/script/walkntrade.js"></script>
 <script type="text/javascript">
 	messaegUserId = "<?php echo $userid ?>";
-	messageTitle = "<?php echo $title ?>";
+	post_id = "<?php echo $args[0].':'.$args[1] ?>";
 	messageUserName = "<?php echo $uName ?>";
 	messageMessage = "<?php echo $message ?>";
 	initShowPage();

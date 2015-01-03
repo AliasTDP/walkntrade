@@ -137,8 +137,8 @@ $avatarUrl = getAvatarOf($uid);
 	</div>
 </body>
 </html>
-<script type="text/javascript" src="/client_js/jquery.min.js"></script>
-<script type="text/javascript" src="/js_minified/min.js"></script>
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+<script type="text/javascript" src="/script/walkntrade.js"></script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

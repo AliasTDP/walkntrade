@@ -104,102 +104,87 @@ class UserMgmt extends CredentialStore{
 	}
 
 	public function addUser($username, $email, $password, $phone){
-		$uc = $this->getUserConnection();
 		$username = preg_replace("/[^a-zA-Z0-9_\-.]+/", "", $username);
 		$password = md5($password);
-
 		if (strlen($username) < 5 || strlen($username) > 20){
-			return 9;
+			return $this->statusDump(401, "Username must be between 5 and 20 characters long", null);
 		}
 		else{
 			if (!$this->checkUname($username)){
-				return 4;
+				return $this->statusDump(401, "The username has been taken", null);
 			}
 		}
-
 		if (strlen($email) == ""){
-			return 7;
+			return $this->statusDump(401, "You must provide an email", null);
 		}
 		else{
 			$tld = substr($email, -3);
 			if($tld != "edu"){
-				return 100;
+				return $this->statusDump(401, "We only allow .edu emails at this time", null);
 			}
 			if (!$this->checkEmail($email)){
-				return 3;
+				return $this->statusDump(401, "Please provide a valid email", null);
 			}
 		}
-
 		if (strlen($phone) != 10){
-			//return 10;
 			$phone = 0;
 		}
-
 		if (strlen($password) < 8){
-			return 8;
+			return $this->statusDump(401, "Password must be at least 8 characters long", null);
 		}
-
-		if ($insert_stmt = $uc->prepare("INSERT INTO `users` (name, email, password, phone, seed) VALUES (?, ?, ?, ?, ?)")){
+		//----------end verification-------------------------------------------------------------------------------------------------------------------
+		if($insert_stmt = $this->getUserConnection()->prepare("INSERT INTO `users` (name, email, password, phone, seed) VALUES (?, ?, ?, ?, ?)")){
 			$seed = rand(1000000,9999999);
 			$insert_stmt->bind_param('ssssi', $username, $email, $password, $phone, $seed); 
 			$insert_stmt->execute();
 			if($insert_stmt->affected_rows == 1){
-				$status = $this->verifyEmail($email);
-				if($status == 0){
-					$insert_stmt->close();
-					//success
-					if($log_user_stmt = $uc->prepare("UPDATE `users` SET date_registered = ? WHERE email = ? LIMIT 1")){
-						$date = date('Y/m/d H:i:s');
-						$log_user_stmt->bind_param("ss", $date, $email);
-						$log_user_stmt->execute();
-						$log_user_stmt->close();
-					}
-					else
-						return 550;
-					if($getUIDSTMT = $uc->prepare("SELECT `id` FROM `users` WHERE email = ? LIMIT 1")){
-						$getUIDSTMT->bind_param("s", $email);
-						$getUIDSTMT->execute();
-						$getUIDSTMT->store_result();
-						$getUIDSTMT->bind_result($uuid);
-						$getUIDSTMT->fetch();
-						$getUIDSTMT->close();
-					}
-					else
-						return 450;
-					if($createInboxSTMT = $this->getWebmailConnection()->prepare("CREATE TABLE `uid_".$uuid."` (
-						`id` int(11) NOT NULL AUTO_INCREMENT,
-						`from` int(10) NOT NULL,
-						`to` int(10) NOT NULL,
-						`subject` varchar(100) NOT NULL,
-						`message` text NOT NULL,
-						`datetime` datetime NOT NULL,
-						`read` bit(1) DEFAULT b'0',
-						`trash` bit(1) DEFAULT b'0',
-						PRIMARY KEY (`id`)
-						) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-						")){
-						$createInboxSTMT->execute();
-					$createInboxSTMT->close();
+				$this->verifyEmail($email);
+				$insert_stmt->close();
+				//success
+				if($log_user_stmt = $this->getUserConnection()->prepare("UPDATE `users` SET date_registered = ? WHERE email = ? LIMIT 1")){
+					$date = date('Y/m/d H:i:s');
+					$log_user_stmt->bind_param("ss", $date, $email);
+					$log_user_stmt->execute();
+					$log_user_stmt->close();
 				}
 				else
-					return 350;
-				return 0;
+					return $this->statusDump(500, "Unable to set registration date", null);
+				if($getUIDSTMT = $this->getUserConnection()->prepare("SELECT `id` FROM `users` WHERE email = ? LIMIT 1")){
+					$getUIDSTMT->bind_param("s", $email);
+					$getUIDSTMT->execute();
+					$getUIDSTMT->store_result();
+					$getUIDSTMT->bind_result($uuid);
+					$getUIDSTMT->fetch();
+					$getUIDSTMT->close();
+				}
+				else
+					return $this->statusDump(500, "Unable to get userID", null);
+				if($createInboxSTMT = $this->getThread_indexConnection()->prepare("
+						CREATE TABLE `wtonline_thread_index`.`$uuid` (
+					  `thread_id` VARCHAR(20) NOT NULL,
+					  `last_message` VARCHAR(100) NOT NULL,
+					  `last_user_id` INT(50) NOT NULL,
+					  `post_id` VARCHAR(45) NOT NULL,
+					  `post_title` VARCHAR(100) NULL,
+					  `datetime` DATETIME NOT NULL,
+					  `new_messages` BIT NOT NULL,
+					  `associated_with` INT(50) NOT NULL,
+					  `locked` BIT NOT NULL,
+					  `hidden` BIT NOT NULL,
+					  PRIMARY KEY (`thread_id`),
+					  UNIQUE INDEX `thread_id_UNIQUE` (`thread_id` ASC));
+					")){
+					$createInboxSTMT->execute();
+					$createInboxSTMT->close();
+				}
+				return $this->statusDump(200, "Success", null);
 			}
 			else{
-				$insert_stmt->close();
-						//unable to send email
-				return "-3e"+$status;
+				return $this->statusDump(500, "Table not updated", null);
 			}
 		}
-		else{
-					//table not updated
-			return 2;
-		}
-	}
-	else {
-					//SQL error
-		return 1;
-	}
+		else
+			return $this->statusDump(500, "Unable to prepare connection", null);
 	}
 
 	public function controlPanel($oldPw, $email, $newPw, $phone){
@@ -323,114 +308,6 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	public function getSentWebmail($quiet){
-		$wc = $this->getWebmailConnection();
-		if($this->getLoginStatus()){
-			if($webmailSTMT = $wc->prepare("SELECT `id`, `to`, `subject`, `message`, `datetime` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `from` = ? ORDER BY `id` DESC LIMIT 100")){
-				$webmailSTMT->bind_param("i", $_SESSION["user_id"]);
-				$webmailSTMT->execute();
-				$webmailSTMT->store_result();
-				$webmailSTMT->bind_result($id, $to, $subject, $message, $datetime);
-			}
-			else return 152;
-			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<webmail>\n";
-			while($webmailSTMT->fetch()){
-				$to_resolved = $this->resolveIDToUsername($to);
-				$to = ($to_resolved == null) ? "[deleted]" : $to_resolved;
-				$subject = (strlen($subject) >= 35 && $quiet)? substr($subject, 0, 35)."..." : $subject;
-				$message = (strlen($message) >= 40 && $quiet)? substr($message, 0, 40)."..." : $message;
-				$subject = htmlspecialchars($subject);
-				$message = htmlspecialchars($message);
-				$concatenated = $concatenated."<message id=\"".$id."\" to=\"".$to."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\"/>\n";
-			}
-			$webmailSTMT->close();
-			$concatenated = $concatenated."</webmail>";
-			return $concatenated;
-		}
-		else{
-				//NLI
-			return 1;
-		}
-	}
-
-	public function getWebmail($quiet){
-		$wc = $this->getWebmailConnection();
-		if($this->getLoginStatus()){
-			if($webmailSTMT = $wc->prepare("SELECT `id`, `from`, `subject`, `message`, `datetime`, `read` FROM `uid_".$_SESSION["user_id"]."` WHERE `trash` = 0 AND `to` = ? ORDER BY `id` DESC LIMIT 100")){
-				$webmailSTMT->bind_param("i", $_SESSION["user_id"]);
-				$webmailSTMT->execute();
-				$webmailSTMT->store_result();
-				$webmailSTMT->bind_result($id, $from, $subject, $message, $datetime, $read);
-			}
-			else return 152;
-			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<webmail>\n";
-			while($webmailSTMT->fetch()){
-				$from_resolved = $this->resolveIDToUsername($from);
-				$from = ($from_resolved == "null") ? "[deleted]" : $from_resolved;
-				$subject = (strlen($subject) >= 35 && $quiet)? substr($subject, 0, 35)."..." : $subject;
-				$message = (strlen($message) >= 40 && $quiet)? substr($message, 0, 40)."..." : $message;
-				$subject = htmlspecialchars($subject);
-				$message = htmlspecialchars($message);
-				$concatenated = $concatenated."<message id=\"".$id."\" from=\"".$from."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\" read=\"".$read."\"/>\n";
-			}
-			$webmailSTMT->close();
-			$concatenated = $concatenated."</webmail>";
-			return $concatenated;
-		}
-		else{
-				//NLI
-			return 1;
-		}
-	}
-
-	public function pollNewWebmail(){
-			if($this->getLoginStatus()){//If user logged in
-				if($pollNewWebmailSTMT = $this->getWebmailConnection()->prepare("SELECT `id` FROM uid_".$_SESSION["user_id"]." WHERE `trash` = 0 AND `to` = ? AND `read` = 0")){
-					$pollNewWebmailSTMT->bind_param("i", $_SESSION["user_id"]);
-					$pollNewWebmailSTMT->execute();
-					$pollNewWebmailSTMT->store_result();
-					return $pollNewWebmailSTMT->num_rows();
-				}
-			}
-	}
-
-	public function getMessage($messageId){
-		if($this->getLoginStatus()){
-			if($getMessageSTMT = $this->getWebmailConnection()->prepare("SELECT `from`, `to`, `subject`, `message`, `datetime` FROM `uid_".$_SESSION["user_id"]."` WHERE id = ?")){
-				$getMessageSTMT->bind_param("i", $messageId);
-				$getMessageSTMT->execute();
-				$getMessageSTMT->store_result();
-				$getMessageSTMT->bind_result($from, $to, $subject, $message, $datetime);
-				$getMessageSTMT->fetch();
-			}
-			if($getUserNameSTMT = $this->getUserConnection()->prepare("SELECT name FROM users where id = ? LIMIT 1")){
-				$getUserNameSTMT->bind_param("i", $from);
-				$getUserNameSTMT->execute();
-				$getUserNameSTMT->store_result();
-				$getUserNameSTMT->bind_result($from);
-				$getUserNameSTMT->fetch();
-				$getUserNameSTMT->close();
-				$from = ($from == "") ? "[deleted user]" : $from;
-			}
-
-			if($getMessageSTMT = $this->getWebmailConnection()->prepare("UPDATE `uid_".$_SESSION["user_id"]."` SET `read` = 1 WHERE id = ?")){
-				$getMessageSTMT->bind_param("i", $messageId);
-				$getMessageSTMT->execute();
-			}
-			else return 150;
-			$getMessageSTMT->close();
-			$html_blacklist = "/< >/";
-			$subject = htmlspecialchars($subject);
-			$message = htmlspecialchars($message);
-			$concatenated = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<message from=\"".$from."\" to=\"".$this->resolveIDToUsername($to)."\" subject=\"".$subject."\" message=\"".$message."\" datetime=\"".$datetime."\"/>";
-			return $concatenated;
-		}
-		else{
-		//NLI
-			return 1;
-		}
-	}
-
 	public function setEmailPref($intent){
 		if($this->getLoginStatus()){
 			if($setEmailPrefSTMT = $this->getUserConnection()->prepare("UPDATE users SET emailPref = ? WHERE id = ? LIMIT 1")){
@@ -446,22 +323,6 @@ class UserMgmt extends CredentialStore{
 
 	public function getEmailPref(){
 		echo $_SESSION["email_me"];
-	}
-
-	public function removeMessage($messageId){
-		if($this->getLoginStatus()){
-			if($removeMessageSTMT = $this->getWebmailConnection()->prepare("UPDATE `uid_".$_SESSION["user_id"]."` SET `trash` = 1 WHERE id = ? LIMIT 1")){
-				$removeMessageSTMT->bind_param("i", $messageId);
-				$removeMessageSTMT->execute();
-				if($removeMessageSTMT->affected_rows == 1){
-					return 0;
-				}
-			}
-		}
-		else{
-		//NLI
-			return 1;
-		}
 	}
 
 	public function checkPassword($password){
@@ -503,101 +364,6 @@ class UserMgmt extends CredentialStore{
 					return true;
 				}
 			}
-		}
-	}
-
-	public function messageUser($uid, $title, $message){
-		if($this->getLoginStatus()){
-			$needles = array(" fuck ", " shit ", " damn ", " bitch ", " ass ", " dick ", " pussy ", " motherfucker ");
-			foreach ($needles as $needle) {
-				if(stripos($message, $needle) !== false){
-					if($stmtINFRACTIONS = $this->getUserConnection()->prepare("UPDATE `users` SET `infractions` = `infractions` + 1 WHERE `id` = ? LIMIT 1")){
-						$stmtINFRACTIONS->bind_param("i", $_SESSION["user_id"]);
-						$stmtINFRACTIONS->execute();
-					}
-					return 5;
-				}
-			}
-			if($stmt = $this->getUserConnection()->prepare("SELECT `email`, `emailPref`, `android_deviceId` FROM `users`  WHERE `id` = ? LIMIT 1")){
-				$stmt->bind_param("i", $uid);
-				$stmt->execute();
-				$stmt->store_result();
-				if($stmt->affected_rows == 1){
-					$stmt->bind_result($email, $emailPref, $androidDeviceId);
-					$emailPref = ($emailPref == "1") ? true : false;
-					$stmt->fetch();
-					//success
-					date_default_timezone_set('America/New_York');
-					$user_inbox = "uid_".$uid;
-					if($webmailSTMT = $this->getWebmailConnection()->prepare("INSERT INTO ".$user_inbox." (`from`, `to`, `subject`, `message`, `datetime`, `read`, `trash`) VALUES (?,?,?,?,?,0,0)")){
-						$dateTime = date('Y/m/d H:i:s');
-						$title = ($title == "") ? "[no title]" : $title;
-						$message = ($message == "") ? "[no message]" : $message;
-						$webmailSTMT->bind_param("iisss", $_SESSION["user_id"], $uid, $title, $message, $dateTime);
-						$webmailSTMT->execute();
-						$remoteMessageId = $webmailSTMT->insert_id;
-						if($_SESSION["user_id"] != $uid){
-							if($webmailSTMT = $this->getWebmailConnection()->prepare("INSERT INTO "."uid_".$_SESSION["user_id"]." (`from`, `to`, `subject`, `message`, `datetime`, `read`, `trash`) VALUES (?,?,?,?,?,0,0)")){
-								$webmailSTMT->bind_param("iisss", $_SESSION["user_id"], $uid, $title, $message, $dateTime);
-								$webmailSTMT->execute();
-							}
-						}
-						if($webmailSTMT->affected_rows == 1){
-							$webmailSTMT->close();
-							if($archiveSTMT = $this->getUserConnection()->prepare("INSERT INTO `interactions`(`sender`,`reciever`,`message`,`datetime`)VALUES(?,?,?,?);")){
-								$archiveSTMT->bind_param("ssss", $_SESSION{"emailAddress"}, $email, $message, $dateTime);
-								$archiveSTMT->execute();
-								if($androidDeviceId != "")
-									$this->GCMPush($uid, $androidDeviceId, $remoteMessageId, $title, $message, $dateTime);
-							}
-							if($emailPref){
-								$subject = "New message from a user on walkntrade";
-								$messageHTML = '
-								<html>
-								<head></head>
-								<body>
-									<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
-									<h1>New message from '.$_SESSION["username"].' on walkntrade</h1>
-									<p>
-										<b>'.$title.'</b>
-									</p>
-									<p>
-										<b>'.$message.'</b>
-									</p>
-									<p>
-										<i>Please log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.</i>
-									</p>
-								</p>
-							</body>
-							</html>
-							';
-							$messageTEXT='New message from '.$_SESSION["username"].' on walkntrade\r\n'.$title.'\r\n'.$message.'\r\nPlease log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.';
-							return $this->sendmailMultipart($email, $subject, $messageTEXT, $messageHTML);
-						}
-						else return 0;
-					}
-					else{
-						$webmailSTMT->close();
-						return 120;
-					}
-				}
-				else{
-					return 100;
-				}
-			}
-			else{
-					//user does not exist
-				return 3;
-			}
-		}
-		else{
-				//SQL error
-			return 2;
-		}
-		}
-		else{
-				//NLI
-			return 1;
 		}
 	}
 
@@ -674,11 +440,20 @@ class UserMgmt extends CredentialStore{
 		return $id;
 	}
 
-	public function getAvatarOf($userid){
-		if(file_exists("../user_images/uid_".$userid.".jpg"))
-			return("/user_images/uid_".$userid.".jpg");
-		else
-			return("/colorful/Anonymous_User.jpg");
+	public function getAvatarOf($userid, $plainText){
+		if(!$plainText){
+			if(file_exists("../user_images/uid_".$userid.".jpg"))
+				$this->statusDump(200, "/user_images/uid_".$userid.".jpg", null);
+			else
+				$this->statusDump(200, "/colorful/Anonymous_User.jpg", null);
+		}
+		else{
+			if(file_exists("../user_images/uid_".$userid.".jpg"))
+				return "/user_images/uid_".$userid.".jpg";
+			else
+				return "/colorful/Anonymous_User.jpg";
+		}
+		
 	}
 
 	public function getUserProfile($uid, $userName){
@@ -781,6 +556,224 @@ class UserMgmt extends CredentialStore{
 		else{
 			return 1;
 		}
+	}
+
+	private function appendThreadIndex($currentUserId, $thread_id, $message_content, $reciever_id, $post_id){
+		if($reciever_id == $currentUserId)
+			$threadOwners = Array($currentUserId);
+		else
+			$threadOwners = Array($currentUserId, $reciever_id);
+		$i=0;
+		foreach ($threadOwners as $owner) {
+			if($i ==0)
+				$associated_with = $reciever_id;
+			else
+				$associated_with = $currentUserId;
+			if(!$appendThreadSTMT = $this->getThread_indexConnection()->prepare("INSERT INTO `$owner` (thread_id, last_message, last_user_id, post_id, datetime, new_messages, associated_with) VALUES (?, ?, ?, ?, NOW(), 1, ?)"))
+				return false;
+			$appendThreadSTMT->bind_param("ssisi", $thread_id, $message_content, $currentUserId, $post_id, $associated_with);
+			$appendThreadSTMT->execute();
+			if($appendThreadSTMT->affected_rows != 1)
+				return false;
+			$i++;
+		}
+		return true;
+		$appendThreadSTMT->close();
+	}
+
+	private function createThreadTable($thread_id){
+		$createThreadsQuery = "
+		CREATE TABLE `$thread_id` (
+	  `message_id` INT NOT NULL AUTO_INCREMENT,
+	  `sender_id` INT(50) NOT NULL,
+	  `sender_name` VARCHAR(20) NOT NULL,
+	  `message_content` VARCHAR(1000) NOT NULL,
+	  `datetime` DATETIME NOT NULL,
+	  `message_seen` BIT NOT NULL,
+	  PRIMARY KEY (`message_id`),
+	  UNIQUE INDEX `message_id_UNIQUE` (`message_id` ASC));
+		";
+		if(!$createThreadTableSTMT = $this->getThreadsConnection()->prepare($createThreadsQuery))
+			return false;
+		$createThreadTableSTMT->execute();
+		return true;
+	}
+
+	private function userOwnsThread($thread_id){
+		$currentUserId = $_SESSION['user_id'];
+		if(!$ownVerifySTMT = $this->getThread_indexConnection()->prepare("SELECT `thread_id` FROM `$currentUserId` WHERE `thread_id` = ?")){
+			return false;
+		}
+		$ownVerifySTMT->bind_param("s", $thread_id);
+		$ownVerifySTMT->execute();
+		$ownVerifySTMT->store_result();
+		if($ownVerifySTMT->num_rows != 1)
+			return false;
+		return true;
+	}
+
+	private function externamMailer($uid, $message, $thread_id){
+		if($stmt = $this->getUserConnection()->prepare("SELECT `email`, `emailPref`, `android_deviceId` FROM `users`  WHERE `id` = ? LIMIT 1")){
+			$stmt->bind_param("i", $uid);
+			$stmt->execute();
+			$stmt->bind_result($email, $emailPref, $_androidDeviceId);
+			$stmt->fetch();
+		}
+		$currentUserId = $_SESSION['user_id'];
+		$title = "title";
+		$this->GCMPush($currentUserId, $_androidDeviceId, $thread_id, $title, $message, date('Y/m/d H:i:s'));
+		if($emailPref){
+			$subject = "New message from a user on walkntrade";
+			$messageHTML = '
+			<html>
+			<head></head>
+			<body>
+			<img src="http://walkntrade.com/colorful/wtlogo_dark.png">
+			<h1>New message from '.$_SESSION["username"].' on walkntrade</h1>
+			<p>
+				<b>'.$title.'</b>
+			</p>
+			<p>
+				<b>'.$message.'</b>
+			</p>
+			<p>
+				<i>Please log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.</i>
+			</p>
+			</p>
+			</body>
+			</html>
+			';
+			$messageTEXT='New message from '.$_SESSION["username"].' on walkntrade\r\n'.$title.'\r\n'.$message.'\r\nPlease log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.';
+			$this->sendmailMultipart($email, $subject, $messageTEXT, $messageHTML);
+		}
+	}
+
+	public function appendMessage($thread_id, $message_content, $standAlone){
+		if($thread_id == "")
+			return $this->statusDump(500, "No thread Id", null);
+		if($message_content == "")
+			return $this->statusDump(500, "No message", null);
+		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
+			$currentUserId = $_SESSION['user_id'];
+			$currentUserName = $_SESSION['username'];
+
+			if(!$getCUIDSTMT = $this->getThread_indexConnection()->prepare("SELECT `associated_with`, `locked` FROM `$currentUserId` WHERE `thread_id` = ?;")){
+				if($standAlone)
+					return $this->statusDump(500, "Unable to get associated user from database (303)", null);
+				return false;
+			}
+			$getCUIDSTMT->bind_param("s", $thread_id);
+			$getCUIDSTMT->execute();
+			$getCUIDSTMT->bind_result($associated_with, $threadLocked);
+			$getCUIDSTMT->fetch();
+
+			if($threadLocked){
+				if($standAlone)
+					return $this->statusDump(401, "This user has chosen to remove themself from the conversation. You will not be able to communicate with them again unless you reply to one of their posts.", null);
+				return false;
+			}
+
+			if(!$appendThreadSTMT = $this->getThreadsConnection()->prepare("INSERT INTO `$thread_id` (sender_id, sender_name, message_content, datetime, message_seen) VALUES (?, ?, ?, NOW(), 0)")){
+				if($standAlone)
+					return $this->statusDump(500, "Unable to update database (301)", null);
+				return false;
+			}
+			$appendThreadSTMT->bind_param("sss", $currentUserId, $currentUserName, $message_content);
+			$appendThreadSTMT->execute();
+			if($appendThreadSTMT->affected_rows != 1){
+				if($standAlone)
+					return $this->statusDump(500, "No update (300)", null);
+				return false;
+			}
+			if($standAlone){
+				$this->externamMailer($currentUserId, $message_content, $thread_id);
+				return $this->statusDump(200, "Message sent", null);
+			}
+			return true;
+		}
+		else{
+			if($standAlone)
+				return $this->statusDump(401, "User not authorized (255)", null);
+			return false;
+		}
+	}
+
+	public function createMessageThread($message_content, $reciever_id, $post_id){
+		if($this->getLoginStatus()){
+			$thread_id = $this->getRandomHex(20);
+			$currentUserId = $_SESSION['user_id'];
+			$currentUserName = $_SESSION['username'];
+
+			if(!$this->appendThreadIndex($currentUserId, $thread_id, $message_content, $reciever_id, $post_id))
+				return $this->statusDump(500, "Unable to appendThreadIndex()", null);
+			if(!$this->createThreadTable($thread_id))
+				return $this->statusDump(500, "Unable to createThreadTable()", null);
+			if(!$this->appendMessage($thread_id, $message_content, false))
+				return $this->statusDump(500, "Unable to appendMessage()", null);
+			return $this->statusDump(200, "Message sent scessfully", null);
+		}
+		else{
+			return $this->statusDump(401, "User not authorized", null);
+		}
+	}
+
+	public function getMessageThreadsCurrentUser($offset, $amount){
+		$currentUserId = $_SESSION['user_id'];
+		if(!$getThreadsSTMT = $this->getThread_indexConnection()->prepare("SELECT thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with FROM `$currentUserId` WHERE `hidden` = 0 ORDER BY `thread_id` DESC LIMIT ?,? "))
+			return $this->statusDump(500, "Unable to get threads (1000)", null);
+		$getThreadsSTMT->bind_param("ii", $offset, $amount);
+		$getThreadsSTMT->execute();
+		$getThreadsSTMT->bind_result($thread_id, $last_message, $last_user_id, $post_id, $post_title, $datetime, $new_messages, $associated_with);
+		$threadsArray = Array();
+		while($getThreadsSTMT->fetch()){
+			$line = Array("thread_id"=>$thread_id, "last_message"=>$last_message, "$last_user_id"=>$last_user_id, "post_id"=>$post_id, "post_title"=>$post_title, "datetime"=>$datetime, "new_messages"=>$new_messages,"associated_with"=>$associated_with,"associated_with_name"=>$this->resolveIDToUsername($associated_with),"associated_with_image"=>$this->getAvatarOf($associated_with, true));
+			array_push($threadsArray, $line);
+		}
+		$this->statusDump(200, "Threads for current user", $threadsArray);
+	}
+
+	public  function retrieveThread($thread_id, $offset, $amount){
+		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
+			$retrieveThreadSTMT = $this->getThreadsConnection()->prepare("SELECT message_id, sender_id, sender_name, message_content, datetime, message_seen  FROM `$thread_id` ORDER BY `message_id` LIMIT ?,?");
+			$retrieveThreadSTMT->bind_param("ii", $offset, $amount);
+			$retrieveThreadSTMT->execute();
+			$retrieveThreadSTMT->bind_result($message_id, $sender_id, $sender_name, $message_content, $datetime, $message_seen);
+			$threadArray=Array();
+			while($retrieveThreadSTMT->fetch()){
+				$sentFromMe = ($sender_id == $_SESSION["user_id"])?1:0;
+				$line=Array("message_id"=>$message_id,"sentFromMe"=>$sentFromMe,"sender_id"=>$sender_id,"sender_name"=>$sender_name,"message_content"=>$message_content,"datetime"=>$datetime,"message_seen"=>$message_seen, "avatar"=>$this->getAvatarOf($sender_id, true));
+				array_push($threadArray, $line);
+			}
+			$this->statusDump(200, "", $threadArray);
+		}
+		else{
+			$this->statusDump(500, "User not authorized", null);
+		}
+	}
+
+	private function getAssoc($thread_id){
+		$currentUserId = $_SESSION["user_id"];
+		$getAssocSTMT = $this->getThread_indexConnection()->prepare("SELECT `associated_with` FROM `$currentUserId` WHERE `thread_id` = ?");
+		$getAssocSTMT->bind_param("s", $thread_id);
+		$getAssocSTMT->execute();
+		$getAssocSTMT->bind_result($associated_with);
+		$getAssocSTMT->fetch();
+		return $associated_with;
+	}
+
+	public function deleteThread($thread_id){
+		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
+			$currentUserId = $_SESSION["user_id"];
+			$associated_with = $this->getAssoc($thread_id);
+			$this->appendMessage($thread_id, $_SESSION["username"]." has left the conversation. They will no longer recieve replies to this thread.", false);
+			if(!$deleteThreadSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$currentUserId`,`$associated_with` SET `$currentUserId`.hidden = 1, `$currentUserId`.locked = 1, `$associated_with`.locked = 1 WHERE `$currentUserId`.thread_id AND `$associated_with`.thread_id = ?"))
+				return $this->statusDump(500,"Unable to prepare connection (482)", null);
+			$deleteThreadSTMT->bind_param("s", $thread_id);
+			$deleteThreadSTMT->execute();
+			return $this->statusDump(200,"Thread closed", null);
+		}
+		else
+			return $this->statusDump(401,"User Not Authorized (2479)", null);
 	}
 }
 ?>

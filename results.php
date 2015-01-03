@@ -1,7 +1,7 @@
 <?php
 $serverName = basename($_SERVER["SERVER_NAME"]);
 $serverURI = $_SERVER['REQUEST_URI'];
-$validDomains = array("walkntrade.com", "dev.wt");
+$validDomains = array("walkntrade.com", "dev.wt", "50.147.246.201", "172.16.10.71");
 $redirect = true;
 foreach ($validDomains as $domain) {
 	if($serverName === $domain){
@@ -72,6 +72,6 @@ if($redirect)
 	</div>
 </body>
 </html>
-<script type="text/javascript" src="/client_js/jquery.min.js"></script>
-<script type="text/javascript" src="/js_minified/min.js"></script>	
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+<script type="text/javascript" src="/script/walkntrade.js"></script>	
 <script type="text/javascript">window.school="<?php echo $schoolTextId ?>";initResults();</script>

@@ -77,7 +77,7 @@ function initResults(){
 
 function initCP(){
 	window.includeDir = "/include/user_settings/";
-	window.sections = new Array('<i class="sprite sprite-1396343029_shop"></i>Welcome', '<i class="sprite sprite-1396343080_mail"></i>Received Messages', '<i class="sprite sprite-1396343166_paperplane"></i>Sent Messages', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
+	window.sections = new Array('<i class="sprite sprite-1396343029_shop"></i>Welcome', '<i class="sprite sprite-1396343080_mail"></i>Messages', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
 	window._preventDefault;
 	window.jumpTo;
 	window.cpModule = new Array();
@@ -195,7 +195,7 @@ function initFeedbackSlider(){
 function pollNewMessages(){
 	if(window.location.pathname == "/user_settings" || window.location.pathname == "/user_settings.php"){
 		$("#messageIndicator").attr("onclick", "javascript:loadModule('1')");
-		$("#postIndicator").attr("onclick", "javascript:loadModule('3')");
+		$("#postIndicator").attr("onclick", "javascript:loadModule('2')");
 		$("#settingsIndicator").attr("onclick", "javascript:loadModule('4')");
 	}
 	else{
@@ -307,158 +307,108 @@ function loadModule(e){
 	});
 }
 
-function getWebmail(){
-	$("#navBarMail").html("[Waiting for mail]");
-	$.ajax({ dataType:"xml", data:"intent=getWebmail&quiet=true"}).success(function(xml){
-		var pageElement = $("#webmail");
-		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total <input type='button' class='button' value='Reload' onclick='getWebmail()' >");
-		$(xml).find("message").each(function(){
-			var id = $(this).attr("id");
-			var from = $(this).attr("from");
-			var subject = $(this).attr("subject");
-			var message = $(this).attr("message");
-			var datetime = $(this).attr("datetime");
-			var read = ($(this).attr("read") == 0) ? "unread" : "" ;
-			pageElement.find("table").append($('<tr/>', {"onclick":"openMessage('"+id+"', '"+read+"')", "id":"msg_"+id, "class":read}));
-			$("#msg_"+id).append($('<td/>', {"width": "15%", "class":"sender"}).text(from));
-			$("#msg_"+id).append($('<td/>', {"width": "30%"}).text(subject));
-			$("#msg_"+id).append($('<td/>', {"width": "40%"}).text(message));
-			$("#msg_"+id).append($('<td/>', {"width": "15%"}).text(datetime));
-		});
-	});
-}
+function loadThread(thread_id, post_id){
+	window.post_id = post_id;
+	$("tbody").find(".threadButton").removeClass("selected");
+	$("#"+thread_id).addClass("selected");
+	var pageElement = $("#threadView");
 
-function getSentWebmail(){
-	$("#navBarMail").html("[Waiting for mail]");
-	$.ajax({ dataType:"xml", data:"intent=getSentWebmail&quiet=true"}).success(function(xml){
-		var pageElement = $("#webmail");
-		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-		$("#navBarMail").html("["+$(xml).find("message").length+"] messages total");
-		$(xml).find("message").each(function(){
-			var id = $(this).attr("id");
-			var to = $(this).attr("to");
-			var subject = $(this).attr("subject");
-			var message = $(this).attr("message");
-			var datetime = $(this).attr("datetime");
-			pageElement.find("table").append($('<tr/>', {"onclick":"openMessageSent('"+id+"')", "id":"msg_"+id}));
-			$("#msg_"+id).append($('<td/>', {"width": "15%", "class":"sender"}).text(to));
-			$("#msg_"+id).append($('<td/>', {"width": "30%"}).text(subject));
-			$("#msg_"+id).append($('<td/>', {"width": "40%"}).text(message));
-			$("#msg_"+id).append($('<td/>', {"width": "15%"}).text(datetime));
-		});
-	});
-}
-
-function openMessage(id, read){
-	$.ajax({dataType:"xml",  data:"intent=getMessage&message_id="+id}).success(function(xml){
-		if(read == "unread"){
-			pollNewMessages();
-			getWebmail();
+	$.ajax({url:api_url2, dataType:"json", data:"intent=getPostByIdentifier&"+post_id}).success(function(json){
+		if(json.status==200){
+			var postTitle = json.payload[0].title;
+			var postDetails = json.payload[0].details;
+			pageElement.html("<div class='postReminder'><h2 class='nowrap'>Post Title: "+postTitle+"</h2><p class='nowrap'>"+postDetails+"</p></div>");
+			window.thread_id = thread_id;
+			renderThread(pageElement);
 		}
-		var _message = $(xml).find("message");
-		window.from = _message.attr("from");
-		window.subject = _message.attr("subject");
-		window.message = _message.attr("message");
-		window.datetime = _message.attr("datetime");
-			var msg = "<table cellspacing=\"0\" cellpadding=\"0\" class=\"messageView\"><tr><th width=\"20%\">sender::</th><th id=\"fromElement\" width=\"80%\"></th></tr><tr><th>subject::</th><th id=\"subjectElement\"></th></tr><tr><td colspan=\"2\" height=\"150px\"><div id=\"messageWrapper\"></div></td></tr><tr><td>Sent:</td><td>"+datetime+"</th></td><tr><td width=\"50%\"><button class=\"button\" onclick=\"javascript:removeMessage("+id+")\">Delete message</button></td><td width=\"50%\"><button class=\"button\" onclick=\"javascript:replyTo()\">Reply</button></td><tr></table>";
-		dialog(msg,false,function(){
-			$("#subjectElement").text(window.subject);
-			$("#fromElement").text(window.from);
-			$("#messageWrapper").text(window.message);
-		});
-		
-	})
-}
+	});
 
-function openMessageSent(id){
-	$.ajax({dataType:"xml",  data:"intent=getMessage&message_id="+id}).success(function(xml){
-		var _message = $(xml).find("message");
-		window.to = _message.attr("to");
-		window.subject = _message.attr("subject");
-		window.message = _message.attr("message");
-		window.datetime = _message.attr("datetime");
-			var msg = "<table cellspacing=\"0\" cellpadding=\"0\" class=\"messageView\"><tr><th width=\"20%\">to::</th><th id=\"toUserElement\" width=\"80%\"></th></tr><tr><th>subject::</th><th id=\"subjectElement\"></th></tr><tr><td colspan=\"2\" height=\"150px\"><div id=\"messageWrapper\"></div></td></tr><tr><td>Sent:</td><td>"+datetime+"</th></td><tr><td colspan=\"2\"><button class=\"button\" onclick=\"javascript:removeMessage("+id+")\">Delete message</button></td><tr></table>";
-		dialog(msg,false,function(){
-			$("#subjectElement").text(window.subject);
-			$("#toUserElement").text(window.to);
-			$("#messageWrapper").text(window.message);
-		});
-		
-	})
-}
-
-function removeMessage(id){
-	if($("#screen").length != 0){
-		$("#screen").fadeOut(function(){
-			$("#screen").remove();
-			act();
-		});
-	}
-	else act();
-	function act(){
-		dialog("Are you sure you want to delete this?", true, null, function(r){
-			if(r){
-				$.ajax({dataType:"html",  data:"intent=removeMessage&message_id="+id, context:refreshAll}).success(function(r){
-					if(r == 0){
-						this();
-					}
-					else{
-						dialog("An error has occured ("+r+").", true, null, window.reload());
-					}
-				});
+	function renderThread(pageElement){
+		$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
+			payload = json.payload;
+			
+			pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
+			for(var i=0;i<payload.length;i++){
+				var message_content = payload[i].message_content;
+				var message_id = payload[i].message_id;
+				var datetime = payload[i].datetime;
+				var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
+				if(sentFromMe)
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
+				else
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+					$("#msg_"+message_id+" td").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");
 			}
-			else return;
-		})
+			$("#threadView").animate({ scrollTop: $("#threadView")[0].scrollHeight}, 500);
+		});
 	}
 }
 
-function sendReply(userName){
-	title = document.replyForm.subject.value;
-	message = document.replyForm.message.value;
-	if($("#screen").length != 0){
-		$("#screen").fadeOut(function(){
-			$("#screen").remove();
-			act();
+function deleteThread(thread_id){
+	var user = confirm("Are you sure you want to remove this thread? You will not be able to talk to this user again except through another post.");
+	if(user){
+		$.ajax({url:api_url2, dataType:"json", data:"intent=deleteThread&thread_id="+thread_id}).success(function(json){
+			if(json.status != 200){
+				dialog(json.message);
+				$("#threadView").empty();
+				window.thread_id = "";
+			}
+			else{
+				$("#threadView").empty();
+				getThreads();
+			}
 		});
 	}
-	else act();
-	function act(){
-		$.ajax({url: api_url2, dataType:"json", data:"intent=messageUser&userName="+userName+"&title="+title+"&message="+message,context:getWebmail}).success(function(json){
-			if(json.status == "200")
-				dialog("Your message has been sent", true, null,  this());
+
+}
+
+function getThreads(){
+	$("#navBarMail").html("please wait...");
+	$.ajax({url:api_url2, dataType:"json", data:"intent=getMessageThreadsCurrentUser"}).success(function(json){
+		var pageElement = $("#threads");
+		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
+		payload = json.payload;
+		$("#navBarMail").html(payload.length+" thread(s) total <input type='button' class='button' value='Reload' onclick='getThreads()' >");
+		if(payload.length == 0){
+			pageElement.html("<p><h3 style='text-align:center;color:#C0C0C0'>You have no messages</h3></p>");
+		}
+		else{
+			for(var i=0;i<payload.length;i++){
+				var thread_id = payload[i].thread_id;
+				var last_message = payload[i].last_message;
+				var post_id = payload[i].post_id;
+				var post_title = payload[i].post_title;
+				var datetime = payload[i].datetime;
+				var new_messages = payload[i].new_messages;
+				var associated_with_name = payload[i].associated_with_name;
+				var associated_with = payload[i].associated_with;
+				var imageUrl = payload[i].associated_with_image;
+				var read = 0;
+				pageElement.find("table").append($('<tr/>', {"id":thread_id, "class":read, "class":"threadButton"}));
+				$("#"+thread_id).append($('<td/>', {"class":"userImage", "onclick": "window.location='/user?uid="+associated_with+"'"}));
+				$("#"+thread_id+" .userImage").html("<img src='"+imageUrl+"'>");
+				$("#"+thread_id).append($('<td/>', {"class":"textContainer", "onclick": "loadThread('"+thread_id+"', '"+post_id+"')"}));
+				$("#"+thread_id+" .textContainer").append($('<div/>'));
+				$("#"+thread_id+" .textContainer div").html("<b>"+associated_with_name+"</b><br>"+last_message+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
+				$("#"+thread_id).append($('<td/>', {"class":"deleteBox", "onclick":"deleteThread('"+thread_id+"')"}));
+				$("#"+thread_id+" .deleteBox").html("<i class='sprite sprite-1396379273_86'></i>");
+			}
+		}
+	});
+}
+
+function sendMessage(message){
+	if(thread_id != ""){
+		$.ajax({url:api_url2, dataType:"json", data:"intent=appendMessage&thread_id="+thread_id+"&message="+message}).success(function(json){
+			if(json.status == 200){
+				loadThread(thread_id, post_id);
+				$("#messaageInput").val("");
+			}
 			else
-				dialog(json.message,true, null);
+				dialog(json.message);
 		});
 	}
-}
-
-function replyTo(){
-	dialog('\
-		<form name="replyForm" action="javascript:void(0)" onSubmit="sendReply(document.replyForm.recipient.value)">\
-		<table id="messageReply">\
-		<tr>\
-		<th colspan="2">Compose message:</th>\
-		</tr>\
-		<tr>\
-		<td width="20%">To:</td>\
-		<td><input name="recipient" id="_recipient" type="text"></td>\
-		</tr>\
-		<tr>\
-		<td width="20%">Subject:</td>\
-		<td><input type="text" name="subject" id="_subject"></td>\
-		</tr>\
-		<tr>\
-		<td colspan="2"><textarea name="message"></textarea></td>\
-		</tr>\
-		<tr>\
-		<td colspan="2"><input type="submit" value="Send!"><td>\
-		</tr>\
-		</table>\
-		</form>',false, function(){
-			$("#_recipient").val(window.from);
-			$("#_subject").val("RE: "+window.subject);
-		}, null);
 }
 
 function getUserPosts(){
@@ -810,10 +760,10 @@ function pageLoad(query, school, cat, sort, callback) {
 	});
 }
 
-function createMessageWindow(userId, title, userName, message){
+function createMessageWindow(userId, post_id, userName, message){
 	var messageWindow ='<form name="contact" action="javascript:messageUser()">\
 	<input type="hidden" name="uid" value="'+userId+'">\
-	<input type="hidden" name="title" value="'+title+'">\
+	<input type="hidden" name="post_id" value="'+post_id+'">\
 	<table id="messageWindow">\
 		<tr>\
 			<th>Email '+userName+'</th>\
@@ -834,7 +784,7 @@ function createMessageWindow(userId, title, userName, message){
 
 function messageUser(){
 	var id = document.contact.uid.value;
-	var title = document.contact.title.value;
+	var post_id = document.contact.post_id.value;
 	var message = document.contact.message.value;
 
 	if(message.length < 20){
@@ -844,7 +794,7 @@ function messageUser(){
 	else{
 		$("#response").html("");
 	}
-	$.ajax({url:api_url2, dataType:"json", type:"POST", data:"intent=messageUser&uid="+id+"&title="+title+"&message="+message}).success(function(json){
+	$.ajax({url:api_url2, dataType:"json", type:"POST", data:"intent=createMessageThread&user_id="+id+"&post_id="+post_id+"&message="+message}).success(function(json){
 			var responseObj = document.getElementById("response");
 			switch(json.status){
 				case("200"):
@@ -1126,24 +1076,23 @@ function user_add(){
 	else{
 		$("#4Err").html("");
 	}
-	$.ajax({url:api_url, 
-		dataType:"html", 
+	$.ajax({url:api_url2, 
+		dataType:"json", 
 		type:"POST", 
 		data:"intent=addUser&username="+uname+"&email="+email+"&password="+pword+"&phone="+phone
-		}).success(function(r){
-		switch(r){
-			case("0"):
-			window.location = "/validateKey";
-			break;
-			case("3"):
-			$("#2Err").html("This email address is in use!");
-			break;
-			default:
-			dialog(r);
-			window.location("./");
-			break;
-		}
-	});
+		}).success(function(json){
+			switch(json.status){
+				case 200:
+						window.location = "/validateKey";
+					break;
+				case 500:
+					dialog("An internal error has occured, please try again or contact feedback@walkNtrade.com");
+					break;
+				case 401:
+					dialog(json.message);
+					break;
+			}
+		});
 }
 
 function handleResponse(response){

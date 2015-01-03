@@ -63,7 +63,6 @@ if($identifier != null){
 		if(user){
 			$.ajax({data:"intent="+intent+"&school="+school+"&title="+title+"&details="+details+"&price="+price+"&identifier="+identifier+"&tags="+tags}).success(function(json){
 				if(json.status == 200){
-					alert(json.message);
 					window.close();
 				}
 				else{

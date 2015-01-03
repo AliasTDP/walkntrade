@@ -101,6 +101,6 @@ if(!$loggedIn = $cs->getLoginStatus())
 	</div>
 </body>
 </html>
-<script type="text/javascript" src="/client_js/jquery.min.js"></script>
-<script type="text/javascript" src="/js_minified/min.js"></script>	
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+<script type="text/javascript" src="/script/walkntrade.js"></script>	
 <script type="text/javascript">initAddPost();</script>

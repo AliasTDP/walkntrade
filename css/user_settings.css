@@ -98,6 +98,7 @@
 
 #contentTab .boxStyle1{
 	padding: 0px;
+	overflow: auto;
 }
 
 .settingsHeader{

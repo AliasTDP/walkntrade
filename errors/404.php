@@ -14,8 +14,8 @@ $loggedIn = $cs->getLoginStatus();
 	<link href='https://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
 	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<script type="text/javascript" src="/client_js/include.js"></script>
-	<script type="text/javascript" src="/client_js/jquery.min.js"></script>
+	<script type="text/javascript" src="/script/walkntrade.js"></script>
+	<script type="text/javascript" src="/script/jquery.min.js"></script>
 	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
