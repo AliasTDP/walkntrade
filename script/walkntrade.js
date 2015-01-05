@@ -419,7 +419,7 @@ function getThreads(quiet){
 				$("#"+thread_id+" .userImage").html("<img src='"+imageUrl+"'>");
 				$("#"+thread_id).append($('<td/>', {"class":"textContainer", "onclick": "loadThread('"+thread_id+"', '"+post_title+"')"}));
 				$("#"+thread_id+" .textContainer").append($('<div/>'));
-				$("#"+thread_id+" .textContainer div").html("<b>"+associated_with_name+"</b><br>"+last_message+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
+				$("#"+thread_id+" .textContainer div").html("<b>"+post_title+"</b><br>"+associated_with_name+": "+last_message+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
 				$("#"+thread_id).append($('<td/>', {"class":"deleteBox", "onclick":"deleteThread('"+thread_id+"')"}));
 				$("#"+thread_id+" .deleteBox").html("<i class='sprite sprite-1396379273_86'></i>");
 			}
