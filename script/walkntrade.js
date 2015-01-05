@@ -794,7 +794,6 @@ function pageLoad(query, school, cat, sort, callback) {
 
 function createMessageWindow(userId, post_id, userName, message){
 	var messageWindow ='<form name="contact" action="javascript:messageUser()">\
-	<input type="hidden" name="uid" value="'+userId+'">\
 	<input type="hidden" name="post_id" value="'+post_id+'">\
 	<input type="hidden" name="post_title" value="'+post_title+'">\
 	<table id="messageWindow">\
@@ -816,9 +815,7 @@ function createMessageWindow(userId, post_id, userName, message){
 }
 
 function messageUser(){
-	var id = document.contact.uid.value;
 	var post_id = document.contact.post_id.value;
-	var post_title = document.contact.post_title.value;
 	var message = document.contact.message.value;
 
 	if(message.length < 20){
@@ -828,7 +825,7 @@ function messageUser(){
 	else{
 		$("#response").html("");
 	}
-	$.ajax({url:api_url2, dataType:"json", type:"POST", data:"intent=createMessageThread&user_id="+id+"&post_id="+post_id+"&message="+message+"&post_title="+post_title}).success(function(json){
+	$.ajax({url:api_url2, dataType:"json", type:"POST", data:"intent=createMessageThread&post_id="+post_id+"&message="+message}).success(function(json){
 			var responseObj = document.getElementById("response");
 			switch(json.status){
 				case("200"):

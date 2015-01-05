@@ -732,8 +732,30 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	public function createMessageThread($message_content, $reciever_id, $post_id, $post_title){
+	private function getPostDetails($post_identifier){
+		$args = split(":", $post_identifier);
+		$identifier = htmlspecialchars($args[1]);
+		$school = htmlspecialchars($args[0]);
+		if($gpbiSTMT = $this->getListingConnection()->prepare("SELECT `title`, `username` FROM `$school` WHERE `identifier` = ? LIMIT 1")){
+			$gpbiSTMT->bind_param("s", $identifier);
+			$gpbiSTMT->execute();
+			$gpbiSTMT->store_result();
+			$gpbiSTMT->bind_result($_pTitle, $_pUsername);
+			$gpbiSTMT->fetch();
+			if($gpbiSTMT->num_rows == 1){
+				return Array($_pTitle, $_pUsername);
+			}
+			else{
+				return false;
+			}
+		}
+	}
+
+	public function createMessageThread($message_content, $post_id){
 		if($this->getLoginStatus()){
+			$postDetails = $this->getPostDetails($post_id);
+			$reciever_id = $this->resolveUsernameToID($postDetails[1]);
+			$post_title = $postDetails[0];
 			$thread_id = $this->getRandomHex(20);
 			$currentUserId = $_SESSION['user_id'];
 			$currentUserName = $_SESSION['username'];
@@ -744,7 +766,7 @@ class UserMgmt extends CredentialStore{
 				return $this->statusDump(500, "Unable to createThreadTable()", null);
 			if(!$this->appendMessage($thread_id, $message_content, false, true))
 				return $this->statusDump(500, "Unable to appendMessage()", null);
-			return $this->statusDump(200, "Message sent successfully", null);
+			return $this->statusDump(200, "Message sent!", null);
 		}
 		else{
 			return $this->statusDump(401, "User not authorized", null);
@@ -752,18 +774,23 @@ class UserMgmt extends CredentialStore{
 	}
 
 	public function getMessageThreadsCurrentUser($offset, $amount){
-		$currentUserId = $_SESSION['user_id'];
-		if(!$getThreadsSTMT = $this->getThread_indexConnection()->prepare("SELECT thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with FROM `$currentUserId` WHERE `hidden` = 0 ORDER BY `thread_id` DESC LIMIT ?,? "))
-			return $this->statusDump(500, "Unable to get threads (1000)", null);
-		$getThreadsSTMT->bind_param("ii", $offset, $amount);
-		$getThreadsSTMT->execute();
-		$getThreadsSTMT->bind_result($thread_id, $last_message, $last_user_id, $post_id, $post_title, $datetime, $new_messages, $associated_with);
-		$threadsArray = Array();
-		while($getThreadsSTMT->fetch()){
-			$line = Array("thread_id"=>$thread_id, "last_message"=>$last_message, "last_user_id"=>$last_user_id, "last_user_name"=>$this->resolveIDToUsername($last_user_id), "post_id"=>$post_id, "post_title"=>$post_title, "datetime"=>$datetime, "new_messages"=>$new_messages,"associated_with"=>$associated_with,"associated_with_name"=>$this->resolveIDToUsername($associated_with),"associated_with_image"=>$this->getAvatarOf($associated_with, true));
-			array_push($threadsArray, $line);
+		if($this->getLoginStatus()){
+			$currentUserId = $_SESSION['user_id'];
+			if(!$getThreadsSTMT = $this->getThread_indexConnection()->prepare("SELECT thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with FROM `$currentUserId` WHERE `hidden` = 0 ORDER BY `thread_id` DESC LIMIT ?,? "))
+				return $this->statusDump(500, "Unable to get threads (1000)", null);
+			$getThreadsSTMT->bind_param("ii", $offset, $amount);
+			$getThreadsSTMT->execute();
+			$getThreadsSTMT->bind_result($thread_id, $last_message, $last_user_id, $post_id, $post_title, $datetime, $new_messages, $associated_with);
+			$threadsArray = Array();
+			while($getThreadsSTMT->fetch()){
+				$line = Array("thread_id"=>$thread_id, "last_message"=>$last_message, "last_user_id"=>$last_user_id, "last_user_name"=>$this->resolveIDToUsername($last_user_id), "post_id"=>$post_id, "post_title"=>$post_title, "datetime"=>$datetime, "new_messages"=>$new_messages,"associated_with"=>$associated_with,"associated_with_name"=>$this->resolveIDToUsername($associated_with),"associated_with_image"=>$this->getAvatarOf($associated_with, true));
+				array_push($threadsArray, $line);
+			}
+			$this->statusDump(200, "Threads for current user", $threadsArray);
 		}
-		$this->statusDump(200, "Threads for current user", $threadsArray);
+		else{
+			$this->statusDump(500, "User not authorized", null);
+		}
 	}
 
 	public  function retrieveThread($thread_id, $limit){

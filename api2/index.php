@@ -395,10 +395,8 @@ switch($getIntent){
 		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$message_content=(isset($_POST["message"]))?filter_var($_POST["message"], FILTER_SANITIZE_STRING):null;
-		$user_id=(isset($_POST["user_id"]))?filter_var($_POST["user_id"], FILTER_SANITIZE_NUMBER_INT):null;
 		$post_id=(isset($_POST["post_id"]))?filter_var($_POST["post_id"], FILTER_SANITIZE_STRING):null;
-		$post_title=(isset($_POST["post_title"]))?filter_var($_POST["post_title"], FILTER_SANITIZE_STRING):null;
-		$um->createMessageThread($message_content, $user_id, $post_id, $post_title);
+		$um->createMessageThread($message_content, $post_id);
 		break;
 	case "getMessageThreadsCurrentUser":
 		require_once "../framework2/UserMgmt.php";
