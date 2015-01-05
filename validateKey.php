@@ -1,5 +1,5 @@
 <?php
-require_once "framework/CredentialStore.php";
+require_once "framework2/CredentialStore.php";
 $cs = new CredentialStore();
 $schoolTextId = basename(getcwd());
 $loggedIn = $cs->getLoginStatus();
@@ -39,7 +39,7 @@ $loggedIn = $cs->getLoginStatus();
 		<div class="wF">
 			<div class="boxStyle1" style="position:absolute;width:450px;text-align:center;left:50%;margin-left:-225px;">
 					<?php
-					require_once "framework/Walkntrade.php";
+					require_once "framework2/Walkntrade.php";
 					if(isset($_GET["token"])){
 						$key = filter_var($_GET["token"], FILTER_SANITIZE_NUMBER_INT);
 						$wt = new Walkntrade();

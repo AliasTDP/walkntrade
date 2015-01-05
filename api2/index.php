@@ -47,16 +47,7 @@ switch($getIntent){
 		$args = split(":", $args[1]);
 		$identifier = htmlspecialchars($args[1]);
 		$school = htmlspecialchars($args[0]);
-		$payload=$wt->getPostByIdentifier($identifier, $school);
-		switch ($payload) {
-			case 1:
-				echo genJSON(404, "The post does not exist", "");
-				break;
-			
-			default:
-				echo genJSON(200, "", $payload);
-				break;
-		}
+		$wt->getPostByIdentifier($identifier, $school);
 		break;
 	case "getSchools":
 		require_once "../framework2/Walkntrade.php";
@@ -406,7 +397,8 @@ switch($getIntent){
 		$message_content=(isset($_POST["message"]))?filter_var($_POST["message"], FILTER_SANITIZE_STRING):null;
 		$user_id=(isset($_POST["user_id"]))?filter_var($_POST["user_id"], FILTER_SANITIZE_NUMBER_INT):null;
 		$post_id=(isset($_POST["post_id"]))?filter_var($_POST["post_id"], FILTER_SANITIZE_STRING):null;
-		$um->createMessageThread($message_content, $user_id, $post_id);
+		$post_title=(isset($_POST["post_title"]))?filter_var($_POST["post_title"], FILTER_SANITIZE_STRING):null;
+		$um->createMessageThread($message_content, $user_id, $post_id, $post_title);
 		break;
 	case "getMessageThreadsCurrentUser":
 		require_once "../framework2/UserMgmt.php";
@@ -419,9 +411,15 @@ switch($getIntent){
 		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
-		$offset=(isset($_POST["offset"]))?filter_var($_POST["offset"], FILTER_SANITIZE_NUMBER_INT):0;
-		$amount=(isset($_POST["amount"]))?filter_var($_POST["amount"], FILTER_SANITIZE_NUMBER_INT):300;
-		$um->retrieveThread($thread_id, $offset, $amount);
+		$limit=(isset($_POST["limit"]))?filter_var($_POST["limit"], FILTER_SANITIZE_NUMBER_INT):100;
+		$um->retrieveThread($thread_id, $limit);
+		break;
+	case "retrieveThreadNew":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
+		$override=(isset($_POST["override"]))?filter_var($_POST["override"], FILTER_SANITIZE_NUMBER_INT):0;
+		$um->retrieveThreadNew($thread_id, $override);
 		break;
 	case "appendMessage":
 		require_once "../framework2/UserMgmt.php";
@@ -435,6 +433,11 @@ switch($getIntent){
 		$um = new UserMgmt();
 		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
 		$um->deleteThread($thread_id);
+		break;
+	case "hasNewMessages":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$um->hasNewMessages();
 		break;
 	default:
 		echo "Hi there!";

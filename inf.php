@@ -1,5 +1,5 @@
 <?php
-require_once "framework/CredentialStore.php";
+require_once "framework2/CredentialStore.php";
 $cs = new CredentialStore();
 $loggedIn = $cs->getLoginStatus();
 if (!isset($_GET["i"])){

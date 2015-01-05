@@ -167,7 +167,7 @@ class UserMgmt extends CredentialStore{
 					  `post_id` VARCHAR(45) NOT NULL,
 					  `post_title` VARCHAR(100) NULL,
 					  `datetime` DATETIME NOT NULL,
-					  `new_messages` BIT NOT NULL,
+					  `new_messages` INT(2) NOT NULL,
 					  `associated_with` INT(50) NOT NULL,
 					  `locked` BIT NOT NULL,
 					  `hidden` BIT NOT NULL,
@@ -453,7 +453,6 @@ class UserMgmt extends CredentialStore{
 			else
 				return "/colorful/Anonymous_User.jpg";
 		}
-		
 	}
 
 	public function getUserProfile($uid, $userName){
@@ -558,7 +557,7 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	private function appendThreadIndex($currentUserId, $thread_id, $message_content, $reciever_id, $post_id){
+	private function appendThreadIndex($currentUserId, $thread_id, $message_content, $reciever_id, $post_id, $post_title){
 		if($reciever_id == $currentUserId)
 			$threadOwners = Array($currentUserId);
 		else
@@ -569,9 +568,9 @@ class UserMgmt extends CredentialStore{
 				$associated_with = $reciever_id;
 			else
 				$associated_with = $currentUserId;
-			if(!$appendThreadSTMT = $this->getThread_indexConnection()->prepare("INSERT INTO `$owner` (thread_id, last_message, last_user_id, post_id, datetime, new_messages, associated_with) VALUES (?, ?, ?, ?, NOW(), 1, ?)"))
+			if(!$appendThreadSTMT = $this->getThread_indexConnection()->prepare("INSERT INTO `$owner` (thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with) VALUES (?, ?, ?, ?, ?, NOW(), 0, ?)"))
 				return false;
-			$appendThreadSTMT->bind_param("ssisi", $thread_id, $message_content, $currentUserId, $post_id, $associated_with);
+			$appendThreadSTMT->bind_param("ssissi", $thread_id, $message_content, $currentUserId, $post_id, $post_title, $associated_with);
 			$appendThreadSTMT->execute();
 			if($appendThreadSTMT->affected_rows != 1)
 				return false;
@@ -648,6 +647,42 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
+	private function threadHasNewMessage($thread_id, $user_id){
+		if(!$newMsgSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$user_id` SET new_messages = new_messages + 1 WHERE thread_id = ?"))
+			return false;
+		$newMsgSTMT->bind_param("s", $thread_id);
+		$newMsgSTMT->execute();
+		if($newMsgSTMT->affected_rows == 1)
+			return true;
+		else
+			return false;
+	}
+
+	private function threadHasNoNewMessage($thread_id, $user_id){
+		if(!$noNewMsgSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$user_id` SET new_messages = 0 WHERE thread_id = ?"))
+			echo 1;
+			// return false;
+		$noNewMsgSTMT->bind_param("s", $thread_id);
+		$noNewMsgSTMT->execute();
+		if($noNewMsgSTMT->affected_rows == 1)
+			return true;
+		else
+			return false;
+	}
+
+	private function updateLastMessage($thread_id, $message, $associated_with){
+		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
+			$owners = Array($_SESSION["user_id"], $associated_with);
+			foreach ($owners as $owner) {
+				if($owner == $_SESSION["user_id"])
+					$message = $message;
+				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ? WHERE thread_id = ?");
+				$lmSTMT->bind_param("ss", $message, $thread_id);
+				$lmSTMT->execute();
+			}
+		}
+	}
+
 	public function appendMessage($thread_id, $message_content, $standAlone, $sendNotification){
 		if($thread_id == "")
 			return $this->statusDump(500, "No thread Id", null);
@@ -656,20 +691,13 @@ class UserMgmt extends CredentialStore{
 		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
 			$currentUserId = $_SESSION['user_id'];
 			$currentUserName = $_SESSION['username'];
-
-			if(!$getCUIDSTMT = $this->getThread_indexConnection()->prepare("SELECT `associated_with`, `locked` FROM `$currentUserId` WHERE `thread_id` = ?;")){
-				if($standAlone)
-					return $this->statusDump(500, "Unable to get associated user from database (303)", null);
-				return false;
-			}
-			$getCUIDSTMT->bind_param("s", $thread_id);
-			$getCUIDSTMT->execute();
-			$getCUIDSTMT->bind_result($associated_with, $threadLocked);
-			$getCUIDSTMT->fetch();
-
+			$assoc = $this->getAssoc($thread_id);
+			$associated_with = $assoc["associated_with"];
+			$threadLocked = $assoc["threadLocked"];
+			
 			if($threadLocked){
 				if($standAlone)
-					return $this->statusDump(401, "This user has chosen to remove themself from the conversation. You will not be able to communicate with them again unless you reply to one of their posts.", null);
+					return $this->statusDump(401, "The other user has closed the conversation. To talk to them again, please reply to one of their posts.", null);
 				return false;
 			}
 
@@ -685,9 +713,11 @@ class UserMgmt extends CredentialStore{
 					return $this->statusDump(500, "No update (300)", null);
 				return false;
 			}
+			$this->threadHasNewMessage($thread_id, $associated_with);
+			$this->updateLastMessage($thread_id, $message_content, $associated_with);
 			if($standAlone){
 				if($sendNotification)
-					$this->externamMailer($currentUserId, $message_content, $thread_id);
+					$this->externamMailer($associated_with, $message_content, $thread_id);
 				return $this->statusDump(200, "Message sent", null);
 			}
 			return true;
@@ -699,19 +729,19 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	public function createMessageThread($message_content, $reciever_id, $post_id){
+	public function createMessageThread($message_content, $reciever_id, $post_id, $post_title){
 		if($this->getLoginStatus()){
 			$thread_id = $this->getRandomHex(20);
 			$currentUserId = $_SESSION['user_id'];
 			$currentUserName = $_SESSION['username'];
 
-			if(!$this->appendThreadIndex($currentUserId, $thread_id, $message_content, $reciever_id, $post_id))
+			if(!$this->appendThreadIndex($currentUserId, $thread_id, $message_content, $reciever_id, $post_id, $post_title))
 				return $this->statusDump(500, "Unable to appendThreadIndex()", null);
 			if(!$this->createThreadTable($thread_id))
 				return $this->statusDump(500, "Unable to createThreadTable()", null);
 			if(!$this->appendMessage($thread_id, $message_content, false, true))
 				return $this->statusDump(500, "Unable to appendMessage()", null);
-			return $this->statusDump(200, "Message sent scessfully", null);
+			return $this->statusDump(200, "Message sent successfully", null);
 		}
 		else{
 			return $this->statusDump(401, "User not authorized", null);
@@ -727,25 +757,66 @@ class UserMgmt extends CredentialStore{
 		$getThreadsSTMT->bind_result($thread_id, $last_message, $last_user_id, $post_id, $post_title, $datetime, $new_messages, $associated_with);
 		$threadsArray = Array();
 		while($getThreadsSTMT->fetch()){
-			$line = Array("thread_id"=>$thread_id, "last_message"=>$last_message, "$last_user_id"=>$last_user_id, "post_id"=>$post_id, "post_title"=>$post_title, "datetime"=>$datetime, "new_messages"=>$new_messages,"associated_with"=>$associated_with,"associated_with_name"=>$this->resolveIDToUsername($associated_with),"associated_with_image"=>$this->getAvatarOf($associated_with, true));
+			$line = Array("thread_id"=>$thread_id, "last_message"=>$last_message, "last_user_id"=>$last_user_id, "last_user_name"=>$this->resolveIDToUsername($last_user_id), "post_id"=>$post_id, "post_title"=>$post_title, "datetime"=>$datetime, "new_messages"=>$new_messages,"associated_with"=>$associated_with,"associated_with_name"=>$this->resolveIDToUsername($associated_with),"associated_with_image"=>$this->getAvatarOf($associated_with, true));
 			array_push($threadsArray, $line);
 		}
 		$this->statusDump(200, "Threads for current user", $threadsArray);
 	}
 
-	public  function retrieveThread($thread_id, $offset, $amount){
+	public  function retrieveThread($thread_id, $limit){
 		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
-			$retrieveThreadSTMT = $this->getThreadsConnection()->prepare("SELECT message_id, sender_id, sender_name, message_content, datetime, message_seen  FROM `$thread_id` ORDER BY `message_id` LIMIT ?,?");
-			$retrieveThreadSTMT->bind_param("ii", $offset, $amount);
+			$retrieveThreadSTMT = $this->getThreadsConnection()->prepare("SELECT message_id, sender_id, sender_name, message_content, datetime, message_seen  FROM `$thread_id` ORDER BY `message_id` DESC LIMIT ?");
+			$retrieveThreadSTMT->bind_param("i", $limit);
 			$retrieveThreadSTMT->execute();
 			$retrieveThreadSTMT->bind_result($message_id, $sender_id, $sender_name, $message_content, $datetime, $message_seen);
 			$threadArray=Array();
 			while($retrieveThreadSTMT->fetch()){
 				$sentFromMe = ($sender_id == $_SESSION["user_id"])?1:0;
 				$line=Array("message_id"=>$message_id,"sentFromMe"=>$sentFromMe,"sender_id"=>$sender_id,"sender_name"=>$sender_name,"message_content"=>$message_content,"datetime"=>$datetime,"message_seen"=>$message_seen, "avatar"=>$this->getAvatarOf($sender_id, true));
-				array_push($threadArray, $line);
+				// array_push($threadArray, $line);
+				array_unshift($threadArray, $line);
 			}
-			$this->statusDump(200, "", $threadArray);
+			$this->threadHasNoNewMessage($thread_id, $_SESSION["user_id"]);
+			$this->statusDump(200, "Here's your thread sir/madam", $threadArray);
+		}
+		else{
+			$this->statusDump(500, "User not authorized", null);
+		}
+	}
+
+	private function newMessagesForThread($thread_id){
+		$currentUserId = $_SESSION["user_id"];
+		$numNewSTMT = $this->getThread_indexConnection()->prepare("SELECT new_messages FROM `$currentUserId` WHERE thread_id = ?");
+		$numNewSTMT->bind_param("s", $thread_id);
+		$numNewSTMT->execute();
+		$numNewSTMT->bind_result($new_messages);
+		$numNewSTMT->fetch();
+		return $new_messages;
+	}
+
+	public function retrieveThreadNew($thread_id, $override){
+		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
+			$currentUserId = $_SESSION["user_id"];
+			if($override == 0){
+				$new_messages = $this->newMessagesForThread($thread_id);
+			}
+			else
+				$new_messages = $override;
+
+			$this->threadHasNoNewMessage($thread_id, $currentUserId);
+
+			$retrieveThreadSTMT = $this->getThreadsConnection()->prepare("SELECT message_id, sender_id, sender_name, message_content, datetime, message_seen  FROM `$thread_id` ORDER BY `message_id` DESC LIMIT ?");
+			$retrieveThreadSTMT->bind_param("i", $new_messages);
+			$retrieveThreadSTMT->execute();
+			$retrieveThreadSTMT->bind_result($message_id, $sender_id, $sender_name, $message_content, $datetime, $message_seen);
+			$threadArray=Array();
+			while($retrieveThreadSTMT->fetch()){
+				$sentFromMe = ($sender_id == $_SESSION["user_id"])?1:0;
+				$line=Array("message_id"=>$message_id,"sentFromMe"=>$sentFromMe,"sender_id"=>$sender_id,"sender_name"=>$sender_name,"message_content"=>$message_content,"datetime"=>$datetime,"message_seen"=>$message_seen, "avatar"=>$this->getAvatarOf($sender_id, true));
+				// array_push($threadArray, $line);
+				array_unshift($threadArray, $line);
+			}
+			$this->statusDump(200, "New messages for thread", $threadArray);
 		}
 		else{
 			$this->statusDump(500, "User not authorized", null);
@@ -754,19 +825,20 @@ class UserMgmt extends CredentialStore{
 
 	private function getAssoc($thread_id){
 		$currentUserId = $_SESSION["user_id"];
-		$getAssocSTMT = $this->getThread_indexConnection()->prepare("SELECT `associated_with` FROM `$currentUserId` WHERE `thread_id` = ?");
+		$getAssocSTMT = $this->getThread_indexConnection()->prepare("SELECT associated_with, locked FROM `$currentUserId` WHERE thread_id = ?");
 		$getAssocSTMT->bind_param("s", $thread_id);
 		$getAssocSTMT->execute();
-		$getAssocSTMT->bind_result($associated_with);
+		$getAssocSTMT->bind_result($associated_with, $threadLocked);
 		$getAssocSTMT->fetch();
-		return $associated_with;
+		$threadLocked = ($threadLocked == 1) ? true : false;
+		return Array("associated_with"=>$associated_with, "threadLocked"=>$threadLocked);
 	}
 
 	public function deleteThread($thread_id){
 		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
 			$currentUserId = $_SESSION["user_id"];
-			$associated_with = $this->getAssoc($thread_id);
-			$this->appendMessage($thread_id, $_SESSION["username"]." has left the conversation. They will no longer recieve replies to this thread.", false, false);
+			$associated_with = $this->getAssoc($thread_id)["associated_with"];
+			$this->appendMessage($thread_id, $_SESSION["username"]." has left the conversation. To talk to them again, reply to one of their posts.", false, false);
 			if(!$deleteThreadSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$currentUserId` SET `$currentUserId`.hidden = 1, `$currentUserId`.locked=1 WHERE `$currentUserId`.thread_id = ?;"))
 				return $this->statusDump(500,"Unable to prepare connection (482)", null);
 			$deleteThreadSTMT->bind_param("s", $thread_id);
@@ -775,11 +847,29 @@ class UserMgmt extends CredentialStore{
 				return $this->statusDump(500,"Unable to prepare connection (483)", null);
 			$deleteThreadSTMT->bind_param("s", $thread_id);
 			$deleteThreadSTMT->execute();
+			$this->threadHasNoNewMessage($thread_id, $currentUserId);
 			return $this->statusDump(200,"Thread closed", null);
 		}
 		else
 			return $this->statusDump(401,"User Not Authorized (2479)", null);
 	}
+
+	public function hasNewMessages(){
+		if($this->getLoginStatus()){
+			$currentUserId = $_SESSION["user_id"];
+			if(!$getNewSTMT = $this->getThread_indexConnection()->prepare("SELECT new_messages FROM `$currentUserId` WHERE new_messages > 0 AND hidden = 0"))
+				return $this->statusDump(500, "unable to prepare connection (2579)", null);
+			$getNewSTMT->execute();
+			$getNewSTMT->bind_result($new_messages);
+			$getNewSTMT->store_result();
+			$total = 0;
+			while($getNewSTMT->fetch()){
+				$total += $new_messages;
+			}
+			$this->statusDump(200, $total, null);
+		}
+		else
+			$this->statusDump(401, "User Not authorized", null);
+	}
 }
 ?>
-

@@ -1,7 +1,13 @@
 <script type="text/javascript">
-	getThreads();
+	getThreads(true);
+	window.thread_id = "";
+	window.post_id="";
+	setInterval(function(){
+			if(thread_id != "")
+				loadThreadNew();
+    },4000);
 	function refreshAll(){
-		getThreads();
+		getThreads(true);
 	}
 </script>
 
@@ -55,7 +61,7 @@
 }
 
 #threads table tr td div{
-	max-width: 250px;
+	width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -175,7 +181,7 @@ b{
 }
 </style>
 <div class="boxStyle1">
-	<div class="settingsHeader">[BETA] Messages<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
+	<div class="settingsHeader">Conversations<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
 	<div id="navBarMail"></div>
 	<div id="threads"></div>
 	<div id="threadViewContainer"><div id="threadView"></div><div id="replyBox">

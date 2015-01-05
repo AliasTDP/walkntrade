@@ -1,5 +1,5 @@
 <?php
-require_once "framework/UserMgmt.php";
+require_once "framework2/UserMgmt.php";
 $um = new UserMgmt();
 $uid = (isset($_GET["uid"])) ? filter_var($_GET["uid"], FILTER_SANITIZE_NUMBER_INT) : null;
 if($uid == null) header('Location: ./');

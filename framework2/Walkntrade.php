@@ -411,30 +411,18 @@ class Walkntrade {
 	}
 
 	public function getPostByIdentifier($identifier, $school){
-		if($gpbiSTMT = $this->listingConnection->prepare("SELECT `id`, `category`, `title`, `author`, `details`, `price`, `isbn`, `tags`, `username`, `date`, `views` FROM `".$school."` WHERE `identifier` = ? LIMIT 1")){
+		if($gpbiSTMT = $this->listingConnection->prepare("SELECT `id`, `category`, `title`, `author`, `details`, `price`, `isbn`, `tags`, `username`, `date`, `views` FROM `$school` WHERE `identifier` = ? LIMIT 1")){
 			$gpbiSTMT->bind_param("s", $identifier);
 			$gpbiSTMT->execute();
 			$gpbiSTMT->store_result();
 			$gpbiSTMT->bind_result($_pId, $_pCategory, $_pTitle, $_pAuthor, $_pDetails, $_pPrice, $_pIsbn, $_pTags, $_pUsername, $_pDate, $_pViews);
 			$gpbiSTMT->fetch();
 			if($gpbiSTMT->num_rows != 1){
-				return 1;
+				return $this->statusDump(404, "Post Not Found!", null);
 			}
 			else{
-				$concatenated = "{";
-					$concatenated .= '"id":"'.$_pId.'",';
-					$concatenated .= '"category":"'.$_pCategory.'",';
-					$concatenated .= '"title":"'.htmlspecialchars($_pTitle).'",';
-					$concatenated .= '"author":"'.htmlspecialchars($_pAuthor).'",';
-					$concatenated .= '"details":"'.htmlspecialchars($_pDetails).'",';
-					$concatenated .= '"price":"'.$_pPrice.'",';
-					$concatenated .= '"isbn":"'.$_pIsbn.'",';
-					$concatenated .= '"tags":"'.htmlspecialchars($_pTags).'",';
-					$concatenated .= '"username":"'.htmlspecialchars($_pUsername).'",';
-					$concatenated .= '"date":"'.$_pDate.'",';
-					$concatenated .= '"views":"'.$_pViews.'"';
-				$concatenated .= "}";
-				return $concatenated;
+				$line = Array("id"=>$_pId, "category"=>$_pCategory, "title"=>htmlspecialchars($_pTitle), "author"=>htmlspecialchars($_pAuthor), "details"=>htmlspecialchars($_pDetails), "price"=>$_pPrice, "isbn"=>$_pIsbn, "tags"=>$_pTags, "username"=>$_pUsername, "date"=>$_pDate, "views"=>$_pViews);
+				return $this->statusDump(200, "post Info", $line);
 			}
 		}
 	}

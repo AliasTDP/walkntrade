@@ -10,7 +10,7 @@ class Walkntrade {
 
 	private $userConnection;
 	private $listingConnection;
-	private $webmailConnection;
+	//private $webmailConnection;
 
 	public function __construct(){
 		$this->dbConnect();
@@ -20,7 +20,7 @@ class Walkntrade {
 	public function __destruct(){
 		$this->userConnection->close();
 		$this->listingConnection->close();
-		$this->webmailConnection->close();
+		//$this->webmailConnection->close();
 	}
 
 	private function dbConnect(){
@@ -34,10 +34,10 @@ class Walkntrade {
 			echo ("Unable to connect to site database: (" . $this->listingConnection->connect_errno . ") " . $this->listingConnection->connect_error);
 		}
 
-		$this->webmailConnection = new mysqli($this->host, $this->userDB1, $this->password, $this->DB3);
-		if($this->webmailConnection->connect_errno){
-			echo ("Unable to connect to webmail database: (" . $this->webmailConnection->connect_errno . ") " . $this->webmailConnection->connect_error);
-		}
+		// $this->webmailConnection = new mysqli($this->host, $this->userDB1, $this->password, $this->DB3);
+		// if($this->webmailConnection->connect_errno){
+		// 	echo ("Unable to connect to webmail database: (" . $this->webmailConnection->connect_errno . ") " . $this->webmailConnection->connect_error);
+		// }
 	}
 
 	public function getUserConnection(){
@@ -48,9 +48,9 @@ class Walkntrade {
 		return $this->listingConnection;
 	}
 
-	public function getWebmailConnection(){
-		return $this->webmailConnection;
-	}
+	// public function getWebmailConnection(){
+	// 	return $this->webmailConnection;
+	// }
 
 	public function getSchoolName($identifier){
 		if($school = $this->listingConnection->prepare("SELECT `name` FROM `schools` WHERE `textId` = ? LIMIT 1")){

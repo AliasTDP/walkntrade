@@ -12,7 +12,7 @@ if($redirect)
 	header( 'Location: https://walkntrade.com'.$serverURI, true, 301 );
 
 $query = (isset($_GET["query"])) ? $_GET["query"] : "";
-require_once "framework/CredentialStore.php";
+require_once "framework2/CredentialStore.php";
 $cs = new CredentialStore();
 $schoolTextId = $cs->cookieCheck("sPref");
 if($cs->getSchoolName($schoolTextId) == null){

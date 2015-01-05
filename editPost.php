@@ -1,5 +1,5 @@
 <?php
-require_once "framework/CredentialStore.php";
+require_once "framework2/CredentialStore.php";
 $cs = new CredentialStore();
 $loggedIn = $cs->getLoginStatus();
 //get page args
@@ -96,4 +96,4 @@ if($identifier != null){
 	</div>
 </body>
 </html>
-<script type="text/javascript" src="/client_js/jquery.min.js"></script>
+<script type="text/javascript" src="/script/jquery.min.js"></script>

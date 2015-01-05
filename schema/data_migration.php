@@ -22,7 +22,7 @@ class DataMigration extends Walkntrade{
 				  `post_id` VARCHAR(45) NOT NULL,
 				  `post_title` VARCHAR(100) NULL,
 				  `datetime` DATETIME NOT NULL,
-				  `new_messages` BIT NOT NULL,
+				  `new_messages` INT(2) NOT NULL,
 				  `associated_with` INT(50) NOT NULL,
 				  `locked` BIT NOT NULL,
 				  `hidden` BIT NOT NULL,

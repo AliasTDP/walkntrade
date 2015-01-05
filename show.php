@@ -1,5 +1,5 @@
 <?php
-require_once "framework/CredentialStore.php";
+require_once "framework2/CredentialStore.php";
 $cs = new CredentialStore();
 $loggedIn = $cs->getLoginStatus();
 //get page args
@@ -322,6 +322,7 @@ if($loggedIn){
 <script type="text/javascript">
 	messaegUserId = "<?php echo $userid ?>";
 	post_id = "<?php echo $args[0].':'.$args[1] ?>";
+	post_title = "<?php echo $title ?>";
 	messageUserName = "<?php echo $uName ?>";
 	messageMessage = "<?php echo $message ?>";
 	initShowPage();

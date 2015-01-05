@@ -1,5 +1,5 @@
 <?php
-require_once "framework/CredentialStore.php";
+require_once "framework2/CredentialStore.php";
 $cs = new CredentialStore();
 $schoolTextId = $cs->cookieCheck("sPref");
 if($cs->getSchoolName($schoolTextId) == null)

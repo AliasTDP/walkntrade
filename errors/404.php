@@ -1,5 +1,5 @@
 <?php 
-require_once "../framework/CredentialStore.php";
+require_once "../framework2/CredentialStore.php";
 $cs = new CredentialStore();
 $schoolTextId = basename(getcwd());
 $loggedIn = $cs->getLoginStatus();
@@ -14,8 +14,6 @@ $loggedIn = $cs->getLoginStatus();
 	<link href='https://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
 	<link rel="shortcut icon" href="http://www.walkntrade.com/favicon.ico?v=2" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<script type="text/javascript" src="/script/walkntrade.js"></script>
-	<script type="text/javascript" src="/script/jquery.min.js"></script>
 	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -64,13 +62,19 @@ $loggedIn = $cs->getLoginStatus();
 	<div class="headerBar blur"></div>
 	<div id="pageHead" class="blur"><?php $noLogin=false; include("../include/header.php"); ?></div>
 	<div class="wrapper">
-		<h1>Page not Found</h1>
-		<div id="container">
-			<div id="errorHeader">Uhh...</div>
+		<h1>404 - Page not Found</h1>
+		<p id="container">
+			<h2 id="errorHeader">Uhh...</h2>
 			<div id="errorImage"><a href="/"><img src="/errors/404.jpg" /></a></div>
 			<div id="errorMessage">Looks like you made a wrong turn or clicked a bad link. Click the gerbil to go home.</div>
-		</div>
+		</p>
+	</div>
+	<div class="footerBar">
+		<?php include("../include/footer.html"); ?>
 	</div>
 </body>
 
 </html>
+<script type="text/javascript" src="/script/jquery.min.js"></script>
+	<script type="text/javascript" src="/script/walkntrade.js"></script>
+	
