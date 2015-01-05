@@ -638,6 +638,9 @@ class UserMgmt extends CredentialStore{
 			<p>
 				<i>Please log-in to walkntrade.com and visit the Inbox tab in your control panel to reply.</i>
 			</p>
+			<p>
+				<i>If you would prefer not to receive these emails, you can change your email preferences under "Contact Preferences" in your walkntrade account.</i>
+			</p>
 			</p>
 			</body>
 			</html>
@@ -715,9 +718,9 @@ class UserMgmt extends CredentialStore{
 			}
 			$this->threadHasNewMessage($thread_id, $associated_with);
 			$this->updateLastMessage($thread_id, $message_content, $associated_with);
+			if($sendNotification)
+				$this->externamMailer($associated_with, $message_content, $thread_id);
 			if($standAlone){
-				if($sendNotification)
-					$this->externamMailer($associated_with, $message_content, $thread_id);
 				return $this->statusDump(200, "Message sent", null);
 			}
 			return true;
