@@ -77,7 +77,7 @@ function initResults(){
 
 function initCP(){
 	window.includeDir = "/include/user_settings/";
-	window.sections = new Array('<i class="sprite sprite-1396343029_shop"></i>Welcome', '<i class="sprite sprite-1396343080_mail"></i>Conversations', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
+	window.sections = new Array('<i class="sprite sprite-1396343080_mail"></i>Conversations', '<i class="sprite sprite-1396343050_news"></i>Your Posts', '<i class="sprite sprite-1396343908_settings"></i>Account Settings', '<i class="sprite sprite-1396343345_user"></i>Profile Settings', '<i class="sprite sprite-1396343039_like"></i>Contact Preferences');
 	window._preventDefault;
 	window.jumpTo;
 	window.cpModule = new Array();
@@ -194,14 +194,14 @@ function initFeedbackSlider(){
 
 function pollNewMessages(){
 	if(window.location.pathname == "/user_settings" || window.location.pathname == "/user_settings.php"){
-		$("#messageIndicator").attr("onclick", "javascript:loadModule('1')");
-		$("#postIndicator").attr("onclick", "javascript:loadModule('2')");
-		$("#settingsIndicator").attr("onclick", "javascript:loadModule('4')");
+		$("#messageIndicator").attr("onclick", "javascript:loadModule('0')");
+		$("#postIndicator").attr("onclick", "javascript:loadModule('1')");
+		$("#settingsIndicator").attr("onclick", "javascript:loadModule('2')");
 	}
 	else{
-		$("#messageIndicator").attr("onclick", "window.location = '/user_settings#1'");
-		$("#postIndicator").attr("onclick", "window.location = '/user_settings#3'");
-		$("#settingsIndicator").attr("onclick", "window.location = '/user_settings#4'");
+		$("#messageIndicator").attr("onclick", "window.location = '/user_settings#0'");
+		$("#postIndicator").attr("onclick", "window.location = '/user_settings#1'");
+		$("#settingsIndicator").attr("onclick", "window.location = '/user_settings#2'");
 	}
 	var status = 0;
 	$.ajax({url: "/api2/", dataType: "json", type:"POST", data:"intent=hasNewMessages", global:false, type:"POST", timeout:15000}).success(function(json){
@@ -325,13 +325,23 @@ function loadThreadNew(amountOverride){
 				var message_content = payload[i].message_content;
 				var message_id = payload[i].message_id;
 				var datetime = payload[i].datetime;
+				var avatarUrl = payload[i].avatar;
+				var sender_name = payload[i].sender_name;
 				var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-				if(sentFromMe)
+				if(sentFromMe){
 					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-				else
-					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
 					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-					$("#msg_"+message_id+" td").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
+				else{
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
 			}
 			if(payload.length > 0)
 				$("#threadView").animate({ scrollTop: $("#threadView")[0].scrollHeight}, 500);
@@ -359,13 +369,23 @@ function loadThread(thread_id, post_title){
 				var message_content = payload[i].message_content;
 				var message_id = payload[i].message_id;
 				var datetime = payload[i].datetime;
+				var avatarUrl = payload[i].avatar;
+				var sender_name = payload[i].sender_name;
 				var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-				if(sentFromMe)
+				if(sentFromMe){
 					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-				else
-					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
 					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-					$("#msg_"+message_id+" td").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
+				else{
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
 			}
 			$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
 		});
@@ -373,7 +393,7 @@ function loadThread(thread_id, post_title){
 }
 
 function deleteThread(thread_id){
-	var user = confirm("WAIT! By deleting this thread you are ending the conversation with the other user. Are you sure?");
+	var user = confirm("WAIT! By deleting this thread you are permanently ending the conversation with the other user. Are you sure?");
 	if(user){
 		$.ajax({url:api_url2, dataType:"json", data:"intent=deleteThread&thread_id="+thread_id}).success(function(json){
 			if(json.status != 200){

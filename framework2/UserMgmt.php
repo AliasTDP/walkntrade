@@ -803,7 +803,7 @@ class UserMgmt extends CredentialStore{
 			$threadArray=Array();
 			while($retrieveThreadSTMT->fetch()){
 				$sentFromMe = ($sender_id == $_SESSION["user_id"])?1:0;
-				$line=Array("message_id"=>$message_id,"sentFromMe"=>$sentFromMe,"sender_id"=>$sender_id,"sender_name"=>$sender_name,"message_content"=>$message_content,"datetime"=>$datetime,"message_seen"=>$message_seen, "avatar"=>$this->getAvatarOf($sender_id, true));
+				$line=Array("message_id"=>$message_id,"sentFromMe"=>$sentFromMe,"sender_id"=>$sender_id,"sender_name"=>($sender_name == $_SESSION["username"])? "You" : $sender_name, $sender_name,"message_content"=>$message_content,"datetime"=>$datetime,"message_seen"=>$message_seen, "avatar"=>$this->getAvatarOf($sender_id, true));
 				// array_push($threadArray, $line);
 				array_unshift($threadArray, $line);
 			}

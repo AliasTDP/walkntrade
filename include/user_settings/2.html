@@ -1,81 +1,28 @@
 <script type="text/javascript">
 $(document).ready(function(){
-	getUserPosts();
+	getAccountPrefs();
 })
 </script>
 <style type="text/css">
-#yourPosts{
-	min-height: 400px;
-	padding: 0px;
-}
-
-#yourPosts h3{
-	padding: 30px 10px 30px 10px;
-}
 table{
-	border-bottom: 1px solid #C0C0C0;
+	width: 75%;
+	margin: auto;
+}
+table tr{
+	text-align: left;
 }
 table th{
-	text-align: left;
-	font-style: bold;
-	padding-bottom: 5px;
-	padding-top: 5px;
-	background:#F5F5F5;
-	border-top: 1px solid #C0C0C0;
+	font-size: 1.2em;
+	font-weight: 900;
+	padding: 5px 0px 5px 0px;
 	border-bottom: 1px solid #C0C0C0;
 }
-
-table .CFExpired a{
-	text-decoration: underline;
-}
-
-table .CFExpiring a{
-	text-decoration: underline;
-}
-
-table .CFExpired{
-	font-style: italic;
-	color: #383838;
-	background-color: #FF3D3D;
-}
-
-table .CFExpiring{
-	font-style: italic;
-	color: #383838;
-	background: #FFBA42;
-}
-
-table .expired{
-	color: #FF1515;
-	background-color: #F5F5F5;
-}
-
-
-table .expiring{
-	color: #DF8E00;
-	background-color: #F5F5F5;
-}
-
 table td{
-	margin: auto;
-	text-align: center;
-	height: 40px;
-	padding:0px 10px 0px 10px;
-	line-height: 30px;
-	text-align: left;
-	font-style: bold;
-}
-
-table .clearfix1{
-	font-style: italic;
-}
-
-table .clearfix1 a{
-	text-decoration: underline;
+	padding: 5px 10px 5px 0px;
 }
 </style>
 <div class="boxStyle1">
-	<div class="settingsHeader">Manage your posts.<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
-	<div id="yourPosts">
-	</div>
+	<div class="settingsHeader">Your account settings.<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
+	<div id="acctMod">
+	<div class="settingsHeader"></div>
 </div>

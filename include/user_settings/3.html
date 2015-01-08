@@ -1,28 +1,21 @@
 <script type="text/javascript">
 $(document).ready(function(){
-	getAccountPrefs();
-})
+	getProfilePrefs();
+});
 </script>
 <style type="text/css">
-table{
-	width: 75%;
-	margin: auto;
-}
-table tr{
-	text-align: left;
-}
-table th{
-	font-size: 1.2em;
-	font-weight: 900;
-	padding: 5px 0px 5px 0px;
-	border-bottom: 1px solid #C0C0C0;
-}
-table td{
-	padding: 5px 10px 5px 0px;
+#avImgElement{
+	width: 150px;
+	height: 150px;
+	float: left;
+	border-radius: 3px;
+	box-shadow:
+    0 2px 2px rgba(0,0,0,0.2),
+    0 1px 5px rgba(0,0,0,0.2); 
+    margin-right: 19px;
 }
 </style>
 <div class="boxStyle1">
-	<div class="settingsHeader">Your account settings.<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
-	<div id="acctMod">
-	<div class="settingsHeader"></div>
+	<div class="settingsHeader">Your profile settings.<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
+	<div id="profileAvatar"></div>
 </div>
