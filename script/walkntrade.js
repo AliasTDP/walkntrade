@@ -325,13 +325,23 @@ function loadThreadNew(amountOverride){
 				var message_content = payload[i].message_content;
 				var message_id = payload[i].message_id;
 				var datetime = payload[i].datetime;
+				var avatarUrl = payload[i].avatar;
+				var sender_name = payload[i].sender_name;
 				var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-				if(sentFromMe)
+				if(sentFromMe){
 					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-				else
-					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
 					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-					$("#msg_"+message_id+" td").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
+				else{
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
 			}
 			if(payload.length > 0)
 				$("#threadView").animate({ scrollTop: $("#threadView")[0].scrollHeight}, 500);
@@ -359,13 +369,23 @@ function loadThread(thread_id, post_title){
 				var message_content = payload[i].message_content;
 				var message_id = payload[i].message_id;
 				var datetime = payload[i].datetime;
+				var avatarUrl = payload[i].avatar;
+				var sender_name = payload[i].sender_name;
 				var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-				if(sentFromMe)
+				if(sentFromMe){
 					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-				else
-					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
 					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-					$("#msg_"+message_id+" td").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
+				else{
+					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+				}
 			}
 			$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
 		});
