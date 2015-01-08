@@ -611,7 +611,7 @@ class UserMgmt extends CredentialStore{
 		return true;
 	}
 
-	private function externamMailer($uid, $message, $thread_id){
+	private function externamMailer($uid, $message, $title, $thread_id){
 		if($stmt = $this->getUserConnection()->prepare("SELECT `email`, `emailPref`, `android_deviceId` FROM `users`  WHERE `id` = ? LIMIT 1")){
 			$stmt->bind_param("i", $uid);
 			$stmt->execute();
@@ -696,6 +696,7 @@ class UserMgmt extends CredentialStore{
 			$currentUserName = $_SESSION['username'];
 			$assoc = $this->getAssoc($thread_id);
 			$associated_with = $assoc["associated_with"];
+			$post_title = $assoc["post_title"];
 			$threadLocked = $assoc["threadLocked"];
 			
 			if($threadLocked){
@@ -719,7 +720,7 @@ class UserMgmt extends CredentialStore{
 			$this->threadHasNewMessage($thread_id, $associated_with);
 			$this->updateLastMessage($thread_id, $message_content, $associated_with);
 			if($sendNotification)
-				$this->externamMailer($associated_with, $message_content, $thread_id);
+				$this->externamMailer($associated_with, $message_content, $post_title, $thread_id);
 			if($standAlone){
 				return $this->statusDump(200, "Message sent", null);
 			}
@@ -855,13 +856,13 @@ class UserMgmt extends CredentialStore{
 
 	private function getAssoc($thread_id){
 		$currentUserId = $_SESSION["user_id"];
-		$getAssocSTMT = $this->getThread_indexConnection()->prepare("SELECT associated_with, locked FROM `$currentUserId` WHERE thread_id = ?");
+		$getAssocSTMT = $this->getThread_indexConnection()->prepare("SELECT associated_with, post_title, locked FROM `$currentUserId` WHERE thread_id = ?");
 		$getAssocSTMT->bind_param("s", $thread_id);
 		$getAssocSTMT->execute();
-		$getAssocSTMT->bind_result($associated_with, $threadLocked);
+		$getAssocSTMT->bind_result($associated_with, $post_title, $threadLocked);
 		$getAssocSTMT->fetch();
 		$threadLocked = ($threadLocked == 1) ? true : false;
-		return Array("associated_with"=>$associated_with, "threadLocked"=>$threadLocked);
+		return Array("associated_with"=>$associated_with, "post_title"=>$post_title, "threadLocked"=>$threadLocked);
 	}
 
 	public function deleteThread($thread_id){
