@@ -28,6 +28,10 @@ input[type=search]:required {
     border: none;
 }
 
+button.pure-button {
+    padding: 0;
+}
+
 button.pure-button:disabled {
     opacity: 1.0;
 }
