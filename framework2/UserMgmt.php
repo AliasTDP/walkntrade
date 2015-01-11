@@ -673,14 +673,14 @@ class UserMgmt extends CredentialStore{
 			return false;
 	}
 
-	private function updateLastMessage($thread_id, $message, $associated_with){
+	private function updateLastMessage($thread_id, $message, $currentUserId, $associated_with){
 		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
 			$owners = Array($_SESSION["user_id"], $associated_with);
 			foreach ($owners as $owner) {
 				if($owner == $_SESSION["user_id"])
 					$message = $message;
-				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ? WHERE thread_id = ?");
-				$lmSTMT->bind_param("ss", $message, $thread_id);
+				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ?, last_user_id = ? WHERE thread_id = ?");
+				$lmSTMT->bind_param("sis", $message, $currentUserId, $thread_id);
 				$lmSTMT->execute();
 			}
 		}
@@ -718,7 +718,7 @@ class UserMgmt extends CredentialStore{
 				return false;
 			}
 			$this->threadHasNewMessage($thread_id, $associated_with);
-			$this->updateLastMessage($thread_id, $message_content, $associated_with);
+			$this->updateLastMessage($thread_id, $message_content, $currentUserId, $associated_with);
 			if($sendNotification)
 				$this->externamMailer($associated_with, $message_content, $post_title, $thread_id);
 			if($standAlone){
