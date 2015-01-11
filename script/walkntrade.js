@@ -1,6 +1,7 @@
 window.api_url = "/api/";
 window.api_url2 = "/api2/";
 window.resultsPageActive = false;
+window.operationPending = false;
 
 $(document).ready(function(){
 	initFeedbackSlider();
@@ -350,45 +351,49 @@ function loadThreadNew(amountOverride){
 
 
 function loadThread(thread_id, post_title){
-	window.thread_id = thread_id;
-	window.post_id = post_id;
-	$("tbody").find(".threadButton").removeClass("selected");
-	$("#"+thread_id).addClass("selected");
-	var pageElement = $("#threadView");
-	pageElement.html("<div class='postReminder'><h2 class='nowrap'>Post Title: "+post_title+"</h2></div>");
-	window.thread_id = thread_id;
-	renderThread(pageElement);
-	pollNewMessages();
+	if(!operationPending){
+		operationPending = true;
+		window.thread_id = thread_id;
+		window.post_id = post_id;
+		$("tbody").find(".threadButton").removeClass("selected");
+		$("#"+thread_id).addClass("selected");
+		var pageElement = $("#threadView");
+		pageElement.html("<div class='postReminder'><h2 class='nowrap'>Post Title: "+post_title+"</h2></div>");
+		window.thread_id = thread_id;
+		renderThread(pageElement);
+		pollNewMessages();
 
-	function renderThread(pageElement){
-		$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
-			payload = json.payload;
-			var message_id;
-			pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-			for(var i=0;i<payload.length;i++){
-				var message_content = payload[i].message_content;
-				var message_id = payload[i].message_id;
-				var datetime = payload[i].datetime;
-				var avatarUrl = payload[i].avatar;
-				var sender_name = payload[i].sender_name;
-				var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-				if(sentFromMe){
-					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
-					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
-					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+		function renderThread(pageElement){
+			$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
+				payload = json.payload;
+				var message_id;
+				pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
+				for(var i=0;i<payload.length;i++){
+					var message_content = payload[i].message_content;
+					var message_id = payload[i].message_id;
+					var datetime = payload[i].datetime;
+					var avatarUrl = payload[i].avatar;
+					var sender_name = payload[i].sender_name;
+					var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
+					if(sentFromMe){
+						pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
+						$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+						$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+						$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+						$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+					}
+					else{
+						pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+						$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+						$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+						$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+						$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+					}
 				}
-				else{
-					pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
-					$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
-					$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
-					$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-					$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
-				}
-			}
-			$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
-		});
+				$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
+				operationPending=false;
+			});
+		}
 	}
 }
 
