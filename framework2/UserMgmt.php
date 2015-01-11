@@ -466,7 +466,7 @@ class UserMgmt extends CredentialStore{
 				$schs->store_result();
 				$schs->bind_result($school);
 				$postArray = Array();
-				$avatarUrl = $this->getAvatarOf($uid);
+				$avatarUrl = $this->getAvatarOf($uid, true);
 				while($schs->fetch()){//for schools
 					$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
 					$mypost->bind_param("s", $uid);
@@ -499,7 +499,7 @@ class UserMgmt extends CredentialStore{
 				$schs->store_result();
 				$schs->bind_result($school);
 				$postArray = Array();
-				$avatarUrl = $this->getAvatarOf($uid);
+				$avatarUrl = $this->getAvatarOf($uid, true);
 				while($schs->fetch()){//for schools
 					$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
 					$mypost->bind_param("s", $uid);
