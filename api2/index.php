@@ -437,6 +437,12 @@ switch($getIntent){
 		$um = new UserMgmt();
 		$um->hasNewMessages();
 		break;
+	case "markThreadAsRead":
+		require_once "../framework2/UserMgmt.php";
+		$um = new UserMgmt();
+		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
+		$um->markThreadAsRead($thread_id);
+		break;
 	default:
 		echo "Hi there!";
 	break;

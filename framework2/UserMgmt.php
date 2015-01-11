@@ -767,7 +767,7 @@ class UserMgmt extends CredentialStore{
 				return $this->statusDump(500, "Unable to createThreadTable()", null);
 			if(!$this->appendMessage($thread_id, $message_content, false, true))
 				return $this->statusDump(500, "Unable to appendMessage()", null);
-			return $this->statusDump(200, "Message sent!", null);
+			return $this->statusDump(200, "Message sent!", Array("datetime"=>Date("Y-m-d H:i:s")));
 		}
 		else{
 			return $this->statusDump(401, "User not authorized", null);
@@ -901,6 +901,16 @@ class UserMgmt extends CredentialStore{
 		}
 		else
 			$this->statusDump(401, "User Not authorized", null);
+	}
+
+	public function markThreadAsRead($thread_id){
+		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
+			$this->threadHasNoNewMessage($thread_id, $_SESSION["user_id"]);
+			return $this->statusDump(200,"Ok done :)", null);
+		}
+		else{
+			return $this->statusDump(401,"User Not Authorized (2474)", null);
+		}
 	}
 }
 ?>
