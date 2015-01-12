@@ -619,7 +619,6 @@ class UserMgmt extends CredentialStore{
 			$stmt->fetch();
 		}
 		$currentUserId = $_SESSION['user_id'];
-		$title = "title";
 		$this->GCMPush($currentUserId, $_androidDeviceId, $thread_id, $title, $message, date('Y/m/d H:i:s'));
 		if($emailPref){
 			$subject = "New message from a user on walkntrade";
