@@ -1,0 +1,41 @@
+<style type="text/css">
+#heyhey{
+	margin: 0px;
+	padding: 15px;
+}
+
+#fbBox{
+	padding: 15px;
+	text-align: center;
+}
+
+#addMees{
+	position: relative;
+	overflow: hidden;
+}
+#addMees li a{
+	text-decoration: underline;
+}
+
+.fb-comments, .fb-comments span, .fb-comments iframe { width: 100% !important; }
+</style>
+
+<div id="fb-root"></div>
+
+<div class="boxStyle1">
+	<div class="settingsHeader">
+		Welcome 
+		<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back" onclick="javascript:window.history.back()">
+	</div>
+		<div id="heyhey">
+		<h1>Posting is simple!</h1>
+		<hr>
+		<p>If you were looking for a place to sell your things, you've come to the right place. Simply click one of the links below to select a category and post away! Thanks for using Walkntrade, and as always, if you have any questions or feedback let us know with the green tab on the right --->.</p>
+		<ul id="addMees">
+			<li><a href="/addBook">Post Textbooks</a></li>
+			<li><a href="/addHousing">Post Housing</a></li>
+			<li><a href="/addElectronics">Post Electronics/Games</a></li>
+			<li><a href="/addMisc">Post Miscellaneous</a></li>
+		</ul>
+	</div>
+</div>

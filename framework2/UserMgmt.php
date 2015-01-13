@@ -466,7 +466,7 @@ class UserMgmt extends CredentialStore{
 				$schs->store_result();
 				$schs->bind_result($school);
 				$postArray = Array();
-				$avatarUrl = $this->getAvatarOf($uid);
+				$avatarUrl = $this->getAvatarOf($uid, true);
 				while($schs->fetch()){//for schools
 					$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
 					$mypost->bind_param("s", $uid);
@@ -499,7 +499,7 @@ class UserMgmt extends CredentialStore{
 				$schs->store_result();
 				$schs->bind_result($school);
 				$postArray = Array();
-				$avatarUrl = $this->getAvatarOf($uid);
+				$avatarUrl = $this->getAvatarOf($uid, true);
 				while($schs->fetch()){//for schools
 					$mypost = $this->getListingConnection()->prepare("SELECT `id`, `identifier`, `category`, `title`,  `date`, `views` FROM `".$school."` WHERE `userid` = ? ORDER BY `id` DESC");
 					$mypost->bind_param("s", $uid);
@@ -619,7 +619,6 @@ class UserMgmt extends CredentialStore{
 			$stmt->fetch();
 		}
 		$currentUserId = $_SESSION['user_id'];
-		$title = "title";
 		$this->GCMPush($currentUserId, $_androidDeviceId, $thread_id, $title, $message, date('Y/m/d H:i:s'));
 		if($emailPref){
 			$subject = "New message from a user on walkntrade";
@@ -673,14 +672,14 @@ class UserMgmt extends CredentialStore{
 			return false;
 	}
 
-	private function updateLastMessage($thread_id, $message, $associated_with){
+	private function updateLastMessage($thread_id, $message, $currentUserId, $associated_with){
 		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
 			$owners = Array($_SESSION["user_id"], $associated_with);
 			foreach ($owners as $owner) {
 				if($owner == $_SESSION["user_id"])
 					$message = $message;
-				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ? WHERE thread_id = ?");
-				$lmSTMT->bind_param("ss", $message, $thread_id);
+				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ?, last_user_id = ? WHERE thread_id = ?");
+				$lmSTMT->bind_param("sis", $message, $currentUserId, $thread_id);
 				$lmSTMT->execute();
 			}
 		}
@@ -718,7 +717,7 @@ class UserMgmt extends CredentialStore{
 				return false;
 			}
 			$this->threadHasNewMessage($thread_id, $associated_with);
-			$this->updateLastMessage($thread_id, $message_content, $associated_with);
+			$this->updateLastMessage($thread_id, $message_content, $currentUserId, $associated_with);
 			if($sendNotification)
 				$this->externamMailer($associated_with, $message_content, $post_title, $thread_id);
 			if($standAlone){
@@ -767,7 +766,7 @@ class UserMgmt extends CredentialStore{
 				return $this->statusDump(500, "Unable to createThreadTable()", null);
 			if(!$this->appendMessage($thread_id, $message_content, false, true))
 				return $this->statusDump(500, "Unable to appendMessage()", null);
-			return $this->statusDump(200, "Message sent!", null);
+			return $this->statusDump(200, "Message sent!", Array("datetime"=>Date("Y-m-d H:i:s")));
 		}
 		else{
 			return $this->statusDump(401, "User not authorized", null);
@@ -803,7 +802,7 @@ class UserMgmt extends CredentialStore{
 			$threadArray=Array();
 			while($retrieveThreadSTMT->fetch()){
 				$sentFromMe = ($sender_id == $_SESSION["user_id"])?1:0;
-				$line=Array("message_id"=>$message_id,"sentFromMe"=>$sentFromMe,"sender_id"=>$sender_id,"sender_name"=>$sender_name,"message_content"=>$message_content,"datetime"=>$datetime,"message_seen"=>$message_seen, "avatar"=>$this->getAvatarOf($sender_id, true));
+				$line=Array("message_id"=>$message_id,"sentFromMe"=>$sentFromMe,"sender_id"=>$sender_id,"sender_name"=>($sender_name == $_SESSION["username"])? "You" : $sender_name, $sender_name,"message_content"=>$message_content,"datetime"=>$datetime,"message_seen"=>$message_seen, "avatar"=>$this->getAvatarOf($sender_id, true));
 				// array_push($threadArray, $line);
 				array_unshift($threadArray, $line);
 			}
@@ -901,6 +900,16 @@ class UserMgmt extends CredentialStore{
 		}
 		else
 			$this->statusDump(401, "User Not authorized", null);
+	}
+
+	public function markThreadAsRead($thread_id){
+		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
+			$this->threadHasNoNewMessage($thread_id, $_SESSION["user_id"]);
+			return $this->statusDump(200,"Ok done :)", null);
+		}
+		else{
+			return $this->statusDump(401,"User Not Authorized (2474)", null);
+		}
 	}
 }
 ?>
