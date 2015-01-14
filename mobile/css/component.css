@@ -12,61 +12,107 @@ body {
 .wt-header {
     width: 100%;
     height: 3.5em;
+    box-sizing: border-box;
     border-bottom: 0.15em solid #34d132;
     background-color: #FFF;
     opacity: 0.95;
 }
 
-.wt-header-logo-wrapper {
+.wt-header-content-wrapper {
     display: inline-block;
-    height: 100%;
-}
-.wt-header-logo-landing-extras {
-    text-align:center;
-    width:100%;
+    vertical-align: middle;
 }
 
-.wt-header-hmenu-container {
-    float: right;
+.wt-header-content::after {
+    content: "";
     display: inline-block;
     height: 100%;
     vertical-align: middle;
 }
+.wt-header-content {
+    display: inline;
+    vertical-align: middle;
+    line-height: 1.75em;
+    text-decoration: none;
+    color: #000;
+}
 
-.wt-header-item-wrapper {
+.wt-header-center-logo {
+    text-align:center;
+    width:100%;
+    padding-top: 0.25em;
+}
+
+.wt-header-offset-logo {
+    position: relative;
+    right: 1em;
+}
+
+#wt-header-menu {
+    position: relative;
+    right: 0.5em;
+}
+
+.wt-header-nav {
+    float: right;
+}
+
+.wt-header-navitem-wrapper {
+    display: inline-block;
     height: 100%;
     padding: 0 1em 0 1em;
     cursor: pointer;
     background-color: inherit;
     transition: background-color 0.1s;
 }
-.wt-header-item-wrapper:hover { background-color: #DDD; }
+.wt-header-navitem-wrapper:hover { background-color: #4fad68;}
 
-.wt-header-content {
-    display: inline;
-    vertical-align: middle;
-    text-decoration: none;
-    color: #000;
-}
-
+/* Sidebar */
 .wt-sidebar {
     position: fixed; /* change to static at certain viewport */
     top: 6.5em;
-    right: 0;
+    left: 0;
     max-width: 50%; /* override with media queries */
     height: 100%;
-    background-color: #888;
+    background-color: #EEE;
     color: white;
-    opacity: 0.98;
+    opacity: 1;
+    box-shadow: 0 0.4em 1em rgba(0, 0, 0, 0.78)
 }
 
+.wt-sidebar #LoginBtn{
+    background: #9CCC65;
+}
+
+.wt-sidebar #RegisterBtn{
+    background: #9CCC65;
+}
+
+.wt-sidebar #ChangeSchoolBtn{
+    background: #B98989;
+}
+
+
 .wt-sidebar-content {
-    padding: 1em;
+    box-sizing: border-box;
+    margin: 0.5em;
+    padding: 0.5em;
     text-align: center;
     transition: background-color 0.1s;
     cursor: pointer;
 }
-.wt-sidebar-content:hover { background-color: #DDD; }
+
+.wt-sidebar-footer {
+    padding-top: 1em;
+    width: 100%;
+    position: absolute;
+    background-color: #444;
+    bottom: 100px;
+    height: 100px;
+    text-align: center;
+}
+
+.wt-sidebar-content:hover { background-color: #1dad68; }
 
 @media screen and (min-width: 600px) {
     .wt-sidebar {

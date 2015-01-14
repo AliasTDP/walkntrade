@@ -8,7 +8,7 @@ body {
     text-align: center;
     color: white;
     display: inline-block;
-    background-color: grey;
+    background-color: rgba(3, 3, 3, 0.6);
     opacity: 0.95;
 }
 
@@ -115,7 +115,7 @@ body {
 
 .results-sort:hover {
     cursor: pointer;
-    background-color: #AAA;
+    background-color: #2d8b46;
 }
 
 .results-sort > span {
@@ -130,7 +130,7 @@ body {
 }
 .results-search:hover {
     cursor: pointer;
-    background-color: #AAA;
+    background-color: #2d8b46;
 }
 
 .results-search > span {
@@ -142,7 +142,6 @@ body {
     background-color: inherit;
     color: black;
 }
-
 
 .wt-results-wrapper {
     display: inline-block;
@@ -173,8 +172,8 @@ body {
     width: 100%;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    box-shadow: 0 0 0.5em 0.01em black;
-    background-color: #FFFFFE;
+    background: rgba(255,255,255, .75);
+    border: 1px solid #C0C0C0;
     cursor: pointer;
 }
 
@@ -213,6 +212,7 @@ body {
     padding-left: 2em;
     padding-right: 2em;
 }
+
 .wt-result > .title > label {
     font-weight: bold;
     text-decoration: none;
@@ -229,7 +229,7 @@ body {
 }
 .wt-result > .visual > img {
     height: 100%;
-    box-shadow: 0 0 0.5em 0.01em black;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.2), 0 1px 5px rgba(0,0,0,0.2), 0 0 0 10px rgba(255,255,255,0.6);
     margin: 0 auto;
 }
 
@@ -275,7 +275,7 @@ body {
 .wt-result > .desc_price_wrapper > .price > label {
     font-size: 2em;
     vertical-align: middle;
-    color: #0e9c57; /** Google Hangouts color **/
+    color: #9CCC65; /** Walkntrade color **/
 }
 
 .wt-result > .description {
@@ -292,35 +292,9 @@ body {
     line-height: 1.3em;
 }
 
-.wt-result > .seller > a {
-    color: white;
-    padding: 0.5em;
-    height: 1em;
-}
-.wt-result > .seller > a:link {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-.wt-result > .seller > a:visited {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-.wt-result > .seller > a:active {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-.wt-result > .seller > a:hover {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
 .wt-result > .seller {
     box-sizing: border-box;
-    background-color: #0e9c57; /** Google Hangouts color **/
+    background-color: #9CCC65; /** Walkntrade color **/
     width: 100%;
     height: 3em;
 }
@@ -340,6 +314,27 @@ body {
     text-align: left;
     color: white;
     text-decoration: none;
+}
+
+.wt-result > .seller > div > a:link {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.wt-result > .seller > div > a:visited {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.wt-result > .seller > div > a:active {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.wt-result > .seller > div > a:hover {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
 }
 
 .wt-result > .seller > div > label {

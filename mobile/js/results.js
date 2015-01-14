@@ -15,13 +15,13 @@ $(document).ready(function() {
                 var loginHTML = '' +
                     '<div style="position: absolute; width: 100%; height: 100%;\
                                  top: 0; left: 0; background-color: grey; opacity: 0.95;">' +
-                        '<div class="pure-form" style="position: relative;\
+                        '<div class="pure-form" style="position: relative; border-radius: 1em;\
                                                        margin: 0 auto; padding: 1em; z-index: 3;\
                                                        top: 25%; background-color: white;\
                                                        width: 50%; height: 50%;">' +
                             '<h3 style="text-align: center;">Login</h3>' +
-                            '<input style="display: block; margin: 0.5em auto;" type="email"/>' + 
-                            '<input style="display: block; margin: 0.5em auto;" type="password"/>' +
+                            '<input style="display: block; margin: 0.5em auto;" placeholder="Email" type="email"/>' + 
+                            '<input style="display: block; margin: 0.5em auto;" placeholder="Password" type="password"/>' +
                             '<div style="margin: 0 auto; text-align: center;">' +
                                 '<input class="pure-button" style="margin: 0.5em;" type="button" value="Log In"/>' +
                                 '<input class="pure-button" style="margin: 0.5em;" type="button" value="Cancel"/>' +
@@ -87,6 +87,8 @@ $(document).ready(function() {
                 $loginDialog.find('input[type="password"]').on('keyup', checkLoginHandler);
             } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
                 logoutUser();
+            } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
+                window.location = "index.html";
             }
         });
         

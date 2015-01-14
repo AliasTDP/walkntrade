@@ -16,18 +16,21 @@
     </head>
     <body>
         <header class="wt-header">
-            <div class="wt-header-logo-wrapper">
-                <span style="display:inline-block; height:100%;vertical-align:middle;"></span>
+            <div id="wt-header-menu" class="wt-header-content-wrapper">
+                <i class="wt-header-content fa fa-2x fa-navicon"></i>
+            </div>
+            <div class="wt-header-content-wrapper wt-header-offset-logo">
                 <img class="wt-header-content pure-img" src="mobile/img/emblem/wtlogo_dark.png" />
             </div>
-            <div class="wt-header-hmenu-container">
-                <div class="wt-header-item-wrapper wt-header-menu-condensed">
-                    <span style="display:inline-block; height:100%;vertical-align:middle;"></span>
-                    <i class="wt-header-content fa fa-2x fa-navicon"></i>
+            <!--
+            <nav class="wt-header-content-wrapper wt-header-nav">
+                <div class="wt-header-navitem-wrapper">
+                    <i class="wt-header-content fa fa-2x fa-envelope"></i>
                 </div>
-            </div>
+            </nav>
+            -->
         </header>
-        <div class="wt-content pure-form results-filter">
+        <section class="wt-content pure-form results-filter">
             <div class="results-sort">
                 <span class="fa fa-sort"></span>
             </div>
@@ -40,22 +43,34 @@
             <div class="results-search">
                 <span class="fa fa-search"></span>
             </div>
-        </div>
-        <div class="wt-sidebar">
+        </section>
+        <nav class="wt-sidebar">
             <div id="LoginBtn" class="wt-sidebar-content">
                 <a>Login</a>
             </div>
             <div id="RegisterBtn" class="wt-sidebar-content">
-                <a>Register</a>
+                <a>Sign Up</a>
             </div>
             <div id="ChangeSchoolBtn" class="wt-sidebar-content">
                 <a>Change School</a>
             </div>
-        </div>
+            <div class="wt-sidebar-footer">
+                <div>
+                    <a>Terms of Service</a>
+                </div>
+                <div>
+                    <a>Privacy Policy</a>
+                </div>
+                <div>
+                    <a>Feedback</a>
+                </div>
+                <label>Copyright 2013 Walkntrade</label>
+            </div>
+        </nav>
         <section class="wt-content wt-content-results">
             <div class="wt-results-wrapper">
-                <div class="wt-results">
-                </div>
+                <main class="wt-results">
+                </main>
             </div>
         </section>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>

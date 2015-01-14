@@ -1,6 +1,7 @@
 var WTHelper = (function() {
     
     /******************************* Private *********************************/
+    var api_url = '/api2/';
     
     // Used by service_initSidebar for menu state / animation.
     var sidebarState = 'hidden',
@@ -37,12 +38,13 @@ var WTHelper = (function() {
         offset = 0;
     
     /******************************** Public **********************************/
+    
     var fontSize = window
         .getComputedStyle($('body')[0], null)
         .getPropertyValue('font-size');
     
     var initSidebar = function() {
-        var $menu = $('.wt-header').find('.wt-header-menu-condensed'),
+        var $menu = $('.wt-header').find('#wt-header-menu'),
             $sidebar = $('.wt-sidebar');
         
         $menu.on('click', animateSidebar);
@@ -68,7 +70,7 @@ var WTHelper = (function() {
     var login = function(email, password, rememberMe) {
         return $.ajax({
             type: 'POST',
-            url: '/api2/',
+            url: api_url,
             data: {
                 intent: 'login',
                 email: email,
@@ -82,7 +84,7 @@ var WTHelper = (function() {
     var logout = function() {
         return $.ajax({
             type: 'POST',
-            url: '/api2/',
+            url: api_url,
             data: {
                 intent: 'logout',
             },
@@ -94,7 +96,7 @@ var WTHelper = (function() {
     var getUsername = function() {
         return $.ajax({
             type: 'POST',
-            url: '/api2/',
+            url: api_url,
             data: {
                 intent: 'getUserName'
             },
@@ -105,7 +107,7 @@ var WTHelper = (function() {
     var getUserAvatar = function() {
         return $.ajax({
             type: 'POST',
-            url: '/api2/',
+            url: api_url,
             data: {
                 intent: 'getAvatar'
             },
@@ -116,7 +118,7 @@ var WTHelper = (function() {
     var getCategories = function() {
         return $.ajax({
             type: 'POST',
-            url: '/api2/',
+            url: api_url,
             data: {
                 intent: 'getCategories'
             },
@@ -132,7 +134,7 @@ var WTHelper = (function() {
         
         return $.ajax({
             type: 'POST',
-            url: '/api2/',
+            url: api_url,
             data: {
                 intent: 'getPosts',
                 school: schoolId,
