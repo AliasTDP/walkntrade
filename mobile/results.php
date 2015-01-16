@@ -6,13 +6,13 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 
-        <link rel="stylesheet" href="mobile/css/vendor/pure-min.css">
-        <link rel="stylesheet" href="mobile/css/vendor/font-awesome.min.css">
-        <link rel="stylesheet" href="mobile/css/styles.css">
-        <link rel="stylesheet" href="mobile/css/component.css">
-        <link rel="stylesheet" href="mobile/css/results.css">
+        <link rel="stylesheet" href="/mobile/css/vendor/pure-min.css">
+        <link rel="stylesheet" href="/mobile/css/vendor/font-awesome.min.css">
+        <link rel="stylesheet" href="/mobile/css/styles.css">
+        <link rel="stylesheet" href="/mobile/css/component.css">
+        <link rel="stylesheet" href="/mobile/css/results.css">
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans" type="text/css">
-        <script src="mobile/js/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="/mobile/js/vendor/modernizr-2.6.2.min.js"></script>
     </head>
     <body>
         <header class="wt-header">
@@ -20,7 +20,7 @@
                 <i class="wt-header-content fa fa-2x fa-navicon"></i>
             </div>
             <div class="wt-header-content-wrapper wt-header-offset-logo">
-                <img class="wt-header-content pure-img" src="mobile/img/emblem/wtlogo_dark.png" />
+                <img class="wt-header-content pure-img" src="/mobile/img/emblem/wtlogo_dark.png" />
             </div>
             <!--
             <nav class="wt-header-content-wrapper wt-header-nav">
@@ -73,9 +73,10 @@
                 </main>
             </div>
         </section>
+        <script>window.school="<?php echo $schoolTextId; ?>";</script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="mobile/js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
-        <script src="mobile/js/helper.js"></script>
-        <script src="mobile/js/results.js"></script>
+        <script>window.jQuery || document.write('<script src="/mobile/js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <script src="/mobile/js/helper.js"></script>
+        <script src="/mobile/js/results.js"></script>
     </body>
 </html>

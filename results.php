@@ -11,7 +11,21 @@ foreach ($validDomains as $domain) {
 if($redirect)
 	header( 'Location: https://walkntrade.com'.$serverURI, true, 301 );
 
- $query = (isset($_GET["query"])) ? $_GET["query"] : ""; ?>
+$query = (isset($_GET["query"])) ? $_GET["query"] : ""; 
+?>
+
+<?php
+$userAgent = $_SERVER["HTTP_USER_AGENT"];
+$mobileDevices = array("Android", "iPhone", "iPad", "Windows Phone");
+
+foreach ($mobileDevices as $mobileDevice) {
+    if(strpos($userAgent, $mobileDevice) !== false){
+        include("mobile/results.php");
+        return;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>

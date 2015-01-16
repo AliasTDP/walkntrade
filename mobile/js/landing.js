@@ -127,7 +127,7 @@ $('document').ready(function() {
 
     function setSchool(id) {
         WTHelper.fn_setCookie('sPref', id, 30);
-        window.location.href='https://walkntrade.com/schools/' + id;
+        window.location='./';
     }
     
     function searchSchools(query) {

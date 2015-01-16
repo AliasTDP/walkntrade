@@ -88,7 +88,7 @@ $(document).ready(function() {
             } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
                 logoutUser();
             } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
-                window.location = "index.html";
+                window.location = "/selector.php";
             }
         });
         
@@ -110,7 +110,7 @@ $(document).ready(function() {
             $('.results-searchfield > input').prop('value', '');
             $('.results-categories > a').removeClass('selected');
             $category.addClass('selected');
-            ChangeFilterEventHandler('spsu', category);
+            ChangeFilterEventHandler(window.school, category);
         });
         
         $('.results-search').on('click', function(event) {
@@ -133,13 +133,13 @@ $(document).ready(function() {
             event.preventDefault();
             event.stopImmediatePropagation();
             if (event.keyCode !== 13 || $(this).prop('value') === '') { return; }
-            ChangeFilterEventHandler('spsu', currentCategory, $(this).prop('value'));
+            ChangeFilterEventHandler(window.school, currentCategory, $(this).prop('value'));
         });
         
         $('.results-searchfield > button').on('click', function(event) {
             event.preventDefault();
             event.stopImmediatePropagation();
-            ChangeFilterEventHandler('spsu', currentCategory, $('.results-searchfield > input').prop('value'));
+            ChangeFilterEventHandler(window.school, currentCategory, $('.results-searchfield > input').prop('value'));
         });
         
         $(window).on('scroll', function(event) {
@@ -178,7 +178,7 @@ $(document).ready(function() {
                 }
                 
                 $pageUpdate = $.Deferred();
-                getPostsByCategory('spsu', currentCategory).done(function() {
+                getPostsByCategory(window.school, currentCategory).done(function() {
                     $pageUpdate.resolve();
                 })
                 .fail(function() {
@@ -410,7 +410,7 @@ $(document).ready(function() {
     }
     
     var categoryFlag = getCategories();
-    var resultsFlag = getPostsByCategory('spsu', 'all');
+    var resultsFlag = getPostsByCategory(window.school, 'all');
     
     $.when(categoryFlag, resultsFlag).then(function() {
         $pageUpdate.resolve();
