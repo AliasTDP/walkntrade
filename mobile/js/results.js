@@ -1,10 +1,33 @@
 $(document).ready(function() {
+    
+    /** State Variables **/
+    var school = window.school; delete window.school;
+    
     var currentCategory = "all",
         filterSearch = false,
         filterSort = false,
-        previousRelativeOffset = 0, // previous scroll position of the window, in em's.
-        inhibitUpdate = false, // flag to be set if a response payload is empty (no more results to load).
-        $pageUpdate = $.Deferred(); // promise object to track any asynchronous operations on the page.
+        previousRelativeOffset = 0, // Previous scroll position of the window, in em's.
+        inhibitUpdate = false, // Flag to be set if all results for school/category/query have been received from the server.
+        $pageUpdate = $.Deferred(); // Track any asynchronous operations on the page.
+    
+    /** Bootstrap the results page  **/
+    initPage();
+    
+    /*********************************************************************************************************/
+    
+    function initPage() {
+        var categoryFlag = getCategories();
+        var resultsFlag = getPostsByCategory(school, 'all');
+
+        $.when(categoryFlag, resultsFlag)
+            .done(function() {
+                $pageUpdate.resolve();
+                bindDOM();
+            })
+            .fail(function() {
+                $pageUpdate.reject();
+            });
+    }
     
     function bindDOM() {
         var $sidebar = WTHelper.fn_initSidebar();
@@ -13,38 +36,60 @@ $(document).ready(function() {
             var $target = $(event.target);
             if ($target.is('#LoginBtn') || $target.is('#LoginBtn *')) {
                 var loginHTML = '' +
-                    '<div style="position: absolute; width: 100%; height: 100%;\
-                                 top: 0; left: 0; background-color: grey; opacity: 0.95;">' +
-                        '<div class="pure-form" style="position: relative; border-radius: 1em;\
-                                                       margin: 0 auto; padding: 1em; z-index: 3;\
-                                                       top: 25%; background-color: white;\
-                                                       width: 50%; height: 50%;">' +
-                            '<h3 style="text-align: center;">Login</h3>' +
-                            '<input style="display: block; margin: 0.5em auto;" placeholder="Email" type="email"/>' + 
-                            '<input style="display: block; margin: 0.5em auto;" placeholder="Password" type="password"/>' +
-                            '<div style="margin: 0 auto; text-align: center;">' +
-                                '<input class="pure-button" style="margin: 0.5em;" type="button" value="Log In"/>' +
-                                '<input class="pure-button" style="margin: 0.5em;" type="button" value="Cancel"/>' +
+                    '<div class="body-overlay" style="top:'+$(window).scrollTop()+'px;">' +
+                        '<div class="pure-form login-window">' +
+                            '<div class="login-window-content-wrapper">' +
+                                '<h3 style="text-align: center;">Login</h3>' +
+                                '<input style="display: block; margin: 0.25em auto; width:75%;" placeholder="Email" type="email"/>' + 
+                                '<input style="display: block; margin: 0.25em auto; width:75%;" placeholder="Password" type="password"/>' +
+                                '<div style="margin: 0 auto; text-align: center;">' +
+                                    '<input class="pure-button pure-button-primary" style="margin: 0.25em;" type="submit" value="Log In"/>' +
+                                '</div>' +
+                                '<label></label>' +
                             '</div>' +
-                            '<label></label>' +
                         '</div>' +
                     '</div>';
                 
                 var $loginContainer = $(loginHTML);
                 var $loginDialog = $loginContainer.find('.pure-form');
-                $loginContainer.hide().appendTo('body').fadeIn().on('click', function(event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
+                
+                // Unbind scroll events
+                $('body').css('overflow', 'hidden')
+                    .on('mousewheel.freezeDOM touchmove.freezeDOM', function(e) {
+                        e.preventDefault();
+                    });
+                
+                $loginContainer.hide().appendTo('body').fadeIn({
+                    duration: 'fast', 
+                    start: function() {
+                        $loginDialog.animate({ top: "25%" }, 250);
+                    },
+                    complete: function() {
+                        $(this).on('click', function(event) {
+                            event.preventDefault();
+                            event.stopImmediatePropagation();
 
-                    var $target = $(event.target);
-                    if (!$target.is($loginDialog) && !$target.is($loginDialog.find('*'))) {
-                        $loginContainer.fadeOut({
-                            complete: function() {
-                                $(this).remove();
+                            var $target = $(event.target);
+                            if (!$target.is($loginDialog) && !$target.is($loginDialog.find('*'))) {
+                                // Re-bind scroll events
+                                $('body').css('overflow', 'visible')
+                                    .off('.freezeDOM');
+
+                                $loginContainer.fadeOut({
+                                    start: function() {
+                                        $loginDialog.animate({ top: "0" }, 250);
+                                    },
+                                    complete: function() {
+                                        $(this).remove();
+                                    }
+                                });
                             }
                         });
                     }
                 });
+                
+                $loginDialog.find('input[type="submit"]').on('click', checkLoginHandler);
+                $loginDialog.find('input[type="password"]').on('keyup', checkLoginHandler);
                 
                 function checkLoginHandler(event) {
                     event.preventDefault();
@@ -69,7 +114,15 @@ $(document).ready(function() {
                             $loginDialog.find('label')
                                 .text('Success :)')
                                 .css('color', 'green');
+                            
+                            // Re-bind scroll event
+                            $('body').css('overflow', 'visible')
+                                .off('.freezeDOM');
+                            
                             $loginContainer.fadeOut({
+                                start: function() {
+                                    $loginDialog.animate({ top: "0" }, 250);
+                                },
                                 complete: function() {
                                     $(this).remove();
                                 }
@@ -82,9 +135,6 @@ $(document).ready(function() {
                             .css('color', 'magenta');
                     });
                 }
-                
-                $loginDialog.find('input[type="button"][value="Log In"]').on('click', checkLoginHandler);
-                $loginDialog.find('input[type="password"]').on('keyup', checkLoginHandler);
             } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
                 logoutUser();
             } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
@@ -110,18 +160,21 @@ $(document).ready(function() {
             $('.results-searchfield > input').prop('value', '');
             $('.results-categories > a').removeClass('selected');
             $category.addClass('selected');
-            ChangeFilterEventHandler(window.school, category);
+            ChangeFilterEventHandler(school, category);
         });
         
         $('.results-search').on('click', function(event) {
             if (filterSearch) {
                 $('.results-filter > .results-searchfield').fadeOut('slow', function() {
                     $('.results-categories').fadeIn('fast', function() {
+                        $(window).triggerHandler('resize');
                         filterSearch = false;
                     });
                 });
             } else {
                 $('.results-categories').fadeOut('slow', function() {
+                    $('.results-categories').prev().css('display', 'none');
+                    $('.results-categories').next().css('display', 'none');
                     $('.results-filter > .results-searchfield').fadeIn('fast', function() {
                         filterSearch = true;
                     });
@@ -133,13 +186,13 @@ $(document).ready(function() {
             event.preventDefault();
             event.stopImmediatePropagation();
             if (event.keyCode !== 13 || $(this).prop('value') === '') { return; }
-            ChangeFilterEventHandler(window.school, currentCategory, $(this).prop('value'));
+            ChangeFilterEventHandler(school, currentCategory, $(this).prop('value'));
         });
         
         $('.results-searchfield > button').on('click', function(event) {
             event.preventDefault();
             event.stopImmediatePropagation();
-            ChangeFilterEventHandler(window.school, currentCategory, $('.results-searchfield > input').prop('value'));
+            ChangeFilterEventHandler(school, currentCategory, $('.results-searchfield > input').prop('value'));
         });
         
         $(window).on('scroll', function(event) {
@@ -178,7 +231,7 @@ $(document).ready(function() {
                 }
                 
                 $pageUpdate = $.Deferred();
-                getPostsByCategory(window.school, currentCategory).done(function() {
+                getPostsByCategory(school, currentCategory).done(function() {
                     $pageUpdate.resolve();
                 })
                 .fail(function() {
@@ -213,32 +266,44 @@ $(document).ready(function() {
         $pageUpdate = $.Deferred();
         
         $('.wt-sidebar > #LoginBtn').detach();
-        $('.wt-sidebar').prepend('<div id="LogoutBtn" class="wt-sidebar-content"><a>Logout</a></div>');
+        $('.wt-sidebar > #RegisterBtn').detach();
+        $('.wt-sidebar').prepend('\
+                <div id="LogoutBtn" class="wt-sidebar-content">\
+                    <a>Logout</a>\
+               </div>\
+               <div id="PostBtn" class="wt-sidebar-content">\
+                    <a>Add a Post</a>\
+               </div>\
+               <div id="MessageBtn" class="wt-sidebar-content">\
+                    <a>Messages</a>\
+               </div>\
+               <div id="PanelBtn" class="wt-sidebar-content">\
+                    <a>User CP</a>\
+               </div>');
+        var $userInfo = $('.wt-sidebar').prepend('<div class="user-info"></div>').children(':first-child');
         
-        var flag1 = WTHelper.service_getUsername().done(function(response) {
-            console.log(response);
-        })
-        .fail(function(request) {
-        });
+        var getUsername = WTHelper.service_getUsername();
+        var getUserAvatar = WTHelper.service_getUserAvatar();
         
-        var flag2 = WTHelper.service_getUserAvatar().done(function(response) {
-            console.log(response);
-            $('.wt-sidebar').prepend('<div class="user-heading" style="width:100%";>\
-                                        <img class="pure-img" style="margin: 0 auto;" src="https://walkntrade.com/'+response.message+'"/>\
-                                     </div>');
-        })
-        .fail(function(request) {
-        });
-        
-        $.when(flag1, flag2).then(function() {
+        $.when(getUsername, getUserAvatar).done(function(response1, response2) {
+            $userInfo.append('\
+            <div class="user-name">'+response1[0].message+'</div>\
+            <div class="user-img">\
+                <img class="pure-img" src="https://walkntrade.com/'+response2[0].message+'"/>\
+            </div>');
             $pageUpdate.resolve();
         });
     }
     
     function logoutUser() {
         WTHelper.service_logout().done(function(response) {
+            $('.wt-header > .wt-header-nav').remove();
+            $('.wt-sidebar > .user-info').remove();
             $('.wt-sidebar > #LogoutBtn').detach();
-            $('.wt-sidebar > .user-heading').remove();
+            $('.wt-sidebar > #PostBtn').detach();
+            $('.wt-sidebar > #MessageBtn').detach();
+            $('.wt-sidebar > #PanelBtn').detach();
+            $('.wt-sidebar').prepend('<div id="RegisterBtn" class="wt-sidebar-content"><a>Sign Up</a></div>');
             $('.wt-sidebar').prepend('<div id="LoginBtn" class="wt-sidebar-content"><a>Login</a></div>');
         })
         .fail(function(request) {
@@ -246,6 +311,28 @@ $(document).ready(function() {
     }
     
     function populateCategories(categories) {
+        $('.results-categories').before('<i style="display: none;" class="fa fa-2x fa-angle-left"></i>').prev()
+            .on('click', function(event) {
+                $('.results-categories').scrollLeft($('.results-categories').scrollLeft() - 25);
+            });
+        $('.results-categories').after('<i class="fa fa-2x fa-angle-right"></i>').next()
+            .on('click', function(event) {
+                $('.results-categories').scrollLeft($('.results-categories').scrollLeft() + 25);
+            });
+        
+        $('.results-categories').on('scroll', function(event) {
+            if ($(this).scrollLeft() < $(this).children(':first-child').width() / 2) {
+                $(this).prev().css('display', 'none');
+                $(this).next().css('display', 'inline');
+            } else if ($(this).scrollLeft() > $(this).width() / 2) {
+                $(this).prev().css('display', 'inline');
+                $(this).next().css('display', 'none');
+            } else {
+                $(this).prev().css('display', 'inline');
+                $(this).next().css('display', 'inline');
+            }
+        });
+        
         for (var cat = 0; cat < categories.length; cat++) {
             var categoryID = categories[cat][0],
                 categoryName = categories[cat][1],
@@ -261,6 +348,20 @@ $(document).ready(function() {
                 .data('category', categoryID)
                 .text(categoryName);
         }
+        
+        if ($('.results-categories').get(0).scrollWidth <= $('.results-filter').width()) {
+            $('.results-categories').next().css('display', 'none');
+        } else {
+            $('.results-categories').next().css('display', 'inline');
+        }
+        
+        $(window).on('resize', function(event) {
+            if ($('.results-categories').get(0).scrollWidth <= $('.results-filter').width()) {
+                $('.results-categories').next().css('display', 'none');
+            } else {
+                $('.results-categories').next().css('display', 'inline');
+            }
+        });
     }
     
     function populateResults(results) {
@@ -316,19 +417,19 @@ $(document).ready(function() {
                 .addClass('desc_price_wrapper')
                 .append('<div>', '<div>');
             
-            var $desc_container = $desc_and_price_wrapper.children(':first-child');
-            var $desc_element = $desc_container
-                .addClass('description')
-                .append('<p>')
-                .children(':first-child');
-            $desc_element.html(desc);
-            
-            var $price_container = $desc_and_price_wrapper.children(':nth-child(2)');
+            var $price_container = $desc_and_price_wrapper.children(':first-child');
             var $price_element = $price_container
                 .addClass('price')
                 .append('<label>')
                 .children(':first-child');
             $price_element.html(price);
+            
+            var $desc_container = $desc_and_price_wrapper.children(':nth-child(2)');
+            var $desc_element = $desc_container
+                .addClass('description')
+                .append('<p>')
+                .children(':first-child');
+            $desc_element.html(desc);
 
             $seller_price_container
                 .addClass('seller')
@@ -348,7 +449,7 @@ $(document).ready(function() {
                 .on('click', function(event) {
                     event.preventDefault();
                     event.stopImmediatePropagation();
-                    window.location.href="";
+                    window.location="/show?" + obsId;
                 });
         }
     }
@@ -408,14 +509,4 @@ $(document).ready(function() {
         
         return status;
     }
-    
-    var categoryFlag = getCategories();
-    var resultsFlag = getPostsByCategory(window.school, 'all');
-    
-    $.when(categoryFlag, resultsFlag).then(function() {
-        $pageUpdate.resolve();
-        bindDOM();
-    }, function() {
-        $pageUpdate.reject();
-    });
 });

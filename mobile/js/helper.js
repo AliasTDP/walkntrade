@@ -23,7 +23,7 @@ var WTHelper = (function() {
                 $sidebar.animate({ "width": "0" }, {
                     "duration": 250,
                     "start": function() {
-                        $sidebar.children().fadeOut();
+                        $sidebar.children().fadeOut('fast');
                     },
                     "complete": function() {
                         sidebarState = 'hidden';
@@ -142,8 +142,8 @@ var WTHelper = (function() {
                 query: query,
                 offset: offset,
                 amount: amount,
-                sort: sort
-                // ellipse: 1
+                sort: sort,
+                ellipse: 1
             },
             dataType: 'JSON'
         }).done(function() {

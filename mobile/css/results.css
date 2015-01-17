@@ -21,7 +21,7 @@ body {
 .results-filter > .results-searchfield {
     display: inline-block;
     box-sizing: border-box;
-    width: 50%;
+    width: 75%;
     height: 100%;
     vertical-align: middle;
 }
@@ -52,7 +52,7 @@ body {
 .results-categories {
     display: inline-block;
     box-sizing: border-box;
-    width: 85%;
+    width: 100%;
     height: 100%;
     text-align: center;
     overflow: auto;
@@ -61,6 +61,26 @@ body {
 }
 .results-categories::-webkit-scrollbar {
     display: none;
+}
+
+.results-filter > i::before {
+    display: inline-block;
+    height: 85%;
+    vertical-align: middle;
+}
+
+.results-filter > .fa-angle-right {
+    right: 0.01em;
+}
+
+.results-filter > i {
+    position: absolute;
+    display: inline-block;
+    height: 1.5em;
+    width: 15%;
+    vertical-align: top;
+    background-color: transparent;
+    box-shadow: 0 0em 1em rgba(255, 255, 255, 0.5);
 }
 
 .results-categories > a {
@@ -106,37 +126,6 @@ body {
     background-color: rgba(68, 211, 216, .6);
 }
 
-.results-sort {
-    float: left;
-    display: inline-block;
-    width: 5%;
-    height: 100%;
-}
-
-.results-sort:hover {
-    cursor: pointer;
-    background-color: #2d8b46;
-}
-
-.results-sort > span {
-    line-height: 3em;
-}
-
-.results-search {
-    float: right;
-    display: inline-block;
-    width: 10%;
-    height: 100%;
-}
-.results-search:hover {
-    cursor: pointer;
-    background-color: #2d8b46;
-}
-
-.results-search > span {
-    line-height: 3em;
-}
-
 .wt-content-results {
     box-sizing: border-box;
     background-color: inherit;
@@ -147,8 +136,7 @@ body {
     display: inline-block;
     width: 100%;
     box-sizing: border-box;
-    padding: 1em 1em 1em 1em;
-    text-align: center;
+    padding: 0.5em;
 }
 
 .wt-results {
@@ -160,7 +148,7 @@ body {
 .wt-result-wrapper {
     display: inline-block;
     box-sizing: border-box;
-    width: calc(100% - 2em); /* accounting for margins */
+    width: calc(100% - 0.8em); /* accounting for margins */
     margin-left: 0.5em;
     margin-right: 0.5em;
     text-align: center;
@@ -172,7 +160,7 @@ body {
     width: 100%;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    background: rgba(255,255,255, .75);
+    background: #FEFEFE;
     border: 1px solid #C0C0C0;
     cursor: pointer;
 }
@@ -180,7 +168,7 @@ body {
 .wt-result > .category {
     padding: 0.5em 0 0.5em 0;
     text-align: center;
-    margin-bottom: 1em;
+    margin-bottom: 0.75em;
     color: white;
     font-weight: bold;
 }
@@ -204,7 +192,7 @@ body {
 .wt-result > .title {
     text-align: center;
     height: 1.5em;
-    margin-bottom: 1em;
+    margin-bottom: 0.25em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -222,10 +210,10 @@ body {
 .wt-result > .visual {
     display: inline-block;
     box-sizing: border-box;
-    padding-left: 1em;
+    padding-left: 0.6em;
     height: 10em;
     width: 50%;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
 }
 .wt-result > .visual > img {
     height: 100%;
@@ -238,7 +226,6 @@ body {
     text-align: left;
     width: 50%;
     height: 10em;
-    margin-bottom: 1em;
     box-sizing: border-box;
     padding-right: 1em;
     vertical-align: top;
@@ -246,23 +233,26 @@ body {
 
 .wt-result > .desc_price_wrapper > .description {
     display: block;
-    height: 6em;
+    height: 7.5em;
     overflow: hidden;
     box-sizing: border-box;
-    padding: 0 1em 0 1em;
+    padding-left: 1em;
 }
 
 .wt-result > .desc_price_wrapper  > .description > p {
     margin-top: 0;
-    line-height: 1.5em;
+    line-height: 1.2em;
+    padding: 0.5em;
+    border: 1px solid #DDD;
+    border-radius: 1em;
 }
 
 .wt-result > .desc_price_wrapper > .price {
     display: block;
     vertical-align: middle;
-    height: 4em;
+    height: 3em;
     box-sizing: border-box;
-    padding: 0 1em 0 1em;
+    padding-left: 1em;
 }
 
 .wt-result > .desc_price_wrapper > .price > label:before {
@@ -273,7 +263,9 @@ body {
 }
 
 .wt-result > .desc_price_wrapper > .price > label {
+    text-align: center;
     font-size: 2em;
+    font-weight: bold;
     vertical-align: middle;
     color: #9CCC65; /** Walkntrade color **/
 }
@@ -284,7 +276,6 @@ body {
     width: 50%;
     height: 10em;
     overflow: hidden;
-    margin-bottom: 1em;
 }
 .wt-result > .description > p {
     margin-top: 0;
@@ -347,21 +338,18 @@ body {
 }
 
 @media screen and (min-width: 600px) {
+    .wt-results-wrapper {
+        padding: 1em;
+    }
+    
     .wt-result-wrapper {
-        width: calc(50% - 2em);
-    }
-    
-    .wt-result > .description {
-        text-align: center;
-    }
-    
-    .wt-result > .description > p {
-        line-height: 1.125em;
+        width: calc(50% - 1em);
     }
     
     .wt-result > .visual {
         display: block;
         width: 100%;
+        padding-left: 0;
     }
     .wt-result > .visual > img {
         margin: 0 auto;
@@ -374,11 +362,12 @@ body {
     
     .wt-result > .desc_price_wrapper{
         display: block;
+        height: 8.5em;
         width: 100%;
     }
     .wt-result > .desc_price_wrapper > .description {
         width: 100%;
-        height: 50%;
+        height: 65%;
     }
     
     .wt-result > .desc_price_wrapper > .description > p {
@@ -388,21 +377,47 @@ body {
     .wt-result > .desc_price_wrapper > .price {
         vertical-align: top;
         width: 100%;
-        height: 50%;
+        height: 35%;
     }
 }
 @media screen and (min-width: 1000px) {
     .wt-result-wrapper {
-        width: calc(33% - 2em);
+        width: calc(33% - 0.8em);
     }
 }
 @media screen and (min-width: 1280px) {
     .wt-result-wrapper {
-        width: calc(25% - 2em);
+        width: calc(25% - 1em);
     }
 }
 @media screen and (min-width: 1900px) {
     .wt-result-wrapper {
-        width: calc(20% - 2em);
+        width: calc(20% - 1em);
     }
 }
+
+.body-overlay {
+    position: absolute; 
+    background-color: grey; 
+    opacity: 0.95;
+    width: 100%; 
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.body-overlay > .login-window {
+    position: relative; 
+    border-radius: 1em;
+    margin: 0 auto; 
+    padding: 1em; 
+    z-index: 3;
+    background-color: white;
+    width: 50%;
+    height: 50%;
+}
+
+.body-overlay > .login-window > .login-window-content-wrapper {
+    height: 100%;
+}
+

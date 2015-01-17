@@ -45,16 +45,16 @@ body {
 
 .wt-header-offset-logo {
     position: relative;
-    right: 1em;
+    right: 0.5em;
+    max-width: 60%;
 }
 
 #wt-header-menu {
-    position: relative;
-    right: 0.5em;
 }
 
 .wt-header-nav {
     float: right;
+    height: 100%;
 }
 
 .wt-header-navitem-wrapper {
@@ -65,6 +65,10 @@ body {
     background-color: inherit;
     transition: background-color 0.1s;
 }
+.wt-header-navitem-wrapper *::before {
+    vertical-align: middle; 
+}
+
 .wt-header-navitem-wrapper:hover { background-color: #4fad68;}
 
 /* Sidebar */
@@ -77,10 +81,32 @@ body {
     background-color: #EEE;
     color: white;
     opacity: 1;
-    box-shadow: 0 0.4em 1em rgba(0, 0, 0, 0.78)
+    box-shadow: 0 0.4em 1em rgba(0, 0, 0, 0.78);
 }
 
-.wt-sidebar #LoginBtn{
+.wt-sidebar .user-info {
+    background-color: #9CCC65;
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+}
+
+.wt-sidebar .user-info > .user-name {
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 0.5em;
+}
+
+.wt-sidebar .user-info > .user-img > img {
+    margin: 0 auto;
+}
+
+.wt-sidebar #LoginBtn,
+.wt-sidebar #LogoutBtn,
+.wt-sidebar #PostBtn,
+.wt-sidebar #MessageBtn,
+.wt-sidebar #PanelBtn {
     background: #9CCC65;
 }
 
@@ -107,8 +133,8 @@ body {
     width: 100%;
     position: absolute;
     background-color: #444;
-    bottom: 100px;
-    height: 100px;
+    bottom: 6.5em;
+    height: 4em;
     text-align: center;
 }
 
@@ -122,11 +148,6 @@ body {
 @media screen and (min-width: 1000px) {
     .wt-sidebar {
         max-width: 25%;
-    }
-}
-@media screen and (min-width: 1280px) {
-    .wt-sidebar {
-        max-width: 12.5%;
     }
 }
 
