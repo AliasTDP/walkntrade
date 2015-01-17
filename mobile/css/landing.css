@@ -8,14 +8,6 @@
     z-index: -1;
     content: "";
     background: url("../img/bg/landing.jpg") #53A852 no-repeat 0/cover;
-    -webkit-filter: blur(0.1em);
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-filter: blur(0.1em);
-    -moz-transform: translate3d(0, 0, 0);
-    -ms-filter: blur(0.1em);
-    -ms-transform: translate3d(0, 0, 0);
-    filter: blur(0.1em);
-    transform: translate3d(0, 0, 0);
     box-shadow: 0 -1em 1em 0 #000000 inset;
 }
 
@@ -29,7 +21,7 @@
     z-index: -1;
     content: "";
     background: #000;
-    opacity: 0.75;
+    opacity: 0.85;
 }
 
 /* Align Landing page content */
