@@ -99,23 +99,39 @@ $(document).ready(function() {
                     var email = $dialog_el.find('.login-form input[type="email"]').prop('value').trim(),
                         password = $dialog_el.find('.login-form input[type="password"]').prop('value');
                     
-                    checkLogin(email, password).done(function(responseText) {
-                        if (responseText === 'success') {
-                            $dialog_el.find('.login-form label')
-                                .text('Success :)')
-                                .css('color', 'green');
-                            $dialog_service.$destroy();
-                        } else {
-                            $dialog_el.find('.login-form label')
-                                .text(responseText)
-                                .css('color', 'red');
-                        }
-                    })
-                    .fail(function(errorText) {
+                    var simple_email_regex = /\S+@\S+\.edu/;
+                    if (!email.length) {
                         $dialog_el.find('.login-form label')
-                            .text('Failed to connect to server :(')
-                            .css('color', 'magenta');
-                    });
+                            .text('Please enter your email address.')
+                            .css('color', 'red');
+                    } else if (simple_email_regex.test(email) === false) {
+                        $dialog_el.find('.login-form label')
+                            .text('Please enter a valid .edu email.')
+                            .css('color', 'red');
+                    } else if (!password.length) {
+                        $dialog_el.find('.login-form label')
+                            .text('Please enter your password.')
+                            .css('color', 'red');
+                    } else {
+                        checkLogin(email, password).done(function(responseText) {
+                            if (responseText === 'success') {
+                                $dialog_el.find('.login-form label')
+                                    .text('Success :)')
+                                    .css('color', 'green');
+                                $dialog_service.$destroy();
+                                loginUser();
+                            } else {
+                                $dialog_el.find('.login-form label')
+                                    .text(responseText)
+                                    .css('color', 'red');
+                            }
+                        })
+                        .fail(function(errorText) {
+                            $dialog_el.find('.login-form label')
+                                .text('Failed to connect to server :(')
+                                .css('color', 'magenta');
+                        });
+                    }
                 }
                 
                 function checkSignupHandler(event) {
@@ -129,6 +145,7 @@ $(document).ready(function() {
                         username = $dialog_el.find('.signup-form input[type="text"]').prop('value').trim(),
                         passwords = $dialog_el.find('.signup-form input[type="password"]');
                     
+                    var simple_email_regex = /\S+@\S+\.edu/;
                     if (!username.length) {
                         $dialog_el.find('.signup-form label')
                             .text('Please enter a username.')
@@ -136,6 +153,10 @@ $(document).ready(function() {
                     } else if (!email.length) {
                         $dialog_el.find('.signup-form label')
                             .text('Please enter an email address.')
+                            .css('color', 'red');
+                    } else if (simple_email_regex.test(email) === false) {
+                        $dialog_el.find('.signup-form label')
+                            .text('Please enter a valid .edu email.')
                             .css('color', 'red');
                     } else if (!passwords[0].value.length && !passwords[1].value.length) {
                         $dialog_el.find('.signup-form label')
@@ -277,36 +298,27 @@ $(document).ready(function() {
         });
     }
     
-    function checkLogin(email, password, $callback) {
+    function checkLogin(email, password) {
         var $status = $.Deferred();
-        WTHelper.service_login(email, password).done(function(response) {
-            console.log(response);
-            if (response === 'success') {
-                loginUser();
-            } else if (response.indexOf("incorrect")) {
-            } else if (response === 'verify') {
-            } else if (response === 'reset') {
-            }
-            
-            $status.resolve(response);
-        })
-        .fail(function(request, errorText) {
-            console.log(errorText);
-            $status.reject(errorText);
-        });
-        
+        WTHelper.service_login(email, password)
+            .done(function(response) {
+                $status.resolve(response);
+            })
+            .fail(function(request, errorText) {
+                $status.reject(errorText);
+            });        
         return $status;
     }
     
     function checkSignup(username, email, password) {
         var $status = $.Deferred();
-        WTHelper.service_registerUser(username, email, password).done(function(response) {
-            $status.resolve(response);
-        })
-        .fail(function(request, errorText) {
-            $status.reject(errorText);
-        });
-        
+        WTHelper.service_registerUser(username, email, password)
+            .done(function(response) {
+                $status.resolve(response);
+            })
+            .fail(function(request, errorText) {
+                $status.reject(errorText);
+            }); 
         return $status;
     }
     
