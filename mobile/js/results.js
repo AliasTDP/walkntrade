@@ -1,7 +1,8 @@
 $(document).ready(function() {
     
     /** State Variables **/
-    var school = window.school; delete window.school;
+    var school = window.school; 
+    delete window.school;
     
     var currentCategory = "all",
         filterSearch = false,
@@ -9,6 +10,10 @@ $(document).ready(function() {
         previousRelativeOffset = 0, // Previous scroll position of the window, in em's.
         inhibitUpdate = false, // Flag to be set if all results for school/category/query have been received from the server.
         $pageUpdate = $.Deferred(); // Track any asynchronous operations on the page.
+    
+    /** Cache **/
+    var cache = {
+    };
     
     /** Bootstrap the results page  **/
     initPage();
@@ -35,61 +40,63 @@ $(document).ready(function() {
         $sidebar.on('click', function(event) {
             var $target = $(event.target);
             if ($target.is('#LoginBtn') || $target.is('#LoginBtn *')) {
-                var loginHTML = '' +
-                    '<div class="body-overlay" style="top:'+$(window).scrollTop()+'px;">' +
-                        '<div class="pure-form login-window">' +
-                            '<div class="login-window-content-wrapper">' +
-                                '<h3 style="text-align: center;">Login</h3>' +
-                                '<input style="display: block; margin: 0.25em auto; width:75%;" placeholder="Email" type="email"/>' + 
-                                '<input style="display: block; margin: 0.25em auto; width:75%;" placeholder="Password" type="password"/>' +
-                                '<div style="margin: 0 auto; text-align: center;">' +
-                                    '<input class="pure-button pure-button-primary" style="margin: 0.25em;" type="submit" value="Log In"/>' +
-                                '</div>' +
-                                '<label></label>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>';
+                var $loginContainer, $loginDialog;
                 
-                var $loginContainer = $(loginHTML);
-                var $loginDialog = $loginContainer.find('.pure-form');
-                
-                // Unbind scroll events
-                $('body').css('overflow', 'hidden')
-                    .on('mousewheel.freezeDOM touchmove.freezeDOM', function(e) {
-                        e.preventDefault();
+                if (cache.hasOwnProperty('loginWindow')) {
+                    attachLoginWindow(cache['loginWindow']);
+                } else {
+                    $.get('/mobile/partials/login-window.html').done(function(loginHTML) {
+                        cache['loginWindow'] = loginHTML;
+                        attachLoginWindow(cache['loginWindow']);
                     });
+                }
                 
-                $loginContainer.hide().appendTo('body').fadeIn({
-                    duration: 'fast', 
-                    start: function() {
-                        $loginDialog.animate({ top: "25%" }, 250);
-                    },
-                    complete: function() {
-                        $(this).on('click', function(event) {
-                            event.preventDefault();
-                            event.stopImmediatePropagation();
+                function attachLoginWindow(loginHTML) {
+                    $loginContainer = $(loginHTML);
+                    $loginDialog = $loginContainer.find('.modal-window');
+                    $loginContainer.css({
+                        'display': 'none',
+                        'top': $(window).scrollTop()+'px'
+                    });
 
-                            var $target = $(event.target);
-                            if (!$target.is($loginDialog) && !$target.is($loginDialog.find('*'))) {
-                                // Re-bind scroll events
-                                $('body').css('overflow', 'visible')
-                                    .off('.freezeDOM');
-
-                                $loginContainer.fadeOut({
-                                    start: function() {
-                                        $loginDialog.animate({ top: "0" }, 250);
-                                    },
-                                    complete: function() {
-                                        $(this).remove();
-                                    }
-                                });
-                            }
+                    // Unbind scroll events
+                    $('body').css('overflow', 'hidden')
+                        .on('mousewheel.freezeDOM touchmove.freezeDOM', function(e) {
+                            e.preventDefault();
                         });
-                    }
-                });
-                
-                $loginDialog.find('input[type="submit"]').on('click', checkLoginHandler);
-                $loginDialog.find('input[type="password"]').on('keyup', checkLoginHandler);
+
+                    $loginContainer.appendTo('body').fadeIn({
+                        duration: 'fast', 
+                        start: function() {
+                            $loginDialog.animate({ top: "25%" }, 250);
+                        },
+                        complete: function() {
+                            $(this).on('click', function(event) {
+                                event.preventDefault();
+                                event.stopImmediatePropagation();
+
+                                var $target = $(event.target);
+                                if (!$target.is($loginDialog) && !$target.is($loginDialog.find('*'))) {
+                                    // Re-bind scroll events
+                                    $('body').css('overflow', 'visible')
+                                        .off('.freezeDOM');
+
+                                    $loginContainer.fadeOut({
+                                        start: function() {
+                                            $loginDialog.animate({ top: "0" }, 250);
+                                        },
+                                        complete: function() {
+                                            $(this).remove();
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    $loginDialog.find('input[type="submit"]').on('click', checkLoginHandler);
+                    $loginDialog.find('input[type="password"]').on('keyup', checkLoginHandler);
+                }
                 
                 function checkLoginHandler(event) {
                     event.preventDefault();
@@ -267,37 +274,35 @@ $(document).ready(function() {
         
         $('.wt-sidebar > #LoginBtn').detach();
         $('.wt-sidebar > #RegisterBtn').detach();
-        $('.wt-sidebar').prepend('\
-                <div id="LogoutBtn" class="wt-sidebar-content">\
-                    <a>Logout</a>\
-               </div>\
-               <div id="PostBtn" class="wt-sidebar-content">\
-                    <a>Add a Post</a>\
-               </div>\
-               <div id="MessageBtn" class="wt-sidebar-content">\
-                    <a>Messages</a>\
-               </div>\
-               <div id="PanelBtn" class="wt-sidebar-content">\
-                    <a>User CP</a>\
-               </div>');
-        var $userInfo = $('.wt-sidebar').prepend('<div class="user-info"></div>').children(':first-child');
         
-        var getUsername = WTHelper.service_getUsername();
-        var getUserAvatar = WTHelper.service_getUserAvatar();
-        
-        $.when(getUsername, getUserAvatar).done(function(response1, response2) {
-            $userInfo.append('\
-            <div class="user-name">'+response1[0].message+'</div>\
-            <div class="user-img">\
-                <img class="pure-img" src="https://walkntrade.com/'+response2[0].message+'"/>\
-            </div>');
-            $pageUpdate.resolve();
-        });
+        if (cache.hasOwnProperty('sidebarSessionContent')) {
+            attachSidebarSession(cache['sidebarSessionContent']);
+        } else {
+            $.get('/mobile/partials/sidebar-session.html').done(function(sidebarHTML) {
+                cache['sidebarSessionContent'] = sidebarHTML;
+                attachSidebarSession(cache['sidebarSessionContent']);
+            });
+        }
+
+        function attachSidebarSession(sidebarHTML) {
+            $('.wt-sidebar').prepend(sidebarHTML);
+            
+            var getUsername = WTHelper.service_getUsername();
+            var getUserAvatar = WTHelper.service_getUserAvatar();
+            
+            $.when(getUsername, getUserAvatar).done(function(response1, response2) {
+                $('.wt-sidebar > .user-info > .user-name')
+                    .html(response1[0].message);
+                $('.wt-sidebar > .user-info > .user-img > img')
+                    .attr('src', 'https://walkntrade.com/'+response2[0].message);
+                
+                $pageUpdate.resolve();
+            });
+        }
     }
     
     function logoutUser() {
         WTHelper.service_logout().done(function(response) {
-            $('.wt-header > .wt-header-nav').remove();
             $('.wt-sidebar > .user-info').remove();
             $('.wt-sidebar > #LogoutBtn').detach();
             $('.wt-sidebar > #PostBtn').detach();
@@ -365,85 +370,56 @@ $(document).ready(function() {
     }
     
     function populateResults(results) {
-        for (var item = 0; item < results.length; item++) {
-            var obsId = results[item].obsId,
-                userid = results[item].userid,
-                category = results[item].category,
-                title = results[item].title,
-                seller = results[item].username,
-                image_ref = results[item].image,
-                desc = results[item].details,
-                price = results[item].price;
+        
+        if (cache.hasOwnProperty('resultHTML')) {
+            for (var item = 0; item < results.length; item++) {
+                populateResult(cache['resultHTML'], results[item]);
+            }
+        } else {
+            var $flag = $.get('/mobile/partials/wt-result.html')
+                .done(function(resultHTML) {
+                    cache['resultHTML'] = resultHTML;
+                    for (var item = 0; item < results.length; item++) {
+                        populateResult(cache['resultHTML'], results[item]);
+                    }
+                });
+        }
+        
+        function populateResult(resultHTML, result) {
+            var obsId = result.obsId,
+                userid = result.userid,
+                category = result.category,
+                title = result.title,
+                seller = result.username,
+                image_ref = result.image,
+                details = result.details,
+                price = result.price.length ? result.price : "";
+            
+            var $itemHTML = $(resultHTML);
 
-            price = (price.length) ? price : "";
+            $itemHTML.find('.category')
+                .addClass('color-'+category)
+                .find('label')
+                    .html(category);
 
-            var itemHTML = '<div class="wt-result-wrapper">' +
-                               '<div class="wt-result">' +
-                               '</div>' +
-                           '</div>';
-            var $itemHTML = $(itemHTML);
-            var $item = $itemHTML.find('.wt-result');
-
-            $item.append('<div>', '<div>', '<div>', '<div>', '<div>');
-            var $category_container = $item.children(':nth-child(1)');
-            var $title_container = $item.children(':nth-child(2)');
-            var $visual_container = $item.children(':nth-child(3)');
-            var $desc_and_price_wrapper = $item.children(':nth-child(4)');
-            var $seller_price_container = $item.children(':nth-child(5)');
-
-            var $category_element = $category_container
-                .addClass('category ' + 'color-'+category)
-                .append('<label>')
-                .children(':first-child');
-            $category_element
-                .html(category);
-
-            var $title_element = $title_container
-                .addClass('title')
-                .append('<label>')
-                .children(':first-child');
-            $title_element
+            $itemHTML.find('.title > label')
                 .html(title);
 
-            var $visual_element = $visual_container
-                .addClass('visual')
-                .append('<img>')
-                .children(':first-child');
-            $visual_element
-                .addClass('pure-img')
-                .attr('src', 'https://walkntrade.com/' + image_ref);
-            
-            $desc_and_price_wrapper
-                .addClass('desc_price_wrapper')
-                .append('<div>', '<div>');
-            
-            var $price_container = $desc_and_price_wrapper.children(':first-child');
-            var $price_element = $price_container
-                .addClass('price')
-                .append('<label>')
-                .children(':first-child');
-            $price_element.html(price);
-            
-            var $desc_container = $desc_and_price_wrapper.children(':nth-child(2)');
-            var $desc_element = $desc_container
-                .addClass('description')
-                .append('<p>')
-                .children(':first-child');
-            $desc_element.html(desc);
+            $itemHTML.find('.visual > img')
+                .attr('src', image_ref);
 
-            $seller_price_container
-                .addClass('seller')
-                .css({ 'font-weight': 'bold' })
-                .append('<div><a></a><label></label></div>');
-            
-            var $seller_element = $seller_price_container.children(':first-child').children(':nth-child(1)');
-            $seller_element
+            $itemHTML.find('.price > label')
+                .html(price);
+
+            $itemHTML.find('.description > p')
+                .html(details);
+
+            $itemHTML.find('.seller a')
                 .html('Posted By: ' + seller)
-                .attr('href', 'https://walkntrade.com/user.php?uid=' + userid);
-            
-            var $message_element = $seller_price_container.children(':first-child').children(':nth-child(2)');
-            $message_element
-                .html("Message User");
+                .attr('href', 'https://walkntrade.com/user.php?uid='+userid);
+
+            $itemHTML.find('.seller label')
+                .html('Message User');
 
             $itemHTML.hide().appendTo('.wt-results').fadeIn('slow')
                 .on('click', function(event) {

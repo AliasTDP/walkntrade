@@ -37,23 +37,20 @@
             </div>
         </section>
         <nav class="wt-sidebar">
-            <?php if ($loggedIn) {
+            <?php if($loggedIn) {
                 if(file_exists(ROOTPATH."user_images/uid_".$_SESSION["user_id"].".jpg")) {
                     $image = ROOTPATH.'/user_images/uid_'.$_SESSION["user_id"].'.jpg';
                 } else {
                     $image = ROOTPATH.'/colorful/Anonymous_User.jpg';
                 }
                 
-                echo('
-                <div class="user-info">
-                    <div class="user-name">'.$_SESSION["username"].'</div>
-                    <div class="user-img">
-                        <img class="pure-img" src="'.$image.'"/>
-                    </div>
-                </div>');
-            } ?>
-            <?php if($loggedIn) {
                echo('
+               <div class="user-info">
+                   <div class="user-name">'.$_SESSION["username"].'</div>
+                   <div class="user-img">
+                       <img class="pure-img" src="'.$image.'"/>
+                   </div>
+               </div>
                <div id="LogoutBtn" class="wt-sidebar-content">
                     <a>Logout</a>
                </div>
@@ -67,13 +64,13 @@
                     <a>User CP</a>
                </div>');
             } else {
-                echo('
-                <div id="LoginBtn" class="wt-sidebar-content">
-                    <a>Login</a>
-                </div>
-                <div id="RegisterBtn" class="wt-sidebar-content">
-                    <a>Sign Up</a>
-                </div>');
+               echo('
+               <div id="LoginBtn" class="wt-sidebar-content">
+                   <a>Login</a>
+               </div>
+               <div id="RegisterBtn" class="wt-sidebar-content">
+                   <a>Sign Up</a>
+               </div>');
             } ?>
             <div id="ChangeSchoolBtn" class="wt-sidebar-content">
                 <a>Change School</a>

@@ -212,7 +212,7 @@ body {
     box-sizing: border-box;
     padding-left: 0.6em;
     height: 10em;
-    width: 50%;
+    width: 49%;
     margin-bottom: 0.5em;
 }
 .wt-result > .visual > img {
@@ -224,7 +224,7 @@ body {
 .wt-result > .desc_price_wrapper {
     display: inline-block;
     text-align: left;
-    width: 50%;
+    width: 49%;
     height: 10em;
     box-sizing: border-box;
     padding-right: 1em;
@@ -242,7 +242,7 @@ body {
 .wt-result > .desc_price_wrapper  > .description > p {
     margin-top: 0;
     line-height: 1.2em;
-    padding: 0.5em;
+    padding: 0.25em;
     border: 1px solid #DDD;
     border-radius: 1em;
 }
@@ -288,6 +288,7 @@ body {
     background-color: #9CCC65; /** Walkntrade color **/
     width: 100%;
     height: 3em;
+    font-weight: bold;
 }
 
 .wt-result > .seller > div {
@@ -406,7 +407,7 @@ body {
     top: 0;
 }
 
-.body-overlay > .login-window {
+.body-overlay > .modal-window {
     position: relative; 
     border-radius: 1em;
     margin: 0 auto; 
@@ -417,7 +418,7 @@ body {
     height: 50%;
 }
 
-.body-overlay > .login-window > .login-window-content-wrapper {
+.body-overlay > .modal-window > .modal-window-content-wrapper {
     height: 100%;
 }
 
