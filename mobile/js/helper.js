@@ -81,6 +81,20 @@ var WTHelper = (function() {
         });
     };
     
+    var registerUser = function(username, email, password) {
+        return $.ajax({
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'addUser',
+                username: username,
+                email: email,
+                password: password
+            },
+            dataType: 'JSON'
+        });
+    };
+    
     var logout = function() {
         return $.ajax({
             type: 'POST',
@@ -163,6 +177,7 @@ var WTHelper = (function() {
         fn_setCookie: setCookie,
         fn_initSidebar: initSidebar,
         service_login: login,
+        service_registerUser: registerUser,
         service_logout: logout,
         service_getUsername: getUsername,
         service_getUserAvatar: getUserAvatar,

@@ -67,14 +67,12 @@
                echo('
                <div id="LoginBtn" class="wt-sidebar-content">
                    <a>Login</a>
-               </div>
-               <div id="RegisterBtn" class="wt-sidebar-content">
-                   <a>Sign Up</a>
                </div>');
             } ?>
             <div id="ChangeSchoolBtn" class="wt-sidebar-content">
                 <a>Change School</a>
             </div>
+            <!--
             <div class="wt-sidebar-footer">
                 <div>
                     <a>Terms of Service</a>
@@ -86,6 +84,7 @@
                     <a>Feedback</a>
                 </div>
             </div>
+            -->
         </nav>
         <section class="wt-content wt-content-results">
             <div class="wt-results-wrapper">

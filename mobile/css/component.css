@@ -74,6 +74,7 @@ body {
 /* Sidebar */
 .wt-sidebar {
     position: fixed; /* change to static at certain viewport */
+    z-index: 1;
     top: 6.5em;
     left: 0;
     max-width: 50%; /* override with media queries */
@@ -110,14 +111,9 @@ body {
     background: #9CCC65;
 }
 
-.wt-sidebar #RegisterBtn{
-    background: #9CCC65;
-}
-
 .wt-sidebar #ChangeSchoolBtn{
     background: #B98989;
 }
-
 
 .wt-sidebar-content {
     box-sizing: border-box;

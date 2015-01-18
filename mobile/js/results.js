@@ -68,7 +68,7 @@ $(document).ready(function() {
                     $loginContainer.appendTo('body').fadeIn({
                         duration: 'fast', 
                         start: function() {
-                            $loginDialog.animate({ top: "25%" }, 250);
+                            $loginDialog.animate({ top: "20%" }, 250);
                         },
                         complete: function() {
                             $(this).on('click', function(event) {
@@ -77,71 +77,122 @@ $(document).ready(function() {
 
                                 var $target = $(event.target);
                                 if (!$target.is($loginDialog) && !$target.is($loginDialog.find('*'))) {
-                                    // Re-bind scroll events
-                                    $('body').css('overflow', 'visible')
-                                        .off('.freezeDOM');
-
-                                    $loginContainer.fadeOut({
-                                        start: function() {
-                                            $loginDialog.animate({ top: "0" }, 250);
-                                        },
-                                        complete: function() {
-                                            $(this).remove();
-                                        }
-                                    });
+                                    destroyLoginWindow();
                                 }
                             });
                         }
                     });
+                    
+                    if ($(window).width() < 600) {
+                        $loginContainer.find('a').eq(0).on('click', function(e) {
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            $loginDialog.find('.signup-form').hide();
+                            $loginDialog.find('.login-form').show();
+                        });
+                        $loginContainer.find('a').eq(1).on('click', function(e) {
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            $loginDialog.find('.login-form').hide();
+                            $loginDialog.find('.signup-form').show();
+                        });
+                    }
+                    
+                    $loginDialog.find('.login-form input[type="submit"]').on('click', checkLoginHandler);
+                    $loginDialog.find('.signup-form input[type="submit"]').on('click', checkSignupHandler);
+                }
+                
+                function destroyLoginWindow() {
+                    // Re-bind scroll event
+                    $('body').css('overflow', 'visible')
+                        .off('.freezeDOM');
 
-                    $loginDialog.find('input[type="submit"]').on('click', checkLoginHandler);
-                    $loginDialog.find('input[type="password"]').on('keyup', checkLoginHandler);
+                    $loginContainer.fadeOut({
+                        start: function() {
+                            $loginDialog.animate({ top: "0" }, 250);
+                        },
+                        complete: function() {
+                            $(this).remove();
+                        }
+                    });
                 }
                 
                 function checkLoginHandler(event) {
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     
-                    var email = $loginDialog.find('input[type="email"]').prop('value').trim(),
-                        password = $loginDialog.find('input[type="password"]').prop('value'),
-                        $target = $(event.target);
-                    
-                    if ($target.is($loginDialog.find('input[type="password"]'))) {
-                        if (event.keyCode !== 13) {
-                            return;
-                        }
-                    }
+                    var email = $loginDialog.find('.login-form input[type="email"]').prop('value').trim(),
+                        password = $loginDialog.find('.login-form input[type="password"]').prop('value');
                     
                     checkLogin(email, password).done(function(responseText) {
-                        if (responseText.indexOf("incorrect") !== -1) {
-                            $loginDialog.find('label')
-                                .text("Username or Password Incorrect.")
-                                .css('color', 'red');
-                        } else if (responseText === 'success') {
-                            $loginDialog.find('label')
+                        if (responseText === 'success') {
+                            $loginDialog.find('.login-form label')
                                 .text('Success :)')
                                 .css('color', 'green');
-                            
-                            // Re-bind scroll event
-                            $('body').css('overflow', 'visible')
-                                .off('.freezeDOM');
-                            
-                            $loginContainer.fadeOut({
-                                start: function() {
-                                    $loginDialog.animate({ top: "0" }, 250);
-                                },
-                                complete: function() {
-                                    $(this).remove();
-                                }
-                            });
+                            destroyLoginWindow();
+                        } else {
+                            $loginDialog.find('.login-form label')
+                                .text(responseText)
+                                .css('color', 'red');
                         }
                     })
                     .fail(function(errorText) {
-                        $loginDialog.find('label')
+                        $loginDialog.find('.login-form label')
                             .text('Failed to connect to server :(')
                             .css('color', 'magenta');
                     });
                 }
+                
+                function checkSignupHandler(event) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    
+                    var email = $loginDialog.find('.signup-form input[type="email"]').prop('value').trim(),
+                        username = $loginDialog.find('.signup-form input[type="text"]').prop('value').trim(),
+                        passwords = $loginDialog.find('.signup-form input[type="password"]');
+                    
+                    if (!username.length) {
+                        $loginDialog.find('.signup-form label')
+                            .text('Please enter a username.')
+                            .css('color', 'red');
+                    } else if (!email.length) {
+                        $loginDialog.find('.signup-form label')
+                            .text('Please enter an email address.')
+                            .css('color', 'red');
+                    } else if (!passwords[0].value.length && !passwords[1].value.length) {
+                        $loginDialog.find('.signup-form label')
+                            .text('Please enter a password.')
+                            .css('color', 'red');
+                    } else if ((!passwords[0].value.length && passwords[1].value.length) || 
+                               (!passwords[1].value.length && passwords[0].value.length)) {
+                        $loginDialog.find('.signup-form label')
+                            .text('Please confirm your password.')
+                            .css('color', 'red');
+                    } else if (passwords[0].value !== passwords[1].value) {
+                        $loginDialog.find('.signup-form label')
+                            .text('The two passwords provided must match.')
+                            .css('color', 'red');
+                    } else {
+                        checkSignup(username, email, passwords[0].value).done(function(response) {
+                            if (response.message === 'Success') {
+                                $loginDialog.find('.signup-form label')
+                                    .text('Success :)')
+                                    .css('color', 'green');
+                                destroyLoginWindow();
+                            } else {
+                                $loginDialog.find('.signup-form label')
+                                    .text(response.message)
+                                    .css('color', 'red');
+                            }
+                        })
+                        .fail(function(errorText) {
+                            $loginDialog.find('.signup-form label')
+                                .text('Failed to connect to server :(')
+                                .css('color', 'magenta');
+                        });
+                    }
+                }
+                
             } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
                 logoutUser();
             } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
@@ -269,11 +320,22 @@ $(document).ready(function() {
         return $status;
     }
     
+    function checkSignup(username, email, password) {
+        var $status = $.Deferred();
+        WTHelper.service_registerUser(username, email, password).done(function(response) {
+            $status.resolve(response);
+        })
+        .fail(function(request, errorText) {
+            $status.reject(errorText);
+        });
+        
+        return $status;
+    }
+    
     function loginUser() {
         $pageUpdate = $.Deferred();
         
         $('.wt-sidebar > #LoginBtn').detach();
-        $('.wt-sidebar > #RegisterBtn').detach();
         
         if (cache.hasOwnProperty('sidebarSessionContent')) {
             attachSidebarSession(cache['sidebarSessionContent']);
@@ -308,7 +370,6 @@ $(document).ready(function() {
             $('.wt-sidebar > #PostBtn').detach();
             $('.wt-sidebar > #MessageBtn').detach();
             $('.wt-sidebar > #PanelBtn').detach();
-            $('.wt-sidebar').prepend('<div id="RegisterBtn" class="wt-sidebar-content"><a>Sign Up</a></div>');
             $('.wt-sidebar').prepend('<div id="LoginBtn" class="wt-sidebar-content"><a>Login</a></div>');
         })
         .fail(function(request) {
@@ -431,6 +492,7 @@ $(document).ready(function() {
     }
     
     function ChangeFilterEventHandler(school, category, query) {
+        inhibitUpdate = false;
         $pageUpdate = $.Deferred();
         query = query || '';
         

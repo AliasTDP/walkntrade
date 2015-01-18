@@ -1,13 +1,21 @@
  <div class="body-overlay">
     <div class="pure-form modal-window">
         <div class="modal-window-content-wrapper">
-            <h3 style="text-align: center;">Login</h3>
-            <input style="display: block; margin: 0.25em auto; width:75%;" placeholder="Email" type="email"/>
-            <input style="display: block; margin: 0.25em auto; width:75%;" placeholder="Password" type="password"/>
-            <div style="margin: 0 auto; text-align: center;">
-                <input class="pure-button pure-button-primary" style="margin: 0.25em;" type="submit" value="Log In"/>
-            </div>
-            <label></label>
+            <h3 style="text-align: center;"><a>Login</a> or <a>Sign Up</a></h3>
+            <form class="login-form">
+                <input placeholder="Email" type="email" autofocus tabindex=1 />
+                <input placeholder="Password" type="password" tabindex=2 />
+                <input class="pure-button" type="submit" tabindex=3 value="Log In" />
+                <label></label>
+            </form>
+            <form class="signup-form">
+                <input placeholder="Username" type="text" tabindex=4/ >
+                <input placeholder="Email" type="email" tabindex=5 />
+                <input placeholder="Password" type="password" tabindex=6 />
+                <input placeholder="Confirm Password" type="password" tabindex=7 />
+                <input class="pure-button" type="submit" tabindex=8 value="Sign Up" />
+                <label></label>
+            </form>
         </div>
     </div>
 </div>
