@@ -40,80 +40,52 @@ $(document).ready(function() {
         $sidebar.on('click', function(event) {
             var $target = $(event.target);
             if ($target.is('#LoginBtn') || $target.is('#LoginBtn *')) {
-                var $loginContainer, $loginDialog;
+                var $dialog;
                 
                 if (cache.hasOwnProperty('loginWindow')) {
-                    attachLoginWindow(cache['loginWindow']);
+                    $dialog = WTHelper.factory_createDialog(cache['loginWindow']);
+                    $dialog.$el_promise.done(function($dialog_el) {
+                        bindDialog($dialog.$service, $dialog_el);
+                    });
                 } else {
                     $.get('/mobile/partials/login-window.html').done(function(loginHTML) {
                         cache['loginWindow'] = loginHTML;
-                        attachLoginWindow(cache['loginWindow']);
+                        $dialog = WTHelper.factory_createDialog(cache['loginWindow']);
+                        $dialog.$el_promise.done(function($dialog_el) {
+                            bindDialog($dialog.$service, $dialog_el);
+                        });
                     });
                 }
                 
-                function attachLoginWindow(loginHTML) {
-                    $loginContainer = $(loginHTML);
-                    $loginDialog = $loginContainer.find('.modal-window');
-                    $loginContainer.css({
-                        'display': 'none',
-                        'top': $(window).scrollTop()+'px'
-                    });
-
-                    // Unbind scroll events
-                    $('body').css('overflow', 'hidden')
-                        .on('mousewheel.freezeDOM touchmove.freezeDOM', function(e) {
-                            e.preventDefault();
-                        });
-
-                    $loginContainer.appendTo('body').fadeIn({
-                        duration: 'fast', 
-                        start: function() {
-                            $loginDialog.animate({ top: "20%" }, 250);
-                        },
-                        complete: function() {
-                            $(this).on('click', function(event) {
-                                event.preventDefault();
-                                event.stopImmediatePropagation();
-
-                                var $target = $(event.target);
-                                if (!$target.is($loginDialog) && !$target.is($loginDialog.find('*'))) {
-                                    destroyLoginWindow();
-                                }
-                            });
-                        }
-                    });
+                function bindDialog($dialog_service, $dialog_el) {
                     
                     if ($(window).width() < 600) {
-                        $loginContainer.find('a').eq(0).on('click', function(e) {
+                        $dialog_el.find('a').eq(0).on('click', function(e) {
                             e.preventDefault();
                             e.stopImmediatePropagation();
-                            $loginDialog.find('.signup-form').hide();
-                            $loginDialog.find('.login-form').show();
+                            $dialog_el.find('.signup-form').hide();
+                            $dialog_el.find('.login-form').show();
                         });
-                        $loginContainer.find('a').eq(1).on('click', function(e) {
+                        $dialog_el.find('a').eq(1).on('click', function(e) {
                             e.preventDefault();
                             e.stopImmediatePropagation();
-                            $loginDialog.find('.login-form').hide();
-                            $loginDialog.find('.signup-form').show();
+                            $dialog_el.find('.login-form').hide();
+                            $dialog_el.find('.signup-form').show();
                         });
                     }
                     
-                    $loginDialog.find('.login-form input[type="submit"]').on('click', checkLoginHandler);
-                    $loginDialog.find('.signup-form input[type="submit"]').on('click', checkSignupHandler);
-                }
-                
-                function destroyLoginWindow() {
-                    // Re-bind scroll event
-                    $('body').css('overflow', 'visible')
-                        .off('.freezeDOM');
-
-                    $loginContainer.fadeOut({
-                        start: function() {
-                            $loginDialog.animate({ top: "0" }, 250);
-                        },
-                        complete: function() {
-                            $(this).remove();
-                        }
+                    $dialog_el.find('.login-form input[type="submit"]').on({
+                        'click': checkLoginHandler
+                    }, {
+                        $dialog_service: $dialog_service,
+                        $dialog_el: $dialog_el
+                    });
+                    
+                    $dialog_el.find('.signup-form input[type="submit"]').on({
+                        'click': checkSignupHandler
+                    }, {
+                        $dialog_service: $dialog_service,
+                        $dialog_el: $dialog_el
                     });
                 }
                 
@@ -121,23 +93,26 @@ $(document).ready(function() {
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     
-                    var email = $loginDialog.find('.login-form input[type="email"]').prop('value').trim(),
-                        password = $loginDialog.find('.login-form input[type="password"]').prop('value');
+                    var $dialog_service = event.data.$dialog_service,
+                        $dialog_el = event.data.$dialog_el;
+                    
+                    var email = $dialog_el.find('.login-form input[type="email"]').prop('value').trim(),
+                        password = $dialog_el.find('.login-form input[type="password"]').prop('value');
                     
                     checkLogin(email, password).done(function(responseText) {
                         if (responseText === 'success') {
-                            $loginDialog.find('.login-form label')
+                            $dialog_el.find('.login-form label')
                                 .text('Success :)')
                                 .css('color', 'green');
-                            destroyLoginWindow();
+                            $dialog_service.$destroy();
                         } else {
-                            $loginDialog.find('.login-form label')
+                            $dialog_el.find('.login-form label')
                                 .text(responseText)
                                 .css('color', 'red');
                         }
                     })
                     .fail(function(errorText) {
-                        $loginDialog.find('.login-form label')
+                        $dialog_el.find('.login-form label')
                             .text('Failed to connect to server :(')
                             .css('color', 'magenta');
                     });
@@ -147,46 +122,49 @@ $(document).ready(function() {
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     
-                    var email = $loginDialog.find('.signup-form input[type="email"]').prop('value').trim(),
-                        username = $loginDialog.find('.signup-form input[type="text"]').prop('value').trim(),
-                        passwords = $loginDialog.find('.signup-form input[type="password"]');
+                    var $dialog_service = event.data.$dialog_service,
+                        $dialog_el = event.data.$dialog_el;
+                    
+                    var email = $dialog_el.find('.signup-form input[type="email"]').prop('value').trim(),
+                        username = $dialog_el.find('.signup-form input[type="text"]').prop('value').trim(),
+                        passwords = $dialog_el.find('.signup-form input[type="password"]');
                     
                     if (!username.length) {
-                        $loginDialog.find('.signup-form label')
+                        $dialog_el.find('.signup-form label')
                             .text('Please enter a username.')
                             .css('color', 'red');
                     } else if (!email.length) {
-                        $loginDialog.find('.signup-form label')
+                        $dialog_el.find('.signup-form label')
                             .text('Please enter an email address.')
                             .css('color', 'red');
                     } else if (!passwords[0].value.length && !passwords[1].value.length) {
-                        $loginDialog.find('.signup-form label')
+                        $dialog_el.find('.signup-form label')
                             .text('Please enter a password.')
                             .css('color', 'red');
                     } else if ((!passwords[0].value.length && passwords[1].value.length) || 
                                (!passwords[1].value.length && passwords[0].value.length)) {
-                        $loginDialog.find('.signup-form label')
+                        $dialog_el.find('.signup-form label')
                             .text('Please confirm your password.')
                             .css('color', 'red');
                     } else if (passwords[0].value !== passwords[1].value) {
-                        $loginDialog.find('.signup-form label')
+                        $dialog_el.find('.signup-form label')
                             .text('The two passwords provided must match.')
                             .css('color', 'red');
                     } else {
                         checkSignup(username, email, passwords[0].value).done(function(response) {
                             if (response.message === 'Success') {
-                                $loginDialog.find('.signup-form label')
+                                $dialog_el.find('.signup-form label')
                                     .text('Success :)')
                                     .css('color', 'green');
-                                destroyLoginWindow();
+                                $dialog_service.$destroy();
                             } else {
-                                $loginDialog.find('.signup-form label')
+                                $dialog_el.find('.signup-form label')
                                     .text(response.message)
                                     .css('color', 'red');
                             }
                         })
                         .fail(function(errorText) {
-                            $loginDialog.find('.signup-form label')
+                            $dialog_el.find('.signup-form label')
                                 .text('Failed to connect to server :(')
                                 .css('color', 'magenta');
                         });

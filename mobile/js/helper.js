@@ -37,6 +37,10 @@ var WTHelper = (function() {
         previousQuery = '', 
         offset = 0;
     
+    // General purpose cache
+    var cache = {
+    };
+    
     /******************************** Public **********************************/
     
     var fontSize = window
@@ -65,6 +69,83 @@ var WTHelper = (function() {
         });
         
         return $sidebar;
+    };
+    
+    var createDialog = function(dialogHTML) {
+      var $dialogContainer, $dialog, $status;
+        
+      $status = $.Deferred();
+      if (cache.hasOwnProperty('modalHTML')) {
+          attachDialog(cache['modalHTML'], dialogHTML);
+          $status.resolve($dialog);
+      } else {
+          $.get('/mobile/partials/modal-window.html').done(function(modalHTML) {
+              cache['modalHTML'] = modalHTML;
+              attachDialog(cache['modalHTML'], dialogHTML);
+              $status.resolve($dialog);
+          });
+      }
+        
+      function attachDialog(modalHTML, dialogHTML) {
+          $dialogContainer = $(modalHTML)
+            .css({
+              'display': 'none',
+              'top': $(window).scrollTop()+'px'
+            });
+          
+          $dialog = $(dialogHTML)
+            .appendTo($dialogContainer.find('.modal-window-content-wrapper'))
+            .parents('.modal-window');
+          
+          // Unbind viewport scrolling
+          $('body').css('overflow', 'hidden')
+            .on('mousewheel.freezeDOM touchmove.freezeDOM', function(scrollEvent) {
+              scrollEvent.preventDefault();
+            });
+          
+          $dialogContainer.appendTo('body').fadeIn({
+              duration: 'fast',
+              start: function() {
+                  $dialog.animate({ top: "20%" }, 250);
+              },
+              complete: function() {
+                  $(this).on('click', function(clickEvent) {
+                      clickEvent.preventDefault();
+                      clickEvent.stopImmediatePropagation();
+                      
+                      var $target = $(event.target);
+                      if (!($target.is($dialog) || $target.is($dialog.find('*')))) {
+                          // User clicked somewhere on the modal backdrop.
+                          destroyDialog();
+                      }
+                  });
+              }
+          });
+      }
+        
+      function destroyDialog() {
+          // Rebind viewport scrolling
+          $('body').css('overflow', 'visible')
+            .off('.freezeDOM');
+          
+          // Remove dialog and modal from the DOM
+          $dialogContainer.fadeOut({
+              duration: 'fast',
+              start: function() {
+                  $dialog.animate({ top: '0' }, 250);
+              },
+              complete: function() {
+                  $(this).remove();
+              }
+          });
+      }
+      
+          return {
+              $el_promise: $status,
+              $service: {
+                $destroy: destroyDialog
+              }
+          };
     };
     
     var login = function(email, password, rememberMe) {
@@ -176,6 +257,7 @@ var WTHelper = (function() {
         const_fontSize: fontSize,
         fn_setCookie: setCookie,
         fn_initSidebar: initSidebar,
+        factory_createDialog: createDialog,
         service_login: login,
         service_registerUser: registerUser,
         service_logout: logout,
