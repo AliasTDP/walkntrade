@@ -109,9 +109,14 @@ var WTHelper = (function() {
                   $dialog.animate({ top: "20%" }, 250);
               },
               complete: function() {
-                  $(this).on('click', function(clickEvent) {
-                      clickEvent.preventDefault();
-                      clickEvent.stopImmediatePropagation();
+                  $(this).on('click keyup', function(event) {
+                      event.preventDefault();
+                      event.stopImmediatePropagation();
+                      
+                      if (event.type === 'keyup' && event.keyCode === 27) {
+                          destroyDialog();
+                          return;
+                      }
                       
                       var $target = $(event.target);
                       if (!($target.is($dialog) || $target.is($dialog.find('*')))) {
