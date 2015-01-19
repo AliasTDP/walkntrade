@@ -5,6 +5,7 @@ $(document).ready(function() {
     delete window.school;
     
     var currentCategory = "all",
+        currentQuery = "",
         filterSearch = false,
         filterSort = false,
         previousRelativeOffset = 0, // Previous scroll position of the window, in em's.
@@ -243,13 +244,19 @@ $(document).ready(function() {
         $('.results-searchfield > input').on('keyup', function(event) {
             event.preventDefault();
             event.stopImmediatePropagation();
-            if (event.keyCode !== 13 || $(this).prop('value') === '') { return; }
+            if (event.keyCode !== 13 || $(this).prop('value') === currentQuery || $(this).prop('value') === '') { return; }
+            
             ChangeFilterEventHandler(school, currentCategory, $(this).prop('value'));
         });
         
         $('.results-searchfield > button').on('click', function(event) {
             event.preventDefault();
             event.stopImmediatePropagation();
+            if ($('.results-searchfield > input').prop('value') === '' || 
+                $('.results-searchfield > input').prop('value') === currentQuery) {
+                return;
+            }
+            
             ChangeFilterEventHandler(school, currentCategory, $('.results-searchfield > input').prop('value'));
         });
         
@@ -524,6 +531,7 @@ $(document).ready(function() {
         WTHelper.service_getPostsByCategory(schoolId, category, query, 12, 0).done(function(response) {
             console.log(response);
             currentCategory = category;
+            currentQuery = query || '';
             if (response.payload.length > 0) {
                 populateResults(response.payload);
             } else {
