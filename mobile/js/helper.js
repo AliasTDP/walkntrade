@@ -189,6 +189,18 @@ var WTHelper = (function() {
         });
     };
     
+    var verifyUser = function(key) {
+        return $.ajax({
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'verifyKey',
+                key: key
+            },
+            dataType: 'HTML'
+        });
+    };
+    
     var logout = function() {
         return $.ajax({
             type: 'POST',
@@ -273,6 +285,7 @@ var WTHelper = (function() {
         factory_createDialog: createDialog,
         service_login: login,
         service_registerUser: registerUser,
+        service_verifyUser: verifyUser,
         service_logout: logout,
         service_getUsername: getUsername,
         service_getUserAvatar: getUserAvatar,

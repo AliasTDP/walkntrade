@@ -47,19 +47,19 @@ $(document).ready(function() {
                 if (cache.hasOwnProperty('loginWindow')) {
                     $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
                     $dialog.$el_promise.done(function($dialog_el) {
-                        bindDialog($dialog.$service, $dialog_el);
+                        bindLoginDialog($dialog.$service, $dialog_el);
                     });
                 } else {
                     $.get('/mobile/partials/login-window.html').done(function(loginHTML) {
                         cache['loginWindow'] = loginHTML;
                         $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
                         $dialog.$el_promise.done(function($dialog_el) {
-                            bindDialog($dialog.$service, $dialog_el);
+                            bindLoginDialog($dialog.$service, $dialog_el);
                         });
                     });
                 }
                 
-                function bindDialog($dialog_service, $dialog_el) {
+                function bindLoginDialog($dialog_service, $dialog_el) {
                     
                     if ($(window).width() < 600) {
                         $dialog_el.find('a').eq(0).on('click', function(e) {
@@ -88,6 +88,17 @@ $(document).ready(function() {
                     }, {
                         $dialog_service: $dialog_service,
                         $dialog_el: $dialog_el
+                    });
+                }
+                
+                function bindVerificationDialog($dialog_service, $dialog_el, email, password) {
+                    $dialog_el.find('.verification-form input[type="submit"]').on({
+                        'click': checkVerificationHandler
+                    }, {
+                        $dialog_service: $dialog_service,
+                        $dialog_el: $dialog_el,
+                        email: email,
+                        password: password
                     });
                 }
                 
@@ -122,6 +133,18 @@ $(document).ready(function() {
                                     .css('color', 'green');
                                 $dialog_service.$destroy();
                                 loginUser();
+                            } else if (responseText === 'verify') {
+                                $dialog_service.$destroy();
+                                $dialog = WTHelper.factory_createDialog('\
+                                <h3>Verify Email</h3>\
+                                <form class="verification-form">\
+                                    <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
+                                    <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
+                                    <label></label>\
+                                </form>', '#verify');
+                                $dialog.$el_promise.done(function($dialog_el) {
+                                    bindVerificationDialog($dialog.$service, $dialog_el, email, password);
+                                });
                             } else {
                                 $dialog_el.find('.login-form label')
                                     .text(responseText)
@@ -180,6 +203,16 @@ $(document).ready(function() {
                                     .text('Success :)')
                                     .css('color', 'green');
                                 $dialog_service.$destroy();
+                                $dialog = WTHelper.factory_createDialog('\
+                                <h3>Verify Email</h3>\
+                                <form class="verification-form">\
+                                    <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
+                                    <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
+                                    <label></label>\
+                                </form>', '#verify');
+                                $dialog.$el_promise.done(function($dialog_el) {
+                                    bindVerificationDialog($dialog.$service, $dialog_el, email, passwords[0].value);
+                                });
                             } else {
                                 $dialog_el.find('.signup-form label')
                                     .text(response.message)
@@ -188,8 +221,50 @@ $(document).ready(function() {
                         })
                         .fail(function(errorText) {
                             $dialog_el.find('.signup-form label')
-                                .text('Failed to connect to server :(')
+                                .text(errorText)
                                 .css('color', 'magenta');
+                        });
+                    }
+                }
+                
+                function checkVerificationHandler(event) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    
+                    var $dialog_service = event.data.$dialog_service,
+                        $dialog_el = event.data.$dialog_el,
+                        email = event.data.email,
+                        password = event.data.password;
+                    
+                    var key = $dialog_el.find('.verification-form input[type="text"]').prop('value').trim();
+                    
+                    if (!key.length) {
+                        $dialog_el.find('.verification-form label')
+                            .text('Please enter the verification code sent to you.')
+                            .css('color', 'red');
+                    } else {
+                        checkVerification(key).done(function(responseText) {
+                            if (responseText === 'Your email address has been verified!') {
+                                $dialog_el.find('.verification-form label')
+                                    .text('Success :)')
+                                    .css('color', 'green');
+                                
+                                checkLogin(email, password).done(function(responseText) {
+                                    if (responseText === 'success') {
+                                        $dialog_service.$destroy();
+                                        loginUser();
+                                    }
+                                });
+                            } else {
+                                $dialog_el.find('.verification-form label')
+                                    .text(responseText)
+                                    .css('color', 'red');
+                            }
+                        })
+                        .fail(function(errorText) {
+                            $dialog_el.find('.verification-form label')
+                                .text(errorText)
+                                .css('color', 'red'); 
                         });
                     }
                 }
@@ -327,6 +402,21 @@ $(document).ready(function() {
             .fail(function(request, errorText) {
                 $status.reject(errorText);
             }); 
+        return $status;
+    }
+
+    function checkVerification(key) {
+        var $status = $.Deferred();
+        WTHelper.service_verifyUser(key)
+            .done(function(response) {
+                console.log(response);
+                $status.resolve(response);
+            })
+            .fail(function(request, errorText) {
+                console.log(request);
+                console.log(errorText);
+                $status.reject(errorText);
+            });
         return $status;
     }
     
