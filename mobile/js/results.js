@@ -41,234 +41,9 @@ $(document).ready(function() {
         
         $sidebar.on('click', function(event) {
             var $target = $(event.target);
+            
             if ($target.is('#LoginBtn') || $target.is('#LoginBtn *')) {
-                var $dialog;
-                
-                if (cache.hasOwnProperty('loginWindow')) {
-                    $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
-                    $dialog.$el_promise.done(function($dialog_el) {
-                        bindLoginDialog($dialog.$service, $dialog_el);
-                    });
-                } else {
-                    $.get('/mobile/partials/login-window.html').done(function(loginHTML) {
-                        cache['loginWindow'] = loginHTML;
-                        $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
-                        $dialog.$el_promise.done(function($dialog_el) {
-                            bindLoginDialog($dialog.$service, $dialog_el);
-                        });
-                    });
-                }
-                
-                function bindLoginDialog($dialog_service, $dialog_el) {
-                    
-                    if ($(window).width() < 600) {
-                        $dialog_el.find('a').eq(0).on('click', function(e) {
-                            e.preventDefault();
-                            e.stopImmediatePropagation();
-                            $dialog_el.find('.signup-form').hide();
-                            $dialog_el.find('.login-form').show();
-                        });
-                        $dialog_el.find('a').eq(1).on('click', function(e) {
-                            e.preventDefault();
-                            e.stopImmediatePropagation();
-                            $dialog_el.find('.login-form').hide();
-                            $dialog_el.find('.signup-form').show();
-                        });
-                    }
-                    
-                    $dialog_el.find('.login-form input[type="submit"]').on({
-                        'click': checkLoginHandler
-                    }, {
-                        $dialog_service: $dialog_service,
-                        $dialog_el: $dialog_el
-                    });
-                    
-                    $dialog_el.find('.signup-form input[type="submit"]').on({
-                        'click': checkSignupHandler
-                    }, {
-                        $dialog_service: $dialog_service,
-                        $dialog_el: $dialog_el
-                    });
-                }
-                
-                function bindVerificationDialog($dialog_service, $dialog_el, email, password) {
-                    $dialog_el.find('.verification-form input[type="submit"]').on({
-                        'click': checkVerificationHandler
-                    }, {
-                        $dialog_service: $dialog_service,
-                        $dialog_el: $dialog_el,
-                        email: email,
-                        password: password
-                    });
-                }
-                
-                function checkLoginHandler(event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    
-                    var $dialog_service = event.data.$dialog_service,
-                        $dialog_el = event.data.$dialog_el;
-                    
-                    var email = $dialog_el.find('.login-form input[type="email"]').prop('value').trim(),
-                        password = $dialog_el.find('.login-form input[type="password"]').prop('value');
-                    
-                    var simple_email_regex = /\S+@\S+\.edu/;
-                    if (!email.length) {
-                        $dialog_el.find('.login-form label')
-                            .text('Please enter your email address.')
-                            .css('color', 'red');
-                    } else if (simple_email_regex.test(email) === false) {
-                        $dialog_el.find('.login-form label')
-                            .text('Please enter a valid .edu email.')
-                            .css('color', 'red');
-                    } else if (!password.length) {
-                        $dialog_el.find('.login-form label')
-                            .text('Please enter your password.')
-                            .css('color', 'red');
-                    } else {
-                        checkLogin(email, password).done(function(responseText) {
-                            if (responseText === 'success') {
-                                $dialog_el.find('.login-form label')
-                                    .text('Success :)')
-                                    .css('color', 'green');
-                                $dialog_service.$destroy();
-                                loginUser();
-                            } else if (responseText === 'verify') {
-                                $dialog_service.$destroy();
-                                $dialog = WTHelper.factory_createDialog('\
-                                <h3>Verify Email</h3>\
-                                <form class="verification-form">\
-                                    <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
-                                    <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
-                                    <label></label>\
-                                </form>', '#verify');
-                                $dialog.$el_promise.done(function($dialog_el) {
-                                    bindVerificationDialog($dialog.$service, $dialog_el, email, password);
-                                });
-                            } else {
-                                $dialog_el.find('.login-form label')
-                                    .text(responseText)
-                                    .css('color', 'red');
-                            }
-                        })
-                        .fail(function(errorText) {
-                            $dialog_el.find('.login-form label')
-                                .text('Failed to connect to server :(')
-                                .css('color', 'magenta');
-                        });
-                    }
-                }
-                
-                function checkSignupHandler(event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    
-                    var $dialog_service = event.data.$dialog_service,
-                        $dialog_el = event.data.$dialog_el;
-                    
-                    var email = $dialog_el.find('.signup-form input[type="email"]').prop('value').trim(),
-                        username = $dialog_el.find('.signup-form input[type="text"]').prop('value').trim(),
-                        passwords = $dialog_el.find('.signup-form input[type="password"]');
-                    
-                    var simple_email_regex = /\S+@\S+\.edu/;
-                    if (!username.length) {
-                        $dialog_el.find('.signup-form label')
-                            .text('Please enter a username.')
-                            .css('color', 'red');
-                    } else if (!email.length) {
-                        $dialog_el.find('.signup-form label')
-                            .text('Please enter an email address.')
-                            .css('color', 'red');
-                    } else if (simple_email_regex.test(email) === false) {
-                        $dialog_el.find('.signup-form label')
-                            .text('Please enter a valid .edu email.')
-                            .css('color', 'red');
-                    } else if (!passwords[0].value.length && !passwords[1].value.length) {
-                        $dialog_el.find('.signup-form label')
-                            .text('Please enter a password.')
-                            .css('color', 'red');
-                    } else if ((!passwords[0].value.length && passwords[1].value.length) || 
-                               (!passwords[1].value.length && passwords[0].value.length)) {
-                        $dialog_el.find('.signup-form label')
-                            .text('Please confirm your password.')
-                            .css('color', 'red');
-                    } else if (passwords[0].value !== passwords[1].value) {
-                        $dialog_el.find('.signup-form label')
-                            .text('The two passwords provided must match.')
-                            .css('color', 'red');
-                    } else {
-                        checkSignup(username, email, passwords[0].value).done(function(response) {
-                            if (response.message === 'Success') {
-                                $dialog_el.find('.signup-form label')
-                                    .text('Success :)')
-                                    .css('color', 'green');
-                                $dialog_service.$destroy();
-                                $dialog = WTHelper.factory_createDialog('\
-                                <h3>Verify Email</h3>\
-                                <form class="verification-form">\
-                                    <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
-                                    <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
-                                    <label></label>\
-                                </form>', '#verify');
-                                $dialog.$el_promise.done(function($dialog_el) {
-                                    bindVerificationDialog($dialog.$service, $dialog_el, email, passwords[0].value);
-                                });
-                            } else {
-                                $dialog_el.find('.signup-form label')
-                                    .text(response.message)
-                                    .css('color', 'red');
-                            }
-                        })
-                        .fail(function(errorText) {
-                            $dialog_el.find('.signup-form label')
-                                .text(errorText)
-                                .css('color', 'magenta');
-                        });
-                    }
-                }
-                
-                function checkVerificationHandler(event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    
-                    var $dialog_service = event.data.$dialog_service,
-                        $dialog_el = event.data.$dialog_el,
-                        email = event.data.email,
-                        password = event.data.password;
-                    
-                    var key = $dialog_el.find('.verification-form input[type="text"]').prop('value').trim();
-                    
-                    if (!key.length) {
-                        $dialog_el.find('.verification-form label')
-                            .text('Please enter the verification code sent to you.')
-                            .css('color', 'red');
-                    } else {
-                        checkVerification(key).done(function(responseText) {
-                            if (responseText === 'Your email address has been verified!') {
-                                $dialog_el.find('.verification-form label')
-                                    .text('Success :)')
-                                    .css('color', 'green');
-                                
-                                checkLogin(email, password).done(function(responseText) {
-                                    if (responseText === 'success') {
-                                        $dialog_service.$destroy();
-                                        loginUser();
-                                    }
-                                });
-                            } else {
-                                $dialog_el.find('.verification-form label')
-                                    .text(responseText)
-                                    .css('color', 'red');
-                            }
-                        })
-                        .fail(function(errorText) {
-                            $dialog_el.find('.verification-form label')
-                                .text(errorText)
-                                .css('color', 'red'); 
-                        });
-                    }
-                }
-                
+                createLoginDialog();
             } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
                 logoutUser();
             } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
@@ -379,6 +154,235 @@ $(document).ready(function() {
                 });
             }
         });
+    }
+    
+    function createLoginDialog() {
+        var $dialog;
+                
+        if (cache.hasOwnProperty('loginWindow')) {
+            $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
+            $dialog.$el_promise.done(function($dialog_el) {
+                bindLoginDialog($dialog.$service, $dialog_el);
+            });
+        } else {
+            $.get('/mobile/partials/login-window.html').done(function(loginHTML) {
+                cache['loginWindow'] = loginHTML;
+                $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
+                $dialog.$el_promise.done(function($dialog_el) {
+                    bindLoginDialog($dialog.$service, $dialog_el);
+                });
+            });
+        }
+
+        function bindLoginDialog($dialog_service, $dialog_el) {
+
+            if ($(window).width() < 600) {
+                $dialog_el.find('a').eq(0).on('click', function(e) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    $dialog_el.find('.signup-form').hide();
+                    $dialog_el.find('.login-form').show();
+                });
+                $dialog_el.find('a').eq(1).on('click', function(e) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    $dialog_el.find('.login-form').hide();
+                    $dialog_el.find('.signup-form').show();
+                });
+            }
+
+            $dialog_el.find('.login-form input[type="submit"]').on({
+                'click': checkLoginHandler
+            }, {
+                $dialog_service: $dialog_service,
+                $dialog_el: $dialog_el
+            });
+
+            $dialog_el.find('.signup-form input[type="submit"]').on({
+                'click': checkSignupHandler
+            }, {
+                $dialog_service: $dialog_service,
+                $dialog_el: $dialog_el
+            });
+        }
+
+        function bindVerificationDialog($dialog_service, $dialog_el, email, password) {
+            $dialog_el.find('.verification-form input[type="submit"]').on({
+                'click': checkVerificationHandler
+            }, {
+                $dialog_service: $dialog_service,
+                $dialog_el: $dialog_el,
+                email: email,
+                password: password
+            });
+        }
+
+        function checkLoginHandler(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            var $dialog_service = event.data.$dialog_service,
+                $dialog_el = event.data.$dialog_el;
+
+            var email = $dialog_el.find('.login-form input[type="email"]').prop('value').trim(),
+                password = $dialog_el.find('.login-form input[type="password"]').prop('value');
+
+            var simple_email_regex = /\S+@\S+\.edu/;
+            if (!email.length) {
+                $dialog_el.find('.login-form label')
+                    .text('Please enter your email address.')
+                    .css('color', 'red');
+            } else if (simple_email_regex.test(email) === false) {
+                $dialog_el.find('.login-form label')
+                    .text('Please enter a valid .edu email.')
+                    .css('color', 'red');
+            } else if (!password.length) {
+                $dialog_el.find('.login-form label')
+                    .text('Please enter your password.')
+                    .css('color', 'red');
+            } else {
+                checkLogin(email, password).done(function(responseText) {
+                    if (responseText === 'success') {
+                        $dialog_el.find('.login-form label')
+                            .text('Success :)')
+                            .css('color', 'green');
+                        $dialog_service.$destroy();
+                        loginUser();
+                    } else if (responseText === 'verify') {
+                        $dialog_service.$destroy();
+                        $dialog = WTHelper.factory_createDialog('\
+                        <h3>Verify Email</h3>\
+                        <form class="verification-form">\
+                            <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
+                            <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
+                            <label></label>\
+                        </form>', '#verify');
+                        $dialog.$el_promise.done(function($dialog_el) {
+                            bindVerificationDialog($dialog.$service, $dialog_el, email, password);
+                        });
+                    } else {
+                        $dialog_el.find('.login-form label')
+                            .text(responseText)
+                            .css('color', 'red');
+                    }
+                })
+                .fail(function(errorText) {
+                    $dialog_el.find('.login-form label')
+                        .text('Failed to connect to server :(')
+                        .css('color', 'magenta');
+                });
+            }
+        }
+
+        function checkSignupHandler(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            var $dialog_service = event.data.$dialog_service,
+                $dialog_el = event.data.$dialog_el;
+
+            var email = $dialog_el.find('.signup-form input[type="email"]').prop('value').trim(),
+                username = $dialog_el.find('.signup-form input[type="text"]').prop('value').trim(),
+                passwords = $dialog_el.find('.signup-form input[type="password"]');
+
+            var simple_email_regex = /\S+@\S+\.edu/;
+            if (!username.length) {
+                $dialog_el.find('.signup-form label')
+                    .text('Please enter a username.')
+                    .css('color', 'red');
+            } else if (!email.length) {
+                $dialog_el.find('.signup-form label')
+                    .text('Please enter an email address.')
+                    .css('color', 'red');
+            } else if (simple_email_regex.test(email) === false) {
+                $dialog_el.find('.signup-form label')
+                    .text('Please enter a valid .edu email.')
+                    .css('color', 'red');
+            } else if (!passwords[0].value.length && !passwords[1].value.length) {
+                $dialog_el.find('.signup-form label')
+                    .text('Please enter a password.')
+                    .css('color', 'red');
+            } else if ((!passwords[0].value.length && passwords[1].value.length) || 
+                       (!passwords[1].value.length && passwords[0].value.length)) {
+                $dialog_el.find('.signup-form label')
+                    .text('Please confirm your password.')
+                    .css('color', 'red');
+            } else if (passwords[0].value !== passwords[1].value) {
+                $dialog_el.find('.signup-form label')
+                    .text('The two passwords provided must match.')
+                    .css('color', 'red');
+            } else {
+                checkSignup(username, email, passwords[0].value).done(function(response) {
+                    if (response.message === 'Success') {
+                        $dialog_el.find('.signup-form label')
+                            .text('Success :)')
+                            .css('color', 'green');
+                        $dialog_service.$destroy();
+                        $dialog = WTHelper.factory_createDialog('\
+                        <h3>Verify Email</h3>\
+                        <form class="verification-form">\
+                            <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
+                            <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
+                            <label></label>\
+                        </form>', '#verify');
+                        $dialog.$el_promise.done(function($dialog_el) {
+                            bindVerificationDialog($dialog.$service, $dialog_el, email, passwords[0].value);
+                        });
+                    } else {
+                        $dialog_el.find('.signup-form label')
+                            .text(response.message)
+                            .css('color', 'red');
+                    }
+                })
+                .fail(function(errorText) {
+                    $dialog_el.find('.signup-form label')
+                        .text(errorText)
+                        .css('color', 'magenta');
+                });
+            }
+        }
+
+        function checkVerificationHandler(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            var $dialog_service = event.data.$dialog_service,
+                $dialog_el = event.data.$dialog_el,
+                email = event.data.email,
+                password = event.data.password;
+
+            var key = $dialog_el.find('.verification-form input[type="text"]').prop('value').trim();
+
+            if (!key.length) {
+                $dialog_el.find('.verification-form label')
+                    .text('Please enter the verification code sent to you.')
+                    .css('color', 'red');
+            } else {
+                checkVerification(key).done(function(responseText) {
+                    if (responseText === 'Your email address has been verified!') {
+                        $dialog_el.find('.verification-form label')
+                            .text('Success :)')
+                            .css('color', 'green');
+
+                        checkLogin(email, password).done(function(responseText) {
+                            if (responseText === 'success') {
+                                $dialog_service.$destroy();
+                                loginUser();
+                            }
+                        });
+                    } else {
+                        $dialog_el.find('.verification-form label')
+                            .text(responseText)
+                            .css('color', 'red');
+                    }
+                })
+                .fail(function(errorText) {
+                    $dialog_el.find('.verification-form label')
+                        .text(errorText)
+                        .css('color', 'red'); 
+                });
+            }
+        }
     }
     
     function checkLogin(email, password) {
