@@ -21,6 +21,7 @@ $(document).ready(function() {
     /*********************************************************************************************************/
     
     function initPage() {
+        history.replaceState("", document.title, window.location.pathname);
         var categoryFlag = getCategories();
         var resultsFlag = getPostsByCategory(school, 'all');
 
@@ -43,14 +44,14 @@ $(document).ready(function() {
                 var $dialog;
                 
                 if (cache.hasOwnProperty('loginWindow')) {
-                    $dialog = WTHelper.factory_createDialog(cache['loginWindow']);
+                    $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
                     $dialog.$el_promise.done(function($dialog_el) {
                         bindDialog($dialog.$service, $dialog_el);
                     });
                 } else {
                     $.get('/mobile/partials/login-window.html').done(function(loginHTML) {
                         cache['loginWindow'] = loginHTML;
-                        $dialog = WTHelper.factory_createDialog(cache['loginWindow']);
+                        $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
                         $dialog.$el_promise.done(function($dialog_el) {
                             bindDialog($dialog.$service, $dialog_el);
                         });
@@ -427,7 +428,7 @@ $(document).ready(function() {
                 populateResult(cache['resultHTML'], results[item]);
             }
         } else {
-            var $flag = $.get('/mobile/partials/wt-result.html')
+            $.get('/mobile/partials/wt-result.html')
                 .done(function(resultHTML) {
                     cache['resultHTML'] = resultHTML;
                     for (var item = 0; item < results.length; item++) {

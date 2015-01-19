@@ -71,22 +71,22 @@ var WTHelper = (function() {
         return $sidebar;
     };
     
-    var createDialog = function(dialogHTML) {
+    var createDialog = function(dialogHTML, locationHash) {
       var $dialogContainer, $dialog, $status;
         
       $status = $.Deferred();
       if (cache.hasOwnProperty('modalHTML')) {
-          attachDialog(cache['modalHTML'], dialogHTML);
+          attachDialog(cache['modalHTML'], dialogHTML, locationHash);
           $status.resolve($dialog);
       } else {
           $.get('/mobile/partials/modal-window.html').done(function(modalHTML) {
               cache['modalHTML'] = modalHTML;
-              attachDialog(cache['modalHTML'], dialogHTML);
+              attachDialog(cache['modalHTML'], dialogHTML, locationHash);
               $status.resolve($dialog);
           });
       }
         
-      function attachDialog(modalHTML, dialogHTML) {
+      function attachDialog(modalHTML, dialogHTML, locationHash) {
           $dialogContainer = $(modalHTML)
             .css({
               'display': 'none',
@@ -109,6 +109,13 @@ var WTHelper = (function() {
                   $dialog.animate({ top: "20%" }, 250);
               },
               complete: function() {
+                  window.location.hash = locationHash;
+                  $(window).on('hashchange', function() {
+                      if (!this.location.hash) {
+                          destroyDialog();
+                      }
+                  });
+                  
                   $(this).on('click keyup', function(event) {
                       event.preventDefault();
                       event.stopImmediatePropagation();
@@ -141,6 +148,7 @@ var WTHelper = (function() {
               },
               complete: function() {
                   $(this).remove();
+                  window.history.replaceState("", document.title, window.location.pathname);
               }
           });
       }
