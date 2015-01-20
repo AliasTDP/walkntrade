@@ -225,120 +225,92 @@ body {
     margin: 0 auto;
 }
 
-.wt-result > .desc_price_wrapper {
+.wt-result > .info {
     display: inline-block;
+    box-sizing: border-box;
     text-align: left;
     width: 49%;
-    height: 10em;
-    box-sizing: border-box;
-    padding-right: 1em;
+    height: 3.5em;
+    padding-right: 0.25em;
+    padding-left: 0.25em;
     vertical-align: top;
 }
 
-.wt-result > .desc_price_wrapper > .description {
-    display: block;
-    height: 7.5em;
-    overflow: hidden;
-    box-sizing: border-box;
-    padding-left: 1em;
-}
-
-.wt-result > .desc_price_wrapper  > .description > p {
-    margin-top: 0;
-    line-height: 1.2em;
-    padding: 0.25em;
-    border: 1px solid #DDD;
-}
-
-.wt-result > .desc_price_wrapper > .price {
-    display: block;
-    vertical-align: middle;
-    height: 3em;
-    box-sizing: border-box;
-    padding-left: 1em;
-}
-
-.wt-result > .desc_price_wrapper > .price > label:before {
+.wt-result > .info > .transaction-info {
     display: inline-block;
-    content: '';
-    height: 100%;
-    vertical-align: middle;
+    text-align: center;
+    height: 3.5em;
+    width: 45%;
 }
 
-.wt-result > .desc_price_wrapper > .price > label {
-    text-align: center;
-    font-size: 2em;
-    font-weight: bold;
+.wt-result > .info > .messager {
+    display: inline-block;
+    vertical-align: top;
+    height: 3.5em;
+    width: 45%;
+}
+
+.wt-result > .info > .messager > button {
+    background-color: #9CCC65;
+    color: white;
+    width: 100%;
+    height: 100%;
+}
+
+.wt-result > .info > .transaction-info > .price {
+    display: block;
     vertical-align: middle;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 2.25em;
+}
+
+.wt-result > .info > .transaction-info > .price > span {
+    text-align: center;
+    font-size: 1.5em;
+    line-height: 1.5em;
+    font-weight: bold;
     color: #9CCC65; /** Walkntrade color **/
 }
 
-.wt-result > .description {
-    display: inline-block;
-    text-align: left;
-    width: 50%;
-    height: 10em;
+.wt-result > .info > .transaction-info > .seller {
+    display: block;
+    vertical-align: middle;
+    box-sizing: border-box;
+    color: black;
+    font-style: italic;
     overflow: hidden;
-}
-.wt-result > .description > p {
-    margin-top: 0;
-    padding: 0 1em 0 1em;
-    line-height: 1.3em;
-}
-
-.wt-result > .seller {
-    box-sizing: border-box;
-    background-color: #9CCC65; /** Walkntrade color **/
-    width: 100%;
-    height: 3em;
-    font-weight: bold;
-}
-
-.wt-result > .seller > div {
-    display: inline-block;
-    box-sizing: border-box;
-    padding: 0.5em;
-    width: 100%;
-    height: 100%;
-}
-
-.wt-result > .seller > div > a {
-    float: left;
-    height: 1em;
-    line-height: 2em; /** Accounting for padding */
-    text-align: left;
-    color: white;
-    text-decoration: none;
-}
-
-.wt-result > .seller > div > a:link {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-.wt-result > .seller > div > a:visited {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-.wt-result > .seller > div > a:active {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-.wt-result > .seller > div > a:hover {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.wt-result > .seller > div > label {
-    float: right;
-    height: 1em;
-    line-height: 2em; /** Accounting for padding */
     text-overflow: ellipsis;
-    text-align: right;
-    color: white;
+    white-space: nowrap;
+    height: 1.25em;
+}
+
+.wt-result > .info > .transaction-info > .seller > span {
+    line-height: 1em;
+    font-size: 1em;
+    text-align: left;
+    color: black;
+    text-decoration: none;
+}
+
+.wt-result > .info > .description {
+    display: block;
+    height: 6.5em;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-top: 0.5em;
+    margin-bottom: 0.5em;
+    word-wrap: break-word;
+}
+
+.wt-result > .info  > .description > p {
+    margin: 0;
+    line-height: 1.15em;
+    padding: 0.25em;
+    box-sizing: border-box;
+    border: 1px solid #DDD;
 }
 
 .body-overlay {
@@ -391,7 +363,7 @@ body {
     background-color: #9CCC65;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 480px) {
     .wt-results-wrapper {
         padding: 1em;
     }
@@ -414,24 +386,30 @@ body {
         padding-left: 0;
     }
     
-    .wt-result > .desc_price_wrapper{
+    .wt-result > .info {
         display: block;
         height: 8.5em;
         width: 100%;
     }
-    .wt-result > .desc_price_wrapper > .description {
-        width: 100%;
-        height: 65%;
+    
+    .wt-result > .info > .transaction-info {
+        padding-left: 1em;
     }
     
-    .wt-result > .desc_price_wrapper > .description > p {
-        line-height: 1.25em;
-    }
-    
-    .wt-result > .desc_price_wrapper > .price {
+    .wt-result > .info > .transacation-info > .price {
         vertical-align: top;
-        width: 100%;
-        height: 35%;
+    }
+    
+    .wt-result > .info > .messager {
+        width: 40%;
+    }
+    
+    .wt-result > .info > .description {
+        height: 4.5em;
+    }
+    
+    .wt-result > .info > .description > p {
+        line-height: 1.2em;
     }
     
     .body-overlay > .modal-window {
@@ -449,17 +427,17 @@ body {
         border-left: 1px solid rgba(80, 80, 80, 0.25);
     }
 }
-@media screen and (min-width: 1000px) {
+@media screen and (min-width: 720px) {
     .wt-result-wrapper {
-        width: calc(33% - 0.8em);
+        width: calc(33% - 0.9em);
     }
 }
-@media screen and (min-width: 1280px) {
+@media screen and (min-width: 1080px) {
     .wt-result-wrapper {
         width: calc(25% - 1em);
     }
 }
-@media screen and (min-width: 1900px) {
+@media screen and (min-width: 1440px) {
     .wt-result-wrapper {
         width: calc(20% - 1em);
     }

@@ -561,18 +561,15 @@ $(document).ready(function() {
             $itemHTML.find('.visual > img')
                 .attr('src', image_ref);
 
-            $itemHTML.find('.price > label')
+            $itemHTML.find('.price > span')
                 .html(price);
 
             $itemHTML.find('.description > p')
                 .html(details);
 
-            $itemHTML.find('.seller a')
-                .html('Posted By: ' + seller)
+            $itemHTML.find('.seller > span')
+                .html(seller)
                 .attr('href', 'https://walkntrade.com/user.php?uid='+userid);
-
-            $itemHTML.find('.seller label')
-                .html('Message User');
 
             $itemHTML.hide().appendTo('.wt-results').fadeIn('slow')
                 .on('click', function(event) {
