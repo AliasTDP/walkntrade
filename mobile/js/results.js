@@ -227,14 +227,14 @@ $(document).ready(function() {
             var email = $dialog_el.find('.login-form input[type="email"]').prop('value').trim(),
                 password = $dialog_el.find('.login-form input[type="password"]').prop('value');
 
-            var simple_email_regex = /\S+@\S+\.edu/;
+            var simple_email_regex = /^\S+@\S+\.\S+$/;
             if (!email.length) {
                 $dialog_el.find('.login-form label')
                     .text('Please enter your email address.')
                     .css('color', 'red');
             } else if (simple_email_regex.test(email) === false) {
                 $dialog_el.find('.login-form label')
-                    .text('Please enter a valid .edu email.')
+                    .text('Please enter a valid email address.')
                     .css('color', 'red');
             } else if (!password.length) {
                 $dialog_el.find('.login-form label')
