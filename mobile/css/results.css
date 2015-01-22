@@ -346,13 +346,15 @@ body {
     display: none;
 }
 
-.body-overlay > .modal-window > .modal-window-content-wrapper input {
+.body-overlay > .modal-window > .modal-window-content-wrapper input,
+.body-overlay > .modal-window > .modal-window-content-wrapper textarea {
     display: block;   
 }
 .body-overlay > .modal-window > .modal-window-content-wrapper input[type=text],
 .body-overlay > .modal-window > .modal-window-content-wrapper input[type=password],
 .body-overlay > .modal-window > .modal-window-content-wrapper input[type=email],
-.body-overlay > .modal-window > .modal-window-content-wrapper input[type=phone] {
+.body-overlay > .modal-window > .modal-window-content-wrapper input[type=phone],
+.body-overlay > .modal-window > .modal-window-content-wrapper textarea {
     margin: 0.5em auto;
     width: 75%;
 }

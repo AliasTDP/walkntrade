@@ -271,6 +271,19 @@ var WTHelper = (function() {
         });
     };
     
+    var createMessageThread = function(post_id, message) {
+        return $.ajax({
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'createMessageThread',
+                message: message,
+                post_id: post_id
+            },
+            dataType: 'JSON'
+        });
+    }
+    
     var setCookie = function(c_name,value,exdays) {
         var exdate=new Date();
         exdate.setDate(exdate.getDate() + exdays);
@@ -290,7 +303,8 @@ var WTHelper = (function() {
         service_getUsername: getUsername,
         service_getUserAvatar: getUserAvatar,
         service_getCategories: getCategories,
-        service_getPostsByCategory: getPostsByCategory
+        service_getPostsByCategory: getPostsByCategory,
+        service_createMessageThread: createMessageThread
     }
 
 })();

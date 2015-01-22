@@ -385,6 +385,77 @@ $(document).ready(function() {
         }
     }
     
+    function createMessagerDialog(post_id) {
+        var $dialog;
+        
+        if (cache.hasOwnProperty('messagerHTML')) {
+            $dialog = WTHelper.factory_createDialog(cache['messagerHTML'], '#messageUser');
+                $dialog.$el_promise.done(function($dialog_el) {
+                    bindMessagerDialog($dialog.$service, $dialog_el, post_id);
+                });
+        } else {
+            $.get('/mobile/partials/messager-window.html').done(function(messagerHTML) {
+                cache['messagerHTML'] = messagerHTML;
+                $dialog = WTHelper.factory_createDialog(messagerHTML, '#messageUser');
+                $dialog.$el_promise.done(function($dialog_el) {
+                    bindMessagerDialog($dialog.$service, $dialog_el, post_id);
+                });
+            });
+        }
+        
+        function bindMessagerDialog($dialog_service, $dialog_el, post_id) {
+            $dialog_el.find('.messager-form input[type="submit"]').on({
+                'click': checkMessagerHandler
+            }, {
+                $dialog_service: $dialog_service,
+                $dialog_el: $dialog_el,
+                post_id: post_id
+            });
+        }
+        
+        function checkMessagerHandler(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            $dialog_service = event.data.$dialog_service;
+            $dialog_el = event.data.$dialog_el;
+            message = $dialog_el.find('.messager-form textarea').prop('value');
+            post_id = event.data.post_id;
+            
+            if (!message.length) {
+                $dialog_el.find('.messager-form label')
+                    .text('Enter a message.')
+                    .css('color', 'red');
+            } else {
+                sendMessage(post_id, message).done(function(response) {
+                    if (response.message === 'Message sent!') {
+                        $dialog_el.find('.messager-form label')
+                            .text('Success :)')
+                            .css('color', 'green');
+                        
+                        $dialog_service.$destroy();
+                    } else {
+                        $dialog_el.find('.messager-form label')
+                            .text(response.message)
+                            .css('color', 'red');
+                    }
+                });
+            }
+            
+        }
+    }
+    
+    function sendMessage(post_id, message) {
+        var $status = $.Deferred();
+        WTHelper.service_createMessageThread(post_id, message)
+            .done(function(response) {
+                $status.resolve(response);
+            })
+            .fail(function(request, errorText) {
+                $status.reject(errorText);
+            });
+        return $status;
+    }
+    
     function checkLogin(email, password) {
         var $status = $.Deferred();
         WTHelper.service_login(email, password)
@@ -571,12 +642,11 @@ $(document).ready(function() {
                 .html(seller)
                 .attr('href', 'https://walkntrade.com/user.php?uid='+userid);
 
-            $itemHTML.hide().appendTo('.wt-results').fadeIn('slow')
-                .on('click', function(event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    window.location="/show?" + obsId;
-                });
+            $itemHTML.hide().appendTo('.wt-results').fadeIn('slow');
+            
+            $itemHTML.find('.messager').on('click', function(event) {
+                createMessagerDialog(obsId);
+            });
         }
     }
     
