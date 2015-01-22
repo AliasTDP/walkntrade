@@ -13,6 +13,7 @@ class Walkntrade {
 	private $listingConnection;
 	private $threadsConnection;
 	private $thread_indexConnection;
+	private $validDomains = array("walkntrade.com", "dev.wt");
 
 	public function __construct(){
 		$this->dbConnect();
@@ -52,6 +53,10 @@ class Walkntrade {
 		$response = Array("status"=>$status,"message"=>$message,"payload"=>$payload);
 		echo json_encode($response);
 		return;
+	}
+
+	public function getValidDomains(){
+		return $this->validDomains;
 	}
 
 	public function getUserConnection(){
