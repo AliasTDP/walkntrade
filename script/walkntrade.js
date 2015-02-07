@@ -438,8 +438,8 @@ function getThreads(quiet){
 				var associated_with_name = payload[i].associated_with_name;
 				var associated_with = payload[i].associated_with;
 				var imageUrl = payload[i].associated_with_image;
-				var read = 0;
-				pageElement.find("table").append($('<tr/>', {"id":thread_id, "class":read, "class":"threadButton"}));
+				var read = (new_messages == 1)?"unread":"";
+				pageElement.find("table").append($('<tr/>', {"id":thread_id, "class":"threadButton "+read}));
 				$("#"+thread_id).append($('<td/>', {"class":"userImage", "onclick": "window.location='/user?uid="+associated_with+"'"}));
 				$("#"+thread_id+" .userImage").html("<img src='"+imageUrl+"'>");
 				$("#"+thread_id).append($('<td/>', {"class":"textContainer", "onclick": "loadThread('"+thread_id+"', '"+post_title+"')"}));
@@ -783,11 +783,11 @@ function pageLoad(query, school, cat, sort, callback) {
 				parentElement.append($("<a/>", {"id":"p_"+id, "href":"/show?"+obsId}));
 				$("#p_"+id).append($("<li/>"));
 				$("#p_"+id+" li")
-					.append($("<div/>", {"class":"title"}))
+					.append($("<div/>", {"class":"title nowrap"}))
 					.append($("<div/>", {"class":"image"}))
 					.append($("<div/>", {"class":"price"}))
-					.append($("<div/>", {"class":"username"}))
-					.append($("<div/>", {"class":"details"}))
+					.append($("<div/>", {"class":"username nowrap"}))
+					.append($("<div/>", {"class":"details nowrap"}))
 					.append($("<div/>", {"class":"categoryTab", "style":"background-color:"+color}));
 
 				$("#p_"+id+" li").find(".title").append($("<h4/>"));
