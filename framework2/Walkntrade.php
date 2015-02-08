@@ -13,7 +13,7 @@ class Walkntrade {
 	private $listingConnection;
 	private $threadsConnection;
 	private $thread_indexConnection;
-	private $validDomains = array("walkntrade.com", "dev.wt");
+	private $validDomains = array("walkntrade.com", "dev.wt", "172.16.10.53");
 
 	public function __construct(){
 		$this->dbConnect();
@@ -105,22 +105,19 @@ class Walkntrade {
 			$sList->store_result();
 			$sList->bind_result($schoolName, $textId);
 			if($sList->num_rows > 0){
-				$output="";
-				$i=0;
+				$concat = Array();
 				while($sList->fetch()){
-					if($i>0) $output.=",";
-					$output .= '{"name":"'.$schoolName.'","textId":"'.$textId.'"}';
-					$i++;
+					$line = Array("name"=>$schoolName, "textId"=>$textId);
+					array_push($concat, $line);
 				}
-				return $output;
+				return statusDump(200, "schools", $concat);
 			}
-			else return 1;
+			return statusDump(404, "No results", Array());
 			$sList->close();
 		}
 	}
 
-	public function getPosts($query, $school, $category, $sort, $offset, $amount, $ellipse){
-		$ellipse = ($ellipse == 1) ? true : false;
+	public function getPosts($query, $school, $category, $sort, $offset, $amount){
 		$lc = $this->listingConnection;
 		if(!isset($school) || $school == "" || $this->getSchoolName($school) == null){
 			//No School
@@ -182,28 +179,19 @@ class Walkntrade {
 		$stmt->execute();
 		$stmt->store_result();
 		$stmt->bind_result($id, $identifier, $title, $cat, $author, $details, $price, $userid, $username, $date, $views);
-		$string = "";
-		$i=0;
+		$concat = Array();
 		while($stmt->fetch()){
-			if($i>0)
-				$string .= ",";
 			$obsId = $school.":".$identifier;
-			if($ellipse){
-				$title = (strlen($title) >= 23)? substr($title, 0, 23)."..." : $title;
-				$details = (strlen($details) >= 80)? substr($details, 0, 80)."..." : $details;
-				$username = (strlen($username) >= 30)? substr($username, 0, 30)."..." : $username;
-			}
 			$price = ($price != 0)? "$".round($price, 2) : "";
 			$image = (file_exists("../post_images/".$school."/".$identifier."-thumb.jpeg")) ? "/post_images/".$school."/".$identifier."-thumb.jpeg" : "/colorful/tfe_no_thumb.png";
 			$title = htmlspecialchars($title);
 			$details = htmlspecialchars(preg_replace( "/\r|\n/", " ", $details ));
 			$username = htmlspecialchars($username);
-
-			$string .= '{"id":"'.$id.'","obsId":"'.$obsId.'","title":"'.$title.'","category":"'.$cat.'","details":"'.$details.'","username":"'.$username.'","price":"'.$price.'","image":"'.$image.'","userid":"'.$userid.'","date":"'.$date.'","views":"'.$views.'"}';
-			$i++;
+			$line = Array("id"=>$id, "obsId"=>"$obsId", "title"=>$title, "category"=>$cat, "details"=>$details, "username"=>$username, "price"=>$price, "image"=>$image, "userid"=>$userid, "date"=>$date, "views"=>$views);
+			array_push($concat, $line);
 		}
 		$stmt->close();
-		return $string;;
+		return statusDump(200, "all posts", $concat);
 	}
 
 	public function checkUname($username){

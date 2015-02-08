@@ -34,11 +34,7 @@ switch($getIntent){
 		$offset= htmlspecialchars($_POST["offset"]);
 		$sort= htmlspecialchars($_POST["sort"]);
 		$amount= htmlspecialchars($_POST["amount"]);
-		if(isset($_POST["ellipse"]))
-			$payload=$wt->getPosts($query, $school, $category, $sort, $offset, $amount, 1);
-		else
-			$payload=$wt->getPosts($query, $school, $category, $sort, $offset, $amount, 0);
-		echo genJSON(200, "", $payload);
+		$payload=$wt->getPosts($query, $school, $category, $sort, $offset, $amount);
 		break;
 	case "getPostByIdentifier":
 		require_once "../framework2/Walkntrade.php";
@@ -54,16 +50,7 @@ switch($getIntent){
 		$wt = new Walkntrade();
 		header ("Content-Type:text/xml");
 		$query= htmlspecialchars($_POST["query"]);
-		$payload=$wt->getSchools($query);
-		switch ($payload) {
-			case 1:
-				echo genJSON(200, "No Results", "");
-				break;
-			
-			default:
-				echo genJSON(200, "", $payload);
-				break;
-		}
+		$wt->getSchools($query);
 		break;
 	case "controlPanel":
 		require_once "../framework/UserMgmt.php";
