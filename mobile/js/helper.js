@@ -4,33 +4,7 @@ var WTHelper = (function() {
     var api_url = '/api2/';
     
     // Used by service_initSidebar for menu state / animation.
-    var sidebarState = 'hidden',
-        animateSidebar = function(event) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            var $sidebar = $('.wt-sidebar');
-            if (sidebarState === 'hidden') { 
-                $sidebar.animate({ "width": $sidebar.css('max-width') }, {
-                    "duration": 250,
-                    "start": function() {
-                        $sidebar.children().fadeIn();
-                    },
-                    "complete": function() {
-                        sidebarState = 'visible';
-                    }
-                });
-            } else if (sidebarState === 'visible') {
-                $sidebar.animate({ "width": "0" }, {
-                    "duration": 250,
-                    "start": function() {
-                        $sidebar.children().fadeOut('fast');
-                    },
-                    "complete": function() {
-                        sidebarState = 'hidden';
-                    }
-                });
-            }
-        };
+    var sidebarState = 'hidden';
     
     // Used by service_getPostsByCategory for state tracking.
     var previousCategory = '', 
@@ -69,6 +43,33 @@ var WTHelper = (function() {
         });
         
         return $sidebar;
+    };
+    
+    var animateSidebar = function(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        var $sidebar = $('.wt-sidebar');
+        if (sidebarState === 'hidden') { 
+            $sidebar.animate({ "width": $sidebar.css('max-width') }, {
+                "duration": 250,
+                "start": function() {
+                    $sidebar.children().fadeIn();
+                },
+                "complete": function() {
+                    sidebarState = 'visible';
+                }
+            });
+        } else if (sidebarState === 'visible') {
+            $sidebar.animate({ "width": "0" }, {
+                "duration": 250,
+                "start": function() {
+                    $sidebar.children().fadeOut('fast');
+                },
+                "complete": function() {
+                    sidebarState = 'hidden';
+                }
+            });
+        }
     };
     
     var createDialog = function(dialogHTML, locationHash) {
@@ -246,9 +247,18 @@ var WTHelper = (function() {
         });
     };
     
-    var getPostsByCategory = function(schoolId, category, query, amount, sort) {
-        query = query || '';
-        if (category !== previousCategory || query !== previousQuery || query.length > 0) { offset = 0; }
+    var getPostsByCategory = function(schoolId, category, opts) {
+        var school = schoolId,
+            category = category,
+            query = opts.query || '',
+            amount = opts.amount || undefined,
+            sort = opts.sort || undefined,
+            flag = opts.resetOffset || false;
+            
+        if (flag === true || category !== previousCategory || query !== previousQuery || query.length > 0) { 
+            offset = 0;
+        }
+        
         previousCategory = category;
         previousQuery = query;
         
@@ -257,7 +267,7 @@ var WTHelper = (function() {
             url: api_url,
             data: {
                 intent: 'getPosts',
-                school: schoolId,
+                school: school,
                 cat: category,
                 query: query,
                 offset: offset,
@@ -269,7 +279,7 @@ var WTHelper = (function() {
         }).done(function() {
             offset += amount;
         });
-    };
+    }
     
     var createMessageThread = function(post_id, message) {
         return $.ajax({
@@ -282,7 +292,58 @@ var WTHelper = (function() {
             },
             dataType: 'JSON'
         });
-    }
+    };
+
+    var getUserMessageThreads = function(offset, amount) {
+        return $.ajax({
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'getMessageThreadsCurrentUser',
+                offset: offset,
+                amount: amount
+            },
+            dataType: 'JSON'
+        });
+    };
+
+    var getThreadByID = function(thread_id, post_count) {
+        return $.ajax({
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'retrieveThread',
+                thread_id: thread_id,
+                post_count: post_count
+            },
+            dataType: 'JSON'
+        });
+    };
+    
+    var sendMessage = function(thread_id, message) {
+        return $.ajax({ 
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'appendMessage',
+                thread_id: thread_id,
+                message: message
+            },
+            dataType: 'JSON'
+        });
+    };
+    
+    var getNewMessagesInThread = function(thread_id) {
+        return $.ajax({
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'retrieveThreadNew',
+                thread_id: thread_id
+            },
+            dataType: 'JSON'
+        });
+    };
     
     var setCookie = function(c_name,value,exdays) {
         var exdate=new Date();
@@ -295,6 +356,7 @@ var WTHelper = (function() {
         const_fontSize: fontSize,
         fn_setCookie: setCookie,
         fn_initSidebar: initSidebar,
+        fn_animateSidebar: animateSidebar,
         factory_createDialog: createDialog,
         service_login: login,
         service_registerUser: registerUser,
@@ -304,7 +366,11 @@ var WTHelper = (function() {
         service_getUserAvatar: getUserAvatar,
         service_getCategories: getCategories,
         service_getPostsByCategory: getPostsByCategory,
-        service_createMessageThread: createMessageThread
+        service_createMessageThread: createMessageThread,
+        service_getUserMessageThreads: getUserMessageThreads,
+        service_getThreadByID: getThreadByID,
+        service_appendMessageToThread: sendMessage,
+        service_getNewMessagesInThread: getNewMessagesInThread
     }
 
 })();

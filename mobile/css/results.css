@@ -4,6 +4,7 @@ body {
 }
 
 .results-filter {
+    width: 100%;
     height: 3em;
     text-align: center;
     color: white;
@@ -126,12 +127,6 @@ body {
     background-color: rgba(68, 211, 216, .6);
 }
 
-.wt-content-results {
-    box-sizing: border-box;
-    background-color: inherit;
-    color: black;
-}
-
 .wt-results-wrapper {
     display: inline-block;
     width: 100%;
@@ -139,9 +134,16 @@ body {
     padding: 0.5em;
 }
 
-.wt-results {
-    display: block;
+.wt-messager-wrapper {
     width: 100%;
+    box-sizing: border-box;
+}
+
+.wt-results {
+    margin: 0 auto;
+}
+
+.wt-messager {
     margin: 0 auto;
 }
 
@@ -154,6 +156,19 @@ body {
     text-align: center;
 }
 
+.wt-thread-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5em;
+    height: 5.5em;
+    border-bottom: 1px solid rgba(80, 80, 80, 0.1);
+    transition: background-color 0.5s;
+}
+
+.wt-thread-wrapper:active {
+    background-color: #9CCC65;
+}
+
 .wt-result {
     display: inline-block;
     box-sizing: border-box;
@@ -163,6 +178,54 @@ body {
     background: #FEFEFE;
     border: 1px solid #C0C0C0;
     cursor: pointer;
+}
+
+.wt-thread {
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wt-thread > .sender-image {
+    display: inline-block;
+    box-sizing: border-box;
+    max-width: 25%;
+    height: 100%;
+}
+
+.wt-thread > .sender-image > img {
+    max-height: 100%;
+}
+
+.wt-thread > .thread-info {
+    display: inline-block;
+    height: 100%;
+    width: 75%;
+    vertical-align: top;
+    padding-left: 0.5em;
+}
+
+.wt-thread > .thread-info > h3 {
+    float: left;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+.wt-thread > .thread-info > span:nth-child(2) {
+    float: left;
+    clear: both;
+    color: #777;
+    margin-bottom: 0.5em;
+}
+
+.wt-thread > .thread-info > span:nth-child(3) {
+    float: right;
+    clear: both;
+    padding-right: 0.5em;
+    font-size: 0.75em;
+    color: #999;
 }
 
 .wt-result > .category {
@@ -311,6 +374,58 @@ body {
     padding: 0.25em;
     box-sizing: border-box;
     border: 1px solid #DDD;
+}
+
+.wt-message-thread-wrapper {
+    box-sizing: border-box;
+    position: fixed;
+    top: 3.5em;
+    height: calc(100% - 3.5em);
+    left: 1%;
+    width: 99%;
+    padding: 0.5em;
+}
+
+.wt-message-thread {
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+
+.wt-message {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5em;
+    clear: both;
+}
+
+.wt-message > .wt-message-avatar {
+    box-sizing: border-box;
+    padding-left: 0.25em; 
+    padding-right: 0.25em;
+    max-width: 3em; 
+    max-height: 3em;
+}
+
+.wt-message > .wt-message-text {
+    box-sizing: border-box; 
+    max-width: calc(100% - 3em);
+    padding:0.5em;
+    border-radius: 0.5em; 
+}
+
+.wt-message > .wt-message-info {
+    padding: 0.5em 0 0.5em 0; 
+    font-size: 0.75em; 
+    color: grey; 
+    clear: both; 
+}
+
+.wt-message-reply {
+    width: 100%;
+    height: 90%;
+    box-sizing: border-box;
+    padding: 0.25em;
 }
 
 .body-overlay {

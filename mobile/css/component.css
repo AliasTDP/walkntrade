@@ -75,10 +75,10 @@ body {
 .wt-sidebar {
     position: fixed; /* change to static at certain viewport */
     z-index: 1;
-    top: 6.5em;
+    top: 3.5em;
     left: 0;
     max-width: 50%; /* override with media queries */
-    height: 100%;
+    height: calc(100% - 3.5em);
     background-color: #EEE;
     color: white;
     opacity: 1;

@@ -12,6 +12,8 @@ $(document).ready(function() {
         inhibitUpdate = false, // Flag to be set if all results for school/category/query have been received from the server.
         $pageUpdate = $.Deferred(); // Track any asynchronous operations on the page.
     
+    var poll; // Messaging Long Poll State Variable
+    
     /** Cache **/
     var cache = {
     };
@@ -48,6 +50,8 @@ $(document).ready(function() {
                 logoutUser();
             } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
                 window.location = "/selector.php";
+            } else if ($target.is('#MessageBtn') || $target.is('#MessageBtn *')) {
+                showConversationsView();
             }
         });
         
@@ -151,6 +155,279 @@ $(document).ready(function() {
                 })
                 .fail(function() {
                     $pageUpdate.reject();
+                });
+            }
+        });
+    }
+    
+    function showConversationsView() {
+        var $wtMenu; // store the old jQuery data for the navicon.
+        window.location.hash = '#messages';
+        $(window).on('hashchange', function() {
+            if (this.location.hash === '') {
+                leaveConversationsView();
+            } else if (this.location.hash === '#messages') {
+                leaveMessageThread();
+            }
+        });
+        
+        $('.wt-results').fadeOut({
+            complete: function() {
+                $(this).children().remove();
+                $(this).parent().removeClass('wt-results-wrapper').addClass('wt-messager-wrapper');
+                $(this).removeClass('wt-results').addClass('wt-messager').show();
+
+                $('.wt-header').css({
+                    'position': 'fixed',
+                    'top': 0,
+                    'z-index': 1
+                });
+                
+                $('.results-filter').css({
+                    'position': 'fixed',
+                    'top': '3.5em',
+                    'z-index': 0
+                }).animate({ top: 0 }, {
+                    duration: 500,
+                    start: function() {
+                        $('.wt-header .wt-header-nav').fadeOut();
+                        $('.wt-header > #wt-header-menu').remove();
+                        $('.wt-header').prepend('<div id="wt-header-menu" class="wt-header-content-wrapper">\
+                                                    <i class="wt-header-content fa fa-2x fa-arrow-left"></i>\
+                                                </div>')
+                            .children(':first-child').hide().fadeIn()
+                            .on('click', function(event) {
+                                window.location.hash = '';
+                            });
+                    },
+                    complete: function() {
+                        $(this).css('display', 'none');
+                        $('.wt-header').css({
+                            'position': 'static'
+                        });
+                        $('.wt-sidebar').css({
+                            'top': '3.5em'
+                        });
+
+                        WTHelper.service_getUserMessageThreads().done(function(response) {
+                            if (response.message === 'Threads for current user') {
+                                if (!response.payload.length) {
+                                    $('.wt-messager').append('<span>No messages</span>');
+                                    return;
+                                }
+
+                                console.log(response.payload);
+                                for (i = 0; i < response.payload.length; i++) {
+                                    thread = response.payload[i];
+                                    var $message_div = $('.wt-messager').append('<div id="thread_'+thread.thread_id+'" class="wt-thread-wrapper">\
+                                                                <div class="wt-thread">\
+                                                                </div>\
+                                                               </div>').children(':nth-child('+(i+1)+')');
+                                    
+                                    $message_div.data('thread_info', thread);
+                                    $message_div.on('click', function(event) {
+                                        event.preventDefault();
+                                        event.stopImmediatePropagation();
+                                        showMessageThread($(this).data('thread_info'));
+                                    });
+
+                                    var $el = $message_div.find('.wt-thread');
+                                    $el.append('<div class="sender-image">\
+                                                <img class="pure-img" src="' + thread.associated_with_image + '"/>\
+                                                </div>');
+                                    $el.append('<div class="thread-info">\
+                                                <h3>' + thread.post_title + '</h3>\
+                                                <span>' + thread.last_user_name + ': ' + thread.last_message +
+                                               '</span>\
+                                                <span>' + thread.datetime + '</span\
+                                                </div>');
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    function leaveConversationsView() {
+        
+        $('.wt-messager').fadeOut({
+            complete: function() {
+                $(this).children().remove();
+                $(this).parent().removeClass('wt-messager-wrapper').addClass('wt-results-wrapper');
+                $(this).removeClass('wt-messager').addClass('wt-results').show();
+                
+                $('.results-filter')
+                    .css({
+                        'display': 'block',
+                        'z-index': -1
+                    })
+                    .animate({
+                        'top': '3.5em'
+                    }, {
+                        duration: 400,
+                        start: function() {
+                            $('.wt-header .wt-header-nav').fadeOut();
+                            $('.wt-header > #wt-header-menu').remove();
+                            $('.wt-header').prepend('<div id="wt-header-menu" class="wt-header-content-wrapper">\
+                                                        <i class="wt-header-content fa fa-2x fa-navicon"></i>\
+                                                    </div>')
+                                .children(':first-child').hide().fadeIn()
+                                .on('click', WTHelper.fn_animateSidebar);
+                        },
+                        complete: function() {
+                            $(this).css({
+                                'position': 'static',
+                                'z-index': 0
+                            });
+                            $('.wt-header .wt-header-nav').fadeIn();
+                            getPostsByCategory(school, currentCategory, { resetOffset: true });
+                        }
+                    });
+            }
+        });
+    }
+    
+    function showMessageThread(thread_info) {
+        console.log(thread_info);
+        if (!poll) {
+            poll = setInterval(function() { 
+                WTHelper.service_getNewMessagesInThread(thread_info.thread_id).done(function(response) {
+                    console.log(response);
+                    if (response.payload.length) {
+                        for (var i = 0; i < response.payload.length; i++) {
+                            var msg = response.payload[i];
+                            $('.wt-message-thread').append('\
+                            <div class="wt-message" style="color:black;">\
+                                <span class="wt-message-avatar" style="float:left;"><img class="pure-img" src="'+msg.avatar+'"/></span>\
+                                <span class="wt-message-text" style="background-color:yellow; float:left;">'+msg.message_content+'</span>\
+                                <div class="wt-message-info" style="float:left;">'+msg.sender_name+' at ' + msg.datetime + '</div>\
+                            </div>');
+                        }
+                        
+                        var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                        $('.wt-message-thread').animate({
+                            scrollTop: '+='+offset
+                        }, 100);
+                    }
+                });
+            }, 2500);
+        }
+        window.location.hash = '#messageThread';
+        
+        $('body > section.wt-content').css({
+            'position': 'fixed',
+            'box-shadow': '0 0.4em 1em rgba(0, 0, 0, 0.78)',
+            'height': 'calc(100% - 3.5em)'
+        }).animate({
+            'left': '-99%'
+        }, {
+            duration: 400,
+            complete: function() {
+                $(this).children().css('opacity', 0.5);
+                WTHelper.service_getThreadByID(thread_info.thread_id, 10)
+                    .done(function(thread) {
+                        console.log(thread);
+                        $('body').append('<section class="wt-message-thread-wrapper">\
+                                              <div class="wt-message-thread">\
+                                              </div>\
+                                              <div class="wt-message-reply pure-form">\
+                                                  <input style="display: inline-block; width: 100%;" type="text" />\
+                                                  <i style="display: inline; top: -1.5em; color: grey; left: 90%; position:relative;" class="fa fa-lg fa-arrow-right"></i>\
+                                              </div>\
+                                          </section>');
+                    
+                        $('.wt-message-reply > input').on('keyup', function(event) {
+                            if (event.keyCode === 13) {
+                                var msg = $(this).prop('value');
+                                if (msg === '') { return; }
+                                
+                                $(this).prop('value', '');
+                                $('.wt-message-thread').append('\
+                                    <div class="wt-message" style="opacity: 0.5; color:white;">\
+                                        <span class="wt-message-avatar" style="float:right;"><img class="pure-img" src="'+$('.user-info > .user-img > img').attr('src')+'"/></span>\
+                                        <span class="wt-message-text" style="background-color:green; float:right;">'+msg+'</span>\
+                                    </div>');
+                                var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                                $('.wt-message-thread').animate({
+                                    scrollTop: '+='+offset
+                                }, 100);
+                                WTHelper.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
+                                    $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">Sent by You just now</div>');
+                                    $('.wt-message:last-child').css('opacity', 1);
+                                    var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                                    $('.wt-message-thread').animate({
+                                        scrollTop: '+='+offset
+                                    }, 100);
+                                });
+                            }
+                        });
+                        $('.wt-message-reply > .fa-arrow-right').on('click', function(event) {
+                            var msg = $(this).siblings('input').prop('value');
+                            if (msg === '') { return; }
+
+                            $(this).siblings('input').prop('value', '');
+                            $('.wt-message-thread').append('\
+                                <div class="wt-message" style="opacity: 0.5; color:white;">\
+                                    <span class="wt-message-avatar" style="float:right;"><img class="pure-img" src="'+$('.user-info > .user-img > img').attr('src')+'"/></span>\
+                                    <span class="wt-message-text" style="background-color:green; float:right;">'+msg+'</span>\
+                                </div>');
+                            var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                            $('.wt-message-thread').animate({
+                                scrollTop: '+='+offset
+                            }, 100);
+                            WTHelper.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
+                                $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">Sent by You just now</div>');
+                                $('.wt-message:last-child').css('opacity', 1);
+                                var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                                $('.wt-message-thread').animate({
+                                    scrollTop: '+='+offset
+                                }, 100);
+                            });
+                        });
+                        
+                        for (var i = 0; i < thread.payload.length; i++) {
+                            var msg = thread.payload[i];
+                            var float = msg.sender_name === "You" ? "right": "left";
+                            var bgcolor = msg.sender_name === "You" ? "green": "yellow";
+                            var color = msg.sender_name === "You" ? "white": "black";
+                            $('.wt-message-thread').append('\
+                            <div class="wt-message" style="color:'+color+';">\
+                                <span class="wt-message-avatar" style="float:'+float+';"><img class="pure-img" src="'+msg.avatar+'"/></span>\
+                                <span class="wt-message-text" style="background-color:'+bgcolor+'; float:'+float+'">'+msg.message_content+'</span>\
+                                <div class="wt-message-info" style="float:'+float+'">'+msg.sender_name+' at ' + msg.datetime + '</div>\
+                            </div>');
+                        }
+                    
+                        var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                        $('.wt-message-thread').scrollTop(offset);
+                    });
+                
+                $('#wt-header-menu').off('click').on('click', function(event) {
+                    window.location.hash = '#messages';
+                });
+           }
+        });
+    }
+    
+    function leaveMessageThread() {
+        clearInterval(poll);
+        poll = undefined;
+        $('section.wt-message-thread-wrapper').remove();
+        $('body > section.wt-content').css({
+            'box-shadow': 'none',
+            'height': 'initial'
+        }).animate({
+            'left': 0
+        }, {
+            duration: 400,
+            complete: function() {
+                $(this).css('position', 'static');
+                $(this).children().css('opacity', 1);
+                
+                $('.wt-header > #wt-header-menu').off('click').on('click', function(event) {
+                    leaveConversationsView();
                 });
             }
         });
@@ -650,14 +927,14 @@ $(document).ready(function() {
         }
     }
     
-    function ChangeFilterEventHandler(school, category, query) {
+    function ChangeFilterEventHandler(school, category, queryString) {
         inhibitUpdate = false;
         $pageUpdate = $.Deferred();
-        query = query || '';
+        queryString = queryString || '';
         
         $('.wt-results').slideUp('slow', function() {
             $(this).empty();
-            getPostsByCategory(school, category, query).done(function() {
+            getPostsByCategory(school, category, queryString).done(function() {
                 if (inhibitUpdate) {
                     $('.wt-results').append('<p>no results :(</p>');
                 }
@@ -675,7 +952,6 @@ $(document).ready(function() {
     function getCategories() {
         var status = $.Deferred();
         WTHelper.service_getCategories().done(function(response) {
-            console.log(response);
             populateCategories(response.payload.categories);
             status.resolve();
         })
@@ -687,20 +963,22 @@ $(document).ready(function() {
         return status;
     }
     
-    function getPostsByCategory(schoolId, category, query) {
+    function getPostsByCategory(schoolId, category, queryString) {
         var status = $.Deferred();
-        WTHelper.service_getPostsByCategory(schoolId, category, query, 12, 0).done(function(response) {
-            console.log(response);
+        WTHelper.service_getPostsByCategory(schoolId, category, {
+            query: queryString || '',
+            amount: 12,
+            sort: 0
+        }).done(function(response) {
             currentCategory = category;
-            currentQuery = query || '';
+            currentQuery = queryString || '';
             if (response.payload.length > 0) {
                 populateResults(response.payload);
             } else {
                 inhibitUpdate = true;
             }
             status.resolve();
-        })
-        .fail(function(request) {
+        }).fail(function(request) {
             console.log(request);
             status.reject();
         });

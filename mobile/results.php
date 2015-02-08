@@ -28,7 +28,7 @@
                 </div>
             </nav>
         </header>
-        <section class="wt-content pure-form results-filter">
+        <section class="pure-form results-filter">
             <div class="results-categories">
             </div>
             <div class="results-searchfield" style="display: none">
@@ -36,7 +36,7 @@
              --><button class="pure-button">Go!</button>
             </div>
         </section>
-        <nav class="wt-sidebar">
+        <nav class="wt-sidebar" style="overflow-y: scroll;">
             <?php if($loggedIn) {
                 if(file_exists(ROOTPATH."user_images/uid_".$_SESSION["user_id"].".jpg")) {
                     $image = ROOTPATH.'/user_images/uid_'.$_SESSION["user_id"].'.jpg';
@@ -86,7 +86,7 @@
             </div>
             -->
         </nav>
-        <section class="wt-content wt-content-results">
+        <section class="wt-content">
             <div class="wt-results-wrapper">
                 <main class="wt-results">
                 </main>
