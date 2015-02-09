@@ -2,6 +2,7 @@ window.api_url = "/api/";
 window.api_url2 = "/api2/";
 window.resultsPageActive = false;
 window.operationPending = false;
+window.unread_message_count = 0;
 
 $(document).ready(function(){
 	initFeedbackSlider();
@@ -210,6 +211,11 @@ function pollNewMessages(){
 			checkVal=json.message;
 			if(checkVal !== "NaN" && checkVal > 0){
 				$("#mNum").slideDown().html(checkVal).css("background", "#9CCC65");
+				if(checkVal > unread_message_count && unread_message_count > 0){
+					audioNotify();
+					getThreads();
+				}
+				unread_message_count = checkVal;
 			}
 			else if(checkVal !== "NaN" && checkVal == 0)
 				$("#mNum").slideUp().html("");
@@ -363,6 +369,8 @@ function loadThread(thread_id, post_title){
 		renderThread(pageElement);
 		pollNewMessages();
 
+		getThreads();
+
 		function renderThread(pageElement){
 			$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
 				payload = json.payload;
@@ -415,6 +423,10 @@ function deleteThread(thread_id){
 
 }
 
+function audioNotify(){
+	$(".notificatoin_sound").trigger('play');
+}
+
 function getThreads(quiet){
 	if(!quiet){
 		$("#navBarMail").html("please wait...");
@@ -423,7 +435,7 @@ function getThreads(quiet){
 		var pageElement = $("#threads");
 		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
 		payload = json.payload;
-		$("#navBarMail").html(payload.length+" thread(s) total <input type='button' class='button' value='Reload' onclick='getThreads()' >");
+		$("#navBarMail").html(payload.length+" thread(s) total <input type='button' style='line-height: 29px;height: 29px;' class='button' value='Reload' onclick='getThreads()' >");
 		if(payload.length == 0){
 			pageElement.html("<p><h3 style='text-align:center;color:#C0C0C0'>You have no messages</h3></p>");
 		}
@@ -448,12 +460,13 @@ function getThreads(quiet){
 				$("#"+thread_id).append($('<td/>', {"class":"deleteBox", "onclick":"deleteThread('"+thread_id+"')"}));
 				$("#"+thread_id+" .deleteBox").html("<i class='sprite sprite-1396379273_86'></i>");
 			}
+			$("#threadViewContainer").height($("#threads").height());
 		}
 	});
 }
 
 function sendMessage(message){
-	if(message != ""){
+	if(/\S/.test(message)){
 		if(thread_id != ""){
 			message = encodeURIComponent(message);
 			$.ajax({url:api_url2, dataType:"json", data:"intent=appendMessage&thread_id="+thread_id+"&message="+message}).success(function(json){
