@@ -19,7 +19,6 @@
 	right: 0;
 	overflow: hidden;
 	background:#E0E0E0;
-	border-right: 1px solid #D3D3D3;
 }
 
 #navBar #userModule {
@@ -89,25 +88,19 @@
 }
 
 #contentTab{
-	width: calc(100% - 402px);
+	width: calc(100% - 279px);
 	float: right;
-	border-right: 1px solid #7A7A7A;
-	padding: 10px 60px;
-	min-height: calc(100vh - 20px);
+	min-height: 100vh;
 }
 
-#contentTab .boxStyle1{
-	padding: 0px;
-	overflow: auto;
-}
 
 .settingsHeader{
-	height: 60px;
-	border-bottom: 2px solid #9ccc65;
+	height: 50px;
+	border-bottom: 1px solid #A0A0A0;
 	background: #9CCC65;
 	color: #FFF;
 	text-align: center;
-	line-height: 60px;
+	line-height: 50px;
 	font-size: 2em;
 }
 

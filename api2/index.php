@@ -197,6 +197,8 @@ switch($getIntent){
 		$um = new UserMgmt();
 		if(isset($_POST["user_id"]))
 			$user_id=$_POST["user_id"];
+		else if(isset($_POST["user_name"]))
+			$user_id = $um->resolveUsernameToID($_POST["user_name"]);
 		else
 			$user_id=$_SESSION["user_id"];
 		$um->getAvatarOf($user_id, false);
@@ -389,15 +391,16 @@ switch($getIntent){
 		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$offset=(isset($_POST["offset"]))?filter_var($_POST["offset"], FILTER_SANITIZE_NUMBER_INT):0;
-		$amount=(isset($_POST["amount"]))?filter_var($_POST["amount"], FILTER_SANITIZE_NUMBER_INT):10;
+		$amount=(isset($_POST["amount"]))?filter_var($_POST["amount"], FILTER_SANITIZE_NUMBER_INT):50;
 		$um->getMessageThreadsCurrentUser($offset, $amount);
 		break;
 	case "retrieveThread":
 		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
 		$thread_id=(isset($_POST["thread_id"]))?filter_var($_POST["thread_id"], FILTER_SANITIZE_STRING):null;
+		$offset=(isset($_POST["offset"]))?filter_var($_POST["offset"], FILTER_SANITIZE_NUMBER_INT):0;
 		$limit=(isset($_POST["limit"]))?filter_var($_POST["limit"], FILTER_SANITIZE_NUMBER_INT):100;
-		$um->retrieveThread($thread_id, $limit);
+		$um->retrieveThread($thread_id, $offset, $limit);
 		break;
 	case "retrieveThreadNew":
 		require_once "../framework2/UserMgmt.php";
