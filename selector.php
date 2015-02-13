@@ -37,16 +37,18 @@ $needles = array("Android", "iPhone", "iPad", "Windows Phone");
 <body>
 <div class="fullBodyWrapper">
 	<div id="parallax"></div>
-	<div class="titleHeader"><img src="/colorful/wtlogo_dark.png"></img></div>
+	<div class="titleHeader"><img src="/colorful/wtlogo_dark.png"></img> <button>Search for your school!</button></div>
 	<div class="clearfix" id="clearFix0">
-		<div>
+	<div id="appClicker">
+	</div>
+	<!-- 	<div>
 			<h1>BUY. SELL. TRADE.</h1>
 			<br>
 			<h2>Put down the flyers, pick up the mouse.</h2>
 		</div>
 		<div>
 			<button>Find My School Now</button>
-		</div>
+		</div> -->
 	</div>
 
 
@@ -103,9 +105,13 @@ $needles = array("Android", "iPhone", "iPad", "Windows Phone");
 <script type="text/javascript" src="/script/jquery.min.js"></script>
 <script type="text/javascript" src="/script/walkntrade.js"></script>
 <script type="text/javascript">
+$("#appClicker").click(function(){
+	window.location="https://play.google.com/store/apps/details?id=com.walkntrade";
+});
+
 $("#parallax").height($(document).height());
 
-$("#clearFix0 button").click(function(){
+$(".titleHeader button").click(function(){
 	var scrollTarget = $("#clearFix3").offset().top;
 	$("html, body").animate({ scrollTop: scrollTarget}, 900, function(){$("#schoolSearch").focus();});
 });
