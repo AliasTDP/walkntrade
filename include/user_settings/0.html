@@ -37,9 +37,6 @@
 	border-bottom: 1px solid #C0C0C0;
 }
 
-.textContainer{
-	padding: 0px 10px;
-}
 
 #messageWrapper{
 	height: 150px;
@@ -49,7 +46,7 @@
 #threads{
 	min-height: 489px;
 	max-height: calc(100vh - 230px);
-	width: 350px;
+	width: 35%;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	float: left;
@@ -60,6 +57,7 @@
 }
 
 #threads table{
+	table-layout: fixed;
 	width: 100%;
 }
 
@@ -75,15 +73,28 @@
 	text-align: left;
 	background: #F0F0F0;
 }
+
 #threads table td{
-	height: 50px;
 	font-size: .85em;
 	cursor: pointer;
-	margin:10px 0px;
+	margin:5px 0px;
+	padding: 5px 0px;
+	border-bottom: 1px solid #EDEDED;
+}
+
+#threads table .userImage{
+	width: 60px;
+}
+
+#threads table .textContainer{
+	width: calc(100% - 90px);
+}
+
+#threads table .deleteBox{
+	width: 30px;
 }
 
 #threads table tr td div{
-	width: 230px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -99,7 +110,7 @@
 
 #threadViewContainer{
 	float: right;
-	width: calc(100% - 351px);
+	width: calc(65% - 1px);
 	padding: 0;
 	overflow: auto;
 }
@@ -190,17 +201,11 @@
 	float: right;
 	height:32px;
 }
-.userImage{
-	padding-left: 5px;
-	float: left;
-	width: 50px;
-	height: 50px;
-}
 
 .userImage img{
 	max-width: 50px;
 	max-height: 50px;
-	padding: 0px;
+	margin: 0px 5px;
 	box-shadow: 0 2px 2px rgba(0,0,0,0.2);
 }
 

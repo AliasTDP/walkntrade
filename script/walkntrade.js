@@ -370,39 +370,39 @@ function loadThread(thread_id, post_title){
 		pollNewMessages();
 
 		getThreads();
-
-		function renderThread(pageElement){
-			$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
-				payload = json.payload;
-				var message_id;
-				pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-				for(var i=0;i<payload.length;i++){
-					var message_content = payload[i].message_content;
-					var message_id = payload[i].message_id;
-					var datetime = payload[i].datetime;
-					var avatarUrl = payload[i].avatar;
-					var sender_name = payload[i].sender_name;
-					var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-					if(sentFromMe){
-						pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-						$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
-						$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
-						$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-						$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
-					}
-					else{
-						pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
-						$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
-						$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
-						$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-						$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
-					}
-				}
-				$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
-				operationPending=false;
-			});
-		}
 	}
+}
+
+function renderThread(pageElement){
+	$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
+		payload = json.payload;
+		var message_id;
+		pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
+		for(var i=0;i<payload.length;i++){
+			var message_content = payload[i].message_content;
+			var message_id = payload[i].message_id;
+			var datetime = payload[i].datetime;
+			var avatarUrl = payload[i].avatar;
+			var sender_name = payload[i].sender_name;
+			var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
+			if(sentFromMe){
+				pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
+				$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+				$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+				$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+				$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+			}
+			else{
+				pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+				$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+				$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+				$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+				$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+			}
+		}
+		$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
+		operationPending=false;
+	});
 }
 
 function deleteThread(thread_id){
@@ -456,7 +456,7 @@ function getThreads(quiet){
 				$("#"+thread_id+" .userImage").html("<img src='"+imageUrl+"'>");
 				$("#"+thread_id).append($('<td/>', {"class":"textContainer", "onclick": "loadThread('"+thread_id+"', '"+post_title+"')"}));
 				$("#"+thread_id+" .textContainer").append($('<div/>'));
-				$("#"+thread_id+" .textContainer div").html("<b>"+post_title+"</b><br>"+associated_with_name+": "+last_message+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
+				$("#"+thread_id+" .textContainer div").html("<b>"+post_title+"</b><br>"+associated_with_name+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
 				$("#"+thread_id).append($('<td/>', {"class":"deleteBox", "onclick":"deleteThread('"+thread_id+"')"}));
 				$("#"+thread_id+" .deleteBox").html("<i class='sprite sprite-1396379273_86'></i>");
 			}

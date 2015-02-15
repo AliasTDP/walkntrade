@@ -137,6 +137,7 @@ body{
 }
 
 #clearFix0{
+	height: 90vh;
 	margin-top: 63px;
 	background: url("/colorful/app_banner.jpg");
 		background-size: 100%;
@@ -151,7 +152,7 @@ body{
 	height: 200px;
 	position: absolute;
 	left: 50%;
-	top: 10%;
+	top: 15%;
 	cursor: pointer;
 }
 

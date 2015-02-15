@@ -105,6 +105,15 @@ $needles = array("Android", "iPhone", "iPad", "Windows Phone");
 <script type="text/javascript" src="/script/jquery.min.js"></script>
 <script type="text/javascript" src="/script/walkntrade.js"></script>
 <script type="text/javascript">
+var img1=new Image();
+    img1.src="colorful/app_banner.jpg";
+var img2=new Image();
+    img2.src="colorful/cf1.jpg";
+var img3=new Image();
+    img3.src="colorful/cf2.jpg";       
+var img4=new Image();
+    img4.src="colorful/cf3.jpg";
+
 $("#appClicker").click(function(){
 	window.location="https://play.google.com/store/apps/details?id=com.walkntrade";
 });
