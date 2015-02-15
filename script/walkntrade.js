@@ -2,11 +2,11 @@ window.api_url = "/api/";
 window.api_url2 = "/api2/";
 window.resultsPageActive = false;
 window.operationPending = false;
-window.unread_message_count = 0;
 
 $(document).ready(function(){
 	initFeedbackSlider();
 	pollNewMessages();
+	$(".notificatoin_sound").trigger('load');
 });
 
 function initAddPost(){
@@ -209,13 +209,15 @@ function pollNewMessages(){
 	$.ajax({url: "/api2/", dataType: "json", type:"POST", data:"intent=hasNewMessages", global:false, type:"POST", timeout:15000}).success(function(json){
 		if(json.status == 200){
 			checkVal=json.message;
-			if(checkVal !== "NaN" && checkVal > 0){
-				$("#mNum").slideDown().html(checkVal).css("background", "#9CCC65");
-				if(checkVal > unread_message_count && unread_message_count > 0){
+			messageDate= new Date(json.payload.last_message);
+			lastDate = (getCookie("latest_date_new") !== "") ? new Date(decodeURIComponent(getCookie("latest_date_new"))) : new Date("1970-01-01 12:00:00");
+									if(checkVal !== "NaN" && checkVal > 0){
+										$("#mNum").slideDown().html(checkVal).css("background", "#9CCC65");""
+				if(checkVal > 0 && messageDate > lastDate){
 					audioNotify();
-					getThreads();
+					getThreads(true);
+					setCookie("latest_date_new",json.payload.last_message,1);
 				}
-				unread_message_count = checkVal;
 			}
 			else if(checkVal !== "NaN" && checkVal == 0)
 				$("#mNum").slideUp().html("");
@@ -223,6 +225,17 @@ function pollNewMessages(){
 		}
 	});
 	return status;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
 }
 
 function setCookie(c_name,value,exdays){
@@ -368,8 +381,6 @@ function loadThread(thread_id, post_title){
 		window.thread_id = thread_id;
 		renderThread(pageElement);
 		pollNewMessages();
-
-		getThreads();
 	}
 }
 
@@ -402,6 +413,7 @@ function renderThread(pageElement){
 		}
 		$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
 		operationPending=false;
+		getThreads();
 	});
 }
 
@@ -435,9 +447,9 @@ function getThreads(quiet){
 		var pageElement = $("#threads");
 		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
 		payload = json.payload;
-		$("#navBarMail").html(payload.length+" thread(s) total <input type='button' style='line-height: 29px;height: 29px;' class='button' value='Reload' onclick='getThreads()' >");
+		$("#navBarMail").html(payload.length+" thread(s) total");
 		if(payload.length == 0){
-			pageElement.html("<p><h3 style='text-align:center;color:#C0C0C0'>You have no messages</h3></p>");
+			pageElement.html("<p><h3 style='text-align:center;color:#C0C0C0'>You have no messages<p>Message threads will appear here when somebody replies to one of you posts, or you reply to somebody else's.</h3></p>");
 		}
 		else{
 			for(var i=0;i<payload.length;i++){
