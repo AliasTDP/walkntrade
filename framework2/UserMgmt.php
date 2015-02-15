@@ -678,7 +678,7 @@ class UserMgmt extends CredentialStore{
 			foreach ($owners as $owner) {
 				if($owner == $_SESSION["user_id"])
 					$message = $message;
-				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ?, last_user_id = ? WHERE thread_id = ?");
+				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ?, last_user_id = ?, datetime=NOW() WHERE thread_id = ?");
 				$lmSTMT->bind_param("sis", $message, $currentUserId, $thread_id);
 				$lmSTMT->execute();
 			}
@@ -887,16 +887,16 @@ class UserMgmt extends CredentialStore{
 	public function hasNewMessages(){
 		if($this->getLoginStatus()){
 			$currentUserId = $_SESSION["user_id"];
-			if(!$getNewSTMT = $this->getThread_indexConnection()->prepare("SELECT new_messages FROM `$currentUserId` WHERE new_messages > 0 AND hidden = 0"))
+			if(!$getNewSTMT = $this->getThread_indexConnection()->prepare("SELECT new_messages, datetime FROM `$currentUserId` WHERE new_messages > 0 AND hidden = 0 ORDER BY datetime ASC"))
 				return $this->statusDump(500, "unable to prepare connection (2579)", null);
 			$getNewSTMT->execute();
-			$getNewSTMT->bind_result($new_messages);
+			$getNewSTMT->bind_result($new_messages, $datetime);
 			$getNewSTMT->store_result();
 			$total = 0;
 			while($getNewSTMT->fetch()){
 				$total += $new_messages;
 			}
-			$this->statusDump(200, $total, null);
+			$this->statusDump(200, $total, Array("last_message"=>$datetime));
 		}
 		else
 			$this->statusDump(401, "User Not authorized", null);

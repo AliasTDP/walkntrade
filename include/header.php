@@ -1,3 +1,7 @@
+<audio class="notificatoin_sound" preload="none"> 
+   <source src="/audio/walkntrade_notification.mp3" type="audio/mpeg">
+   <source src="/audio/walkntrade_notification.ogg" type="audio/ogg">
+</audio>
 <div id="newMessageWrapper">
 </div>
 <div id="leftHead">

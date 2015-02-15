@@ -9,10 +9,10 @@
 	function refreshAll(){
 		getThreads(true);
 	}
+	$("#threadViewContainer").height($("#threads").height());
 	$(window).resize(function(){
 		$("#threadViewContainer").height($("#threads").height());
 	});
-	$(".notificatoin_sound").trigger('load');
 	$("#threadView").html("<table><tr><td align='center'>To begin, select a message.</td></tr></table>");
 </script>
 
@@ -87,7 +87,6 @@
 }
 
 #threads table .textContainer{
-	width: calc(100% - 90px);
 }
 
 #threads table .deleteBox{
@@ -225,10 +224,6 @@ b{
 	color: #477C09;;
 }
 </style>
-<audio class="notificatoin_sound" preload="none"> 
-   <source src="audio/walkntrade_notification.mp3" type="audio/mpeg">
-   <source src="audio/walkntrade_notification.ogg" type="audio/ogg">
-</audio>
 <div class="cp_right_module">
 	<div class="settingsHeader">Conversations<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 50px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()">
 	</div>
