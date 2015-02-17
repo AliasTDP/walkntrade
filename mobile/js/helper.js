@@ -80,11 +80,15 @@ var WTHelper = (function() {
           attachDialog(cache['modalHTML'], dialogHTML, locationHash);
           $status.resolve($dialog);
       } else {
-          $.get('/mobile/partials/modal-window.html').done(function(modalHTML) {
-              cache['modalHTML'] = modalHTML;
-              attachDialog(cache['modalHTML'], dialogHTML, locationHash);
-              $status.resolve($dialog);
-          });
+          $.get('/mobile/partials/modal-window.html')
+              .done(function(modalHTML) {
+                  cache['modalHTML'] = modalHTML;
+                  attachDialog(cache['modalHTML'], dialogHTML, locationHash);
+                  $status.resolve($dialog);
+              })
+              .fail(function() {
+                  $status.reject('There was a problem connecting to the website. Please try again.');
+              });
       }
         
       function attachDialog(modalHTML, dialogHTML, locationHash) {

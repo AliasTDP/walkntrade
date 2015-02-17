@@ -438,19 +438,35 @@ $(document).ready(function() {
                 
         if (cache.hasOwnProperty('loginWindow')) {
             $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
-            $dialog.$el_promise.done(function($dialog_el) {
-                bindLoginDialog($dialog.$service, $dialog_el);
-            });
-        } else {
-            $.get('/mobile/partials/login-window.html').done(function(loginHTML) {
-                cache['loginWindow'] = loginHTML;
-                $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
-                $dialog.$el_promise.done(function($dialog_el) {
+            $dialog.$el_promise
+                .done(function($dialog_el) {
                     bindLoginDialog($dialog.$service, $dialog_el);
+                })
+                .fail(function(errorMessage) {
+                    alert(errorMessage);
                 });
-            });
+        } else {
+            $.get('/mobile/partials/login-window.html')
+                .done(function(loginHTML) {
+                    cache['loginWindow'] = loginHTML;
+                    $dialog = WTHelper.factory_createDialog(cache['loginWindow'], '#login');
+                    $dialog.$el_promise
+                        .done(function($dialog_el) {
+                            bindLoginDialog($dialog.$service, $dialog_el);
+                        }).fail(function(errorMessage) {
+                            alert(errorMessage);
+                        });
+                })
+                .fail(function() {
+                    var errorMessage = '<span>There was a problem loading some data from the server. Please try again.</span>';
+                    $dialog = WTHelper.factory_createDialog(errorMessage, '#login')
+                    $dialog.$el_promise.fail(function(errorMessage) {
+                        alert(errorMessage);
+                    });
+                });
         }
 
+        // Assuming all async operations have succeeded so far, we end up here.
         function bindLoginDialog($dialog_service, $dialog_el) {
 
             if ($(window).width() < 600) {
@@ -518,36 +534,44 @@ $(document).ready(function() {
                     .text('Please enter your password.')
                     .css('color', 'red');
             } else {
-                checkLogin(email, password).done(function(responseText) {
-                    if (responseText === 'success') {
+                checkLogin(email, password)
+                    .done(function(responseText) {
+                        if (responseText === 'success') {
+                            $dialog_el.find('.login-form label')
+                                .text('Success :)')
+                                .css('color', 'green');
+                            setTimeout(function() {
+                                $dialog_service.$destroy();
+                                loginUser();
+                            }, 500);
+                        } else if (responseText === 'verify') {
+                            $dialog_service.$destroy();
+                            $dialog = WTHelper.factory_createDialog('\
+                            <h3>Verify Email</h3>\
+                            <form class="verification-form">\
+                                <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
+                                <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
+                                <label></label>\
+                            </form>', '#verify');
+                            
+                            /** 
+                            We're not checking for a fail condition here, because this cannot fail.
+                            The modal content has to have been already cached to reach this point.
+                            **/
+                            $dialog.$el_promise.done(function($dialog_el) {
+                                bindVerificationDialog($dialog.$service, $dialog_el, email, password);
+                            });
+                        } else {
+                            $dialog_el.find('.login-form label')
+                                .text(responseText)
+                                .css('color', 'red');
+                        }
+                    })
+                    .fail(function(errorText) {
                         $dialog_el.find('.login-form label')
-                            .text('Success :)')
-                            .css('color', 'green');
-                        $dialog_service.$destroy();
-                        loginUser();
-                    } else if (responseText === 'verify') {
-                        $dialog_service.$destroy();
-                        $dialog = WTHelper.factory_createDialog('\
-                        <h3>Verify Email</h3>\
-                        <form class="verification-form">\
-                            <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
-                            <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
-                            <label></label>\
-                        </form>', '#verify');
-                        $dialog.$el_promise.done(function($dialog_el) {
-                            bindVerificationDialog($dialog.$service, $dialog_el, email, password);
-                        });
-                    } else {
-                        $dialog_el.find('.login-form label')
-                            .text(responseText)
-                            .css('color', 'red');
-                    }
-                })
-                .fail(function(errorText) {
-                    $dialog_el.find('.login-form label')
-                        .text('Failed to connect to server :(')
-                        .css('color', 'magenta');
-                });
+                            .text('Failed to connect to server :(')
+                            .css('color', 'magenta');
+                    });
             }
         }
 
