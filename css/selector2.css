@@ -20,10 +20,11 @@ body{
 	margin: 0px;
 	z-index: -1000;
 	position: fixed;
-	background: url("/colorful/cf0.jpg");
+	background: url("/colorful/app_banner.jpg");
 	background-size: 100%;
 	background-repeat: none;
 	background-attachment: top;
+	background-position: 0px -100px;
 }
 
 #schools {
@@ -88,6 +89,9 @@ body{
 	padding: 0px 50px;
 	height: 60px;
 	border-bottom: 3px solid #9ACE4D;
+	position: fixed;
+	width: 100%;
+	z-index: 1000;
 }
 .fullBodyWrapper .titleHeader img{
 	margin: 5px 0px;
@@ -132,18 +136,37 @@ body{
 	height: 500px;
 }
 
-#clearFix0 button{
-	background-color:rgba(73, 114, 13, 0.9);;
+#clearFix0{
+	height: 90vh;
+	margin-top: 63px;
+	background: url("/colorful/app_banner.jpg");
+		background-size: 100%;
+	background-repeat: none;
+	background-attachment: top;
+	background-position: 0px -100px;
+}
+
+#clearFix0 #appClicker{
+	background: none;
+	width: 300px;
+	height: 200px;
+	position: absolute;
+	left: 50%;
+	top: 15%;
+	cursor: pointer;
+}
+
+.titleHeader button{
+	background-color:rgba(73, 114, 13, 0.8);;
 	border: none;
 	font-size: 1.3em;
 	color: #FFF;
 	width: 300px;
 	padding: 10px; 
 	cursor: pointer;
-	position: relative;
-	left: 50%;
-	margin-left: -150px;
-	top: 250px;
+	position: absolute;
+	top: 8px;
+	right: 150px;
 }
 
 #clearFix1{

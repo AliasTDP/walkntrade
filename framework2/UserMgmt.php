@@ -678,7 +678,7 @@ class UserMgmt extends CredentialStore{
 			foreach ($owners as $owner) {
 				if($owner == $_SESSION["user_id"])
 					$message = $message;
-				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ?, last_user_id = ? WHERE thread_id = ?");
+				$lmSTMT = $this->getThread_indexConnection()->prepare("UPDATE `$owner` SET last_message = ?, last_user_id = ?, datetime=NOW() WHERE thread_id = ?");
 				$lmSTMT->bind_param("sis", $message, $currentUserId, $thread_id);
 				$lmSTMT->execute();
 			}
@@ -776,7 +776,7 @@ class UserMgmt extends CredentialStore{
 	public function getMessageThreadsCurrentUser($offset, $amount){
 		if($this->getLoginStatus()){
 			$currentUserId = $_SESSION['user_id'];
-			if(!$getThreadsSTMT = $this->getThread_indexConnection()->prepare("SELECT thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with FROM `$currentUserId` WHERE `hidden` = 0 ORDER BY `thread_id` DESC LIMIT ?,? "))
+			if(!$getThreadsSTMT = $this->getThread_indexConnection()->prepare("SELECT thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with FROM `$currentUserId` WHERE `hidden` = 0 ORDER BY `new_messages` DESC LIMIT ?,? "))
 				return $this->statusDump(500, "Unable to get threads (1000)", null);
 			$getThreadsSTMT->bind_param("ii", $offset, $amount);
 			$getThreadsSTMT->execute();
@@ -793,10 +793,10 @@ class UserMgmt extends CredentialStore{
 		}
 	}
 
-	public  function retrieveThread($thread_id, $limit){
+	public  function retrieveThread($thread_id, $offset, $limit){
 		if($this->getLoginStatus() && $this->userOwnsThread($thread_id)){
-			$retrieveThreadSTMT = $this->getThreadsConnection()->prepare("SELECT message_id, sender_id, sender_name, message_content, datetime, message_seen  FROM `$thread_id` ORDER BY `message_id` DESC LIMIT ?");
-			$retrieveThreadSTMT->bind_param("i", $limit);
+			$retrieveThreadSTMT = $this->getThreadsConnection()->prepare("SELECT message_id, sender_id, sender_name, message_content, datetime, message_seen  FROM `$thread_id` ORDER BY `message_id` DESC LIMIT ?, ?");
+			$retrieveThreadSTMT->bind_param("ii", $offset, $limit);
 			$retrieveThreadSTMT->execute();
 			$retrieveThreadSTMT->bind_result($message_id, $sender_id, $sender_name, $message_content, $datetime, $message_seen);
 			$threadArray=Array();
@@ -887,16 +887,16 @@ class UserMgmt extends CredentialStore{
 	public function hasNewMessages(){
 		if($this->getLoginStatus()){
 			$currentUserId = $_SESSION["user_id"];
-			if(!$getNewSTMT = $this->getThread_indexConnection()->prepare("SELECT new_messages FROM `$currentUserId` WHERE new_messages > 0 AND hidden = 0"))
+			if(!$getNewSTMT = $this->getThread_indexConnection()->prepare("SELECT new_messages, datetime FROM `$currentUserId` WHERE new_messages > 0 AND hidden = 0 ORDER BY datetime ASC"))
 				return $this->statusDump(500, "unable to prepare connection (2579)", null);
 			$getNewSTMT->execute();
-			$getNewSTMT->bind_result($new_messages);
+			$getNewSTMT->bind_result($new_messages, $datetime);
 			$getNewSTMT->store_result();
 			$total = 0;
 			while($getNewSTMT->fetch()){
 				$total += $new_messages;
 			}
-			$this->statusDump(200, $total, null);
+			$this->statusDump(200, $total, Array("last_message"=>$datetime));
 		}
 		else
 			$this->statusDump(401, "User Not authorized", null);

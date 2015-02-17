@@ -5,10 +5,15 @@
 	setInterval(function(){
 			if(thread_id != "")
 				loadThreadNew();
-    },4000);
+    },5000);
 	function refreshAll(){
 		getThreads(true);
 	}
+	$("#threadViewContainer").height($("#threads").height());
+	$(window).resize(function(){
+		$("#threadViewContainer").height($("#threads").height());
+	});
+	$("#threadView").html("<table><tr><td align='center'>To begin, select a message.</td></tr></table>");
 </script>
 
 <style type="text/css">
@@ -32,20 +37,27 @@
 	border-bottom: 1px solid #C0C0C0;
 }
 
+
 #messageWrapper{
 	height: 150px;
 	overflow: scroll;
 }
 
 #threads{
-	min-height: 400px;
-	width: 350px;
+	min-height: 489px;
+	max-height: calc(100vh - 230px);
+	width: 35%;
+	overflow-y: scroll;
+	overflow-x: hidden;
 	float: left;
 	border-right: 1px solid #C0C0C0;
 	padding: 0px;
+	min-height: calc(100vh - 82px);
+	box-shadow: 0px -1px 3px rgba(0,0,0,0.4) inset;
 }
 
 #threads table{
+	table-layout: fixed;
 	width: 100%;
 }
 
@@ -61,15 +73,28 @@
 	text-align: left;
 	background: #F0F0F0;
 }
+
 #threads table td{
-	height: 50px;
 	font-size: .85em;
 	cursor: pointer;
-	margin:10px 0px;
+	margin:5px 0px;
+	padding: 5px 0px;
+	border-bottom: 1px solid #EDEDED;
+}
+
+#threads table .userImage{
+	width: 60px;
+}
+
+#threads table .textContainer{
+	width: calc(100% - 90px);
+}
+
+#threads table .deleteBox{
+	width: 30px;
 }
 
 #threads table tr td div{
-	width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -85,16 +110,21 @@
 
 #threadViewContainer{
 	float: right;
-	width: calc(100% - 351px);
+	width: calc(65% - 1px);
 	padding: 0;
 	overflow: auto;
 }
 
 #threadView{
-	height: 330px;
+	height: calc(100% - 61px);
 	overflow-y: scroll;
 	overflow-x:none;
 	padding: 0px;
+	background: #FFF;
+}
+
+#threadView h2{
+	margin:0px;
 }
 
 #threadView table{
@@ -115,6 +145,7 @@
 
 .postReminder{
 	height: 100px;
+	padding: 10px;
 	background: -moz-linear-gradient(top,  rgba(237,255,216,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(237,255,216,1)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(top,  rgba(237,255,216,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
@@ -122,6 +153,10 @@
 	background: -ms-linear-gradient(top,  rgba(237,255,216,1) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
 	background: linear-gradient(to bottom,  rgba(237,255,216,1) 0%,rgba(255,255,255,0) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#edffd8', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+}
+
+.postReminder h2{
+	white-space: nowrap;
 }
 
 .myPost td{
@@ -142,15 +177,17 @@
 	white-space: nowrap;
 }
 #navBarMail{
-	height: 30px;
+	height: 29px;
 	line-height: 30px;
-	background:#F5F5F5;
+	background: #F5F5F5;
+	box-shadow: 0 1px 6px rgba(0,0,0,0.1);
 	border-bottom: 1px solid #C0C0C0;
 }
 
 #replyBox{
+	padding: 12px 5px;
 	border-top: 1px solid #C0C0C0;
-	height: 50px;
+	height: 30px;
 }
 
 #messaageInput{
@@ -164,17 +201,11 @@
 	float: right;
 	height:32px;
 }
-.userImage{
-	padding-left: 5px;
-	float: left;
-	width: 50px;
-	height: 50px;
-}
 
 .userImage img{
 	max-width: 50px;
 	max-height: 50px;
-	padding: 0px;
+	margin: 0px 5px;
 	box-shadow: 0 2px 2px rgba(0,0,0,0.2);
 }
 
@@ -194,14 +225,21 @@ b{
 	color: #477C09;;
 }
 </style>
-<div class="boxStyle1">
-	<div class="settingsHeader">Conversations<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 61px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()"></div>
-	<div id="navBarMail"></div>
-	<div id="threads"></div>
-	<div id="threadViewContainer"><div id="threadView"></div><div id="replyBox">
-		<form action='javascript:sendMessage(this.messaageInput.value)'>
-			<input type="text" id="messaageInput" value="" placeholder="reply">
-			<input type="submit" id="sendMessage" value="Send">
-			</form>
-	</div></div>
+<div class="cp_right_module">
+	<div class="settingsHeader">Conversations<input type="button" class="button" style="float:right;background:#CFF1A7;color:#555;height: 50px;width: 100px;" value="Go Back"  onclick="javascript:window.history.back()">
+	</div>
+	<div id="navBarMail">
+	</div>
+	<div id="threads">
+	</div>
+	<div id="threadViewContainer">
+		<div id="threadView">
+		</div>
+		<div id="replyBox">
+			<form action='javascript:sendMessage(this.messaageInput.value)'>
+				<input type="text" id="messaageInput" value="" placeholder="Type your message">
+				<input type="submit" id="sendMessage" value="Send">
+				</form>
+		</div>
+	</div>
 </div>

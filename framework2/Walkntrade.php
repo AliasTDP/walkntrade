@@ -13,7 +13,7 @@ class Walkntrade {
 	private $listingConnection;
 	private $threadsConnection;
 	private $thread_indexConnection;
-	private $validDomains = array("walkntrade.com", "dev.wt", "172.16.10.53");
+	private $validDomains = array("walkntrade.com", "dev.wt", "172.16.10.53", "127.0.0.1");
 
 	public function __construct(){
 		$this->dbConnect();

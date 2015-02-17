@@ -109,6 +109,13 @@ body {
     box-shadow:0 2px 2px rgba(0,0,0,0.2), 0 1px 5px rgba(0,0,0,0.2), 0 0 0 10px rgba(255, 255, 255, 0.4); 
 }
 
+.cp_right_module {
+	position: relative;
+	background-color: #FAFAFA;
+	color: #7e7975;
+	min-height: 100vh;
+}
+
 .dialog{
 	text-align:center;
 	width: 500px;

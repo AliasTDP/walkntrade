@@ -6,6 +6,7 @@ window.operationPending = false;
 $(document).ready(function(){
 	initFeedbackSlider();
 	pollNewMessages();
+	$(".notificatoin_sound").trigger('load');
 });
 
 function initAddPost(){
@@ -208,8 +209,15 @@ function pollNewMessages(){
 	$.ajax({url: "/api2/", dataType: "json", type:"POST", data:"intent=hasNewMessages", global:false, type:"POST", timeout:15000}).success(function(json){
 		if(json.status == 200){
 			checkVal=json.message;
-			if(checkVal !== "NaN" && checkVal > 0){
-				$("#mNum").slideDown().html(checkVal).css("background", "#9CCC65");
+			messageDate= new Date(json.payload.last_message);
+			lastDate = (getCookie("latest_date_new") !== "") ? new Date(decodeURIComponent(getCookie("latest_date_new"))) : new Date("1970-01-01 12:00:00");
+									if(checkVal !== "NaN" && checkVal > 0){
+										$("#mNum").slideDown().html(checkVal).css("background", "#9CCC65");""
+				if(checkVal > 0 && messageDate > lastDate){
+					audioNotify();
+					getThreads(true);
+					setCookie("latest_date_new",json.payload.last_message,1);
+				}
 			}
 			else if(checkVal !== "NaN" && checkVal == 0)
 				$("#mNum").slideUp().html("");
@@ -217,6 +225,17 @@ function pollNewMessages(){
 		}
 	});
 	return status;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
 }
 
 function setCookie(c_name,value,exdays){
@@ -362,39 +381,40 @@ function loadThread(thread_id, post_title){
 		window.thread_id = thread_id;
 		renderThread(pageElement);
 		pollNewMessages();
-
-		function renderThread(pageElement){
-			$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
-				payload = json.payload;
-				var message_id;
-				pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
-				for(var i=0;i<payload.length;i++){
-					var message_content = payload[i].message_content;
-					var message_id = payload[i].message_id;
-					var datetime = payload[i].datetime;
-					var avatarUrl = payload[i].avatar;
-					var sender_name = payload[i].sender_name;
-					var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
-					if(sentFromMe){
-						pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
-						$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
-						$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
-						$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-						$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
-					}
-					else{
-						pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
-						$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
-						$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
-						$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
-						$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
-					}
-				}
-				$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
-				operationPending=false;
-			});
-		}
 	}
+}
+
+function renderThread(pageElement){
+	$.ajax({url:api_url2, dataType:"json", data:"intent=retrieveThread&thread_id="+thread_id}).success(function(json){
+		payload = json.payload;
+		var message_id;
+		pageElement.append("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
+		for(var i=0;i<payload.length;i++){
+			var message_content = payload[i].message_content;
+			var message_id = payload[i].message_id;
+			var datetime = payload[i].datetime;
+			var avatarUrl = payload[i].avatar;
+			var sender_name = payload[i].sender_name;
+			var sentFromMe = (payload[i].sentFromMe == "1")?true:false;
+			if(sentFromMe){
+				pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"myPost"}));
+				$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+				$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+				$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+				$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+			}
+			else{
+				pageElement.find("table").append($('<tr/>', {"id":"msg_"+message_id, "class":"othersPost"}));
+				$("#msg_"+message_id).prepend($('<td/>', {"width": "50px", "class":"avThumb"}));
+				$("#msg_"+message_id+" td:first").html("<img src=\""+avatarUrl+"\"></img>");
+				$("#msg_"+message_id).append($('<td/>', {"width": "70%"}));
+				$("#msg_"+message_id+" td:last").html(message_content+"<br><span style='color:#C0C0C0;font-size:.8em'>"+sender_name+" at "+datetime+"</span>");
+			}
+		}
+		$("#threadView").scrollTop($("#msg_"+message_id).offset().top);
+		operationPending=false;
+		getThreads();
+	});
 }
 
 function deleteThread(thread_id){
@@ -415,6 +435,10 @@ function deleteThread(thread_id){
 
 }
 
+function audioNotify(){
+	$(".notificatoin_sound").trigger('play');
+}
+
 function getThreads(quiet){
 	if(!quiet){
 		$("#navBarMail").html("please wait...");
@@ -423,9 +447,9 @@ function getThreads(quiet){
 		var pageElement = $("#threads");
 		pageElement.html("<table cellpadding=\"0\" cellspacing=\"0\"></table>");
 		payload = json.payload;
-		$("#navBarMail").html(payload.length+" thread(s) total <input type='button' class='button' value='Reload' onclick='getThreads()' >");
+		$("#navBarMail").html(payload.length+" thread(s) total");
 		if(payload.length == 0){
-			pageElement.html("<p><h3 style='text-align:center;color:#C0C0C0'>You have no messages</h3></p>");
+			pageElement.html("<p><h3 style='text-align:center;color:#C0C0C0'>You have no messages<p>Message threads will appear here when somebody replies to one of you posts, or you reply to somebody else's.</h3></p>");
 		}
 		else{
 			for(var i=0;i<payload.length;i++){
@@ -444,16 +468,17 @@ function getThreads(quiet){
 				$("#"+thread_id+" .userImage").html("<img src='"+imageUrl+"'>");
 				$("#"+thread_id).append($('<td/>', {"class":"textContainer", "onclick": "loadThread('"+thread_id+"', '"+post_title+"')"}));
 				$("#"+thread_id+" .textContainer").append($('<div/>'));
-				$("#"+thread_id+" .textContainer div").html("<b>"+post_title+"</b><br>"+associated_with_name+": "+last_message+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
+				$("#"+thread_id+" .textContainer div").html("<b>"+post_title+"</b><br>"+associated_with_name+"<br><span style='color:#C0C0C0;font-size:.8em'>"+datetime+"</span>");				
 				$("#"+thread_id).append($('<td/>', {"class":"deleteBox", "onclick":"deleteThread('"+thread_id+"')"}));
 				$("#"+thread_id+" .deleteBox").html("<i class='sprite sprite-1396379273_86'></i>");
 			}
+			$("#threadViewContainer").height($("#threads").height());
 		}
 	});
 }
 
 function sendMessage(message){
-	if(message != ""){
+	if(/\S/.test(message)){
 		if(thread_id != ""){
 			message = encodeURIComponent(message);
 			$.ajax({url:api_url2, dataType:"json", data:"intent=appendMessage&thread_id="+thread_id+"&message="+message}).success(function(json){
