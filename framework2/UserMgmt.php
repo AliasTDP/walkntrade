@@ -187,77 +187,41 @@ class UserMgmt extends CredentialStore{
 			return $this->statusDump(500, "Unable to prepare connection", null);
 	}
 
-	public function controlPanel($oldPw, $email, $newPw, $phone){
-		$uc = $this->getUserConnection();
+	public function modifyAccount($oldPassword, $newEmail, $newPassword, $newPhoneNumber){
 		if($this->getLoginStatus()){
-			if($this->checkPassword($oldPw)){
-				$errors = false;
-				if($email != ""){
-					if($this->checkEmail($email)){
-						if($emailUpdate = $uc->prepare("UPDATE `users` SET `email` = ?,`verified` = 0 WHERE `id` = ? LIMIT 1")){
-							$emailUpdate->bind_param("ss", $email, $_SESSION["user_id"]);
-							$emailUpdate ->execute();
-							if($emailUpdate->affected_rows ==1){
-								if($this->verifyEmail($email) == 0){
-										//success
-									$emailUpdate->close();
-								}
-								else{
-										//unable to send email
-									$emailUpdate->close();
-									return 14;
-								}
-							}
-							else{
-									//unable to update table
-								return 13;
-							}
-						}
-						else{
-								//SQL error
-							return 12;
-						}
-					}
-					else{
-							//email address exixts
-						return 11;
-					}
-				}
-				if($newPw != ""){
-					$newPw = md5($newPw);
-					$stmt = $uc->prepare("UPDATE `users` SET `password` = ?  WHERE `id` = ? LIMIT 1");
-					$stmt->bind_param("si", $newPw, $_SESSION["user_id"]);
-					$stmt->execute();
-					if($stmt->affected_rows != 1){
-						$errors = true;
-					}
-				}
-				if($phone != ""){
-					$stmt = $uc->prepare("UPDATE `users` SET `phone` = ?  WHERE `id` = ? LIMIT 1");
-					$stmt->bind_param("si", $phone, $_SESSION["user_id"]);
-					$stmt->execute();
-					if($stmt->affected_rows != 1){
-						$errors = true;
-					}
-				}
-				if(!$errors){
-					if($email == "" && $newPw == "" && $phone =="")
-							//No Act
-						return 301;
-						//All Gud
-					return 0;
-				}
-				else
-						//Err detect
-					return 3;
+			if($newEmail != ""){
+				if(!$this->checkEmail($newEmail))
+					return 1;
+				$newEmailSTMT=$this->getUserConnection()->prepare("UPDATE `users` SET `email` = ?  WHERE `id` = ? LIMIT 1");
+				$newEmailSTMT->bind_param("ss", $newEmail, $_SESSION["user_id"]);
+				$newEmailSTMT ->execute();
+				if($newEmailSTMT->affected_rows != 1)
+					return 2;
+				$this->verifyEmail($newEmail);
+				return 0;
+			}
+			else if($newPassword != ""){
+				$newPasswordSTMT=$this->getUserConnection()->prepare("UPDATE `users` SET `password` = ?  WHERE `id` = ? LIMIT 1");
+				$newPasswordSTMT->bind_param("si", md5($newPassword), $_SESSION["user_id"]);
+				$newPasswordSTMT->execute();
+				if($newPasswordSTMT->affected_rows != 1)
+					return 1;
+				return 0;
+			}
+			else if($newPhoneNumber != ""){
+				$newPhoneNumber=intval($newPhoneNumber);
+				$newPhoneNumberSTMT=$this->getUserConnection()->prepare("UPDATE `users` SET `phone` = ?  WHERE `id` = ? LIMIT 1");
+				$newPhoneNumberSTMT->bind_param("ii", $newPhoneNumber, $_SESSION["user_id"]);
+				$newPhoneNumberSTMT->execute();
+				if($newPhoneNumberSTMT->affected_rows != 1)
+					return 1;
+				return 0;
 			}
 			else
-					//No Auth
-				return 2;
+				return false;
 		}
 		else
-				//NLI
-			return 1;
+			return false;
 	}
 
 	public function getPostsCurrentUser(){
@@ -776,7 +740,7 @@ class UserMgmt extends CredentialStore{
 	public function getMessageThreadsCurrentUser($offset, $amount){
 		if($this->getLoginStatus()){
 			$currentUserId = $_SESSION['user_id'];
-			if(!$getThreadsSTMT = $this->getThread_indexConnection()->prepare("SELECT thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with FROM `$currentUserId` WHERE `hidden` = 0 ORDER BY `new_messages` DESC LIMIT ?,? "))
+			if(!$getThreadsSTMT = $this->getThread_indexConnection()->prepare("SELECT thread_id, last_message, last_user_id, post_id, post_title, datetime, new_messages, associated_with FROM `$currentUserId` WHERE `hidden` = 0 ORDER BY `datetime` DESC LIMIT ?,? "))
 				return $this->statusDump(500, "Unable to get threads (1000)", null);
 			$getThreadsSTMT->bind_param("ii", $offset, $amount);
 			$getThreadsSTMT->execute();

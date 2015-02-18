@@ -53,36 +53,37 @@ switch($getIntent){
 		$wt->getSchools($query);
 		break;
 	case "controlPanel":
-		require_once "../framework/UserMgmt.php";
+		require_once "../framework2/UserMgmt.php";
 		$um = new UserMgmt();
-		$oldPw = filter_var($_POST["oldPw"], FILTER_SANITIZE_STRING);
-		$email = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
-		$newPw = filter_var($_POST["newPw"], FILTER_SANITIZE_STRING);
-		$phone = filter_var($_POST["phone"], FILTER_SANITIZE_NUMBER_INT);
-		switch($um->controlPanel($oldPw, $email, $newPw, $phone)){
-			case "1";
-			echo "Not authorized";
-			break;
-			case "2";
-			echo "Not authorized";
-			break;
-			case "3";
-			echo "One or more of your settings are redundant and have not been changed. You will be logged out now so your changes to take effect. If you changed your email, you will need to verify it before you may log in.";
-			break;
-			case "0";
-			echo "Your settings have been saved. You will be logged out now in order for your changes to take effect. If you changed your email, you will need to verify it before you may log in.";
-			break;
-			case "301";
-			echo "No Act";
-			break;
-			case "11";
-			echo "This email address exists...";
-			break;
-			default:
-			echo "Internal error. Please report this <a href='/feedback'>here</a>.";
-			break;
+		if(isset($_POST["oldPw"]) && $um->checkPassword($_POST["oldPw"])){
+			if(isset($_POST["email"]) && $_POST["email"] != ""){
+				$email = filter_var($_POST["email"], FILTER_SANITIZE_EMAIL);
+				switch($um->modifyAccount($_POST["oldPw"], $email, "", "")){
+					case 1:
+						return $um->statusDump(999, "This email addres is already used", null);
+						break;
+					case 2:
+						return $um->statusDump(500, "An error has occured (1)", null);
+						break;
+				}
+			}
+			if(isset($_POST["phone"]) && $_POST["phone"] != ""){
+				$phone = filter_var($_POST["phone"], FILTER_SANITIZE_NUMBER_INT);
+				$um->modifyAccount($_POST["oldPw"], "", "", $phone);
+			}
+			if(isset($_POST["newPw"]) && $_POST["newPw"] != ""){
+				$newPw = filter_var($_POST["newPw"], FILTER_SANITIZE_STRING);
+				switch($um->modifyAccount($_POST["oldPw"], "", $newPw, "")){
+					case 1:
+						return $um->statusDump(500, "An error has occured (2)", null);
+						break;
+				}
+			}
+			return $um->statusDump(200, "Success", null);
 		}
-		break;//Skipped Refactoring to JSON until later
+		else
+			return $um->statusDump(401, "User not authorized", null);
+		break;
 	case "checkPassword":
 		require_once "../framework/UserMgmt.php";
 		$um = new UserMgmt();
@@ -321,7 +322,7 @@ switch($getIntent){
 		$pq = new PostQuery();
 		$school = filter_var($_POST["school"], FILTER_SANITIZE_STRING);
 		if($pq->getSchoolName($school) == null) ### Prevent from inserting into nonexisting db ###
-		return $this->statusDump(500, "nonexisting school ID", null);
+		return $pq->statusDump(500, "nonexisting school ID", null);
 		$title = $_POST["title"];
 		$details = $_POST["details"];
 		$price = filter_var($_POST["price"], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);

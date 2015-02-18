@@ -138,6 +138,7 @@ body{
 
 #clearFix0{
 	height: 90vh;
+	max-height: 900px;
 	margin-top: 63px;
 	background: url("/colorful/app_banner.jpg");
 		background-size: 100%;

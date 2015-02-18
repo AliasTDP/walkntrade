@@ -566,15 +566,15 @@ function getAccountPrefs(callback){
 	concat = '	<form name="acctPrefs" action="javascript:updateAcctPrefs()" autocomplete="off">';
 	concat += '	<table cellspacing="0px" cellpadding="0px">';
 	concat += '	<tr><th colspan="2">Enter your password</th></tr>';
-	concat += '	<tr><td>Current Password:</td><td><input type="password" name="pword0"></td></tr>';
+	concat += '	<tr><td>Current Password:</td><td><input id="pword0" type="password" name="pword0"></td></tr>';
 	concat += '	<tr><th colspan="2">Update your email</th></tr>';
-	concat += '	<tr><td width="50%">New Email:</td><td width="50%"><input type="text" name="email1"></td></tr>';
-	concat += '	<tr><td>Comfirm:</td><td><input type="text" name="email2"></td></tr>';
+	concat += '	<tr><td width="50%">New Email:</td><td width="50%"><input id="email1" input type="text" name="email1"></td></tr>';
+	concat += '	<tr><td>Comfirm:</td><td><input id="email2" type="text" name="email2"></td></tr>';
 	concat += '	<tr><th colspan="2">Update your password</th></tr>';
-	concat += '	<tr><td>New Password:</td><td><input type="password" name="pword1"></td></tr>';
-	concat += '	<tr><td>Comfirm:</td><td><input type="password" name="pword2"></td></tr>';
+	concat += '	<tr><td>New Password:</td><td><input id="pword1" type="password" name="pword1"></td></tr>';
+	concat += '	<tr><td>Comfirm:</td><td><input id="pword2" type="password" name="pword2"></td></tr>';
 	concat += '	<tr><th colspan="2">Choose your digits</th></tr>';
-	concat += '	<tr><td>Phone Number:</td><td><input type="text" name="phone1"></td></tr>';
+	concat += '	<tr><td>Phone Number:</td><td><input id="phone1" type="text" name="phone1"></td></tr>';
 	concat += '	<tr><td colspan="2"><input type="submit" value="Save Changes"></td></tr>'
 	concat += '	</table>';
 	concat += '	</form>';
@@ -590,57 +590,101 @@ function updateAcctPrefs(){
 	var pword1 = document.acctPrefs.pword1.value;
 	var pword2 = document.acctPrefs.pword2.value;
 	var phone1 = document.acctPrefs.phone1.value;
+
+	$("form #email1").css("border-color", "#ebe6e2");
+	$("form #email2").css("border-color", "#ebe6e2");
+	$("form #pword1").css("border-color", "#ebe6e2");
+	$("form #pword2").css("border-color", "#ebe6e2");
+	$("form #phone1").css("border-color", "#ebe6e2");
+
 	if(pword0 == ""){
-		dialog("You must enter your password first.", true);
+		$("form #pword0").css("border-color", "#F30");
 		return;
 	}
-	var cont = true;
+	email_change=false;
 	if(email1 != ""){
 		if(validateEmail(email1)){
 			if(email1 != email2){
-				dialog("Emails must match.", true);
-				cont = false;
+				$("form #email2").css("border-color", "#F30");
+				return;
 			}
+			email_change=true;
 		}
 		else{
-			dialog("Please enter a valid email", true);
-			cont = false;
+			$("form #email1").css("border-color", "#F30");
+			return
 		}
 	}
 
+	password_change = false;
 	if(pword1 != ""){
 		if(pword1.length > 7){
 			if(pword1 != pword2){
-				dialog("Passwords must match.", true);	
-				cont = false;
+				$("form #pword2").css("border-color", "#F30");
+				return;
 			}
+			password_change = true;
 		}
 		else{
+			$("form #pword1").css("border-color", "#F30");
 			dialog("Passwords must be 8 characters or longer.", true);
-			cont = false;
+			return;
 		}
 	}
 
 	if(phone1 != ""){
 		if(phone1.length != 10){
+			$("form #phone1").css("border-color", "#F30");
 			dialog("Please enter a valid phone number", true);
 			cont = false;
 		}
 	}
 
-	if(cont){
-		user = confirm("Are you sure you want to save these changes? This cannot be undone.");
-		if(user){
-			$.ajax({dataType:"html",  data:"intent=controlPanel&oldPw="+pword0+"&email="+email1+"&newPw="+pword1+"&phone="+phone1, context:user_logout}).success(function(r){
-				switch(r){
-					case "No Act":
+	user = true;// confirm("Are you sure you want to save these changes? This cannot be undone.");
+	if(user){
+		$.ajax({url:api_url2, dataType:"json", data:"intent=controlPanel&oldPw="+pword0+"&email="+email1+"&newPw="+pword1+"&phone="+phone1, context:user_logout}).success(function(json){
+			console.log(json);
+			switch(json.status){
+				case 401://incorrect password
+					$("form #pword0").css("border-color", "#ebe6e2");
+					$("form #pword0").css("border-color", "#F30");
 					break;
-					default:
-					dialog(r,true,this);
+				case 999://email in use
+					$("form #pword0").css("border-color", "#ebe6e2");	
+					$("form #email1").css("border-color", "#F30");
+					dialog("This email is already in use!", true);
 					break;
-				}
-			});
-		}
+				case 500:
+					dialog(json.message, true);
+					break;
+				case 200:
+					$("form #pword0").css("border-color", "#ebe6e2");
+					if(password_change && !email_change){
+						dialog("Since you have changed your password, you will be logged out now, and you will need to log-in again.", true, null, function(r){
+							user_logout();
+							window.location="/";
+						});
+					}
+					else if(!password_change && email_change){
+						dialog("Since you have changed your email address, you will need to verify it before logging in again", true, null, function(r){
+							user_logout();
+							window.location="/";
+						});
+					}
+					else if(password_change && email_change){
+						dialog("We're gonna log you out now since you changed your password. You will need to verify your new email before you can log back in", true, null, function(r){
+							user_logout();
+							window.location="/";
+						});
+					}
+					else{
+						dialog("All Done!", true, null, function(r){
+							window.location="/";
+						});
+					}
+					break;
+			}
+		});
 	}
 }
 
