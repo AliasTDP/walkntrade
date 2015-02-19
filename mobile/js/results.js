@@ -209,41 +209,43 @@ $(document).ready(function() {
                             'top': '3.5em'
                         });
 
-                        WTHelper.service_getUserMessageThreads().done(function(response) {
-                            if (response.message === 'Threads for current user') {
-                                if (!response.payload.length) {
-                                    $('.wt-messager').append('<span>No messages</span>');
-                                    return;
-                                }
+                        WTHelper.service_getUserMessageThreads()
+                            .done(function(response) {
+                                if (response.message === 'Threads for current user') {
+                                    if (!response.payload.length) {
+                                        $('.wt-messager').append('<span>No messages</span>');
+                                        return;
+                                    }
 
-                                console.log(response.payload);
-                                for (i = 0; i < response.payload.length; i++) {
-                                    thread = response.payload[i];
-                                    var $message_div = $('.wt-messager').append('<div id="thread_'+thread.thread_id+'" class="wt-thread-wrapper">\
-                                                                <div class="wt-thread">\
-                                                                </div>\
-                                                               </div>').children(':nth-child('+(i+1)+')');
-                                    
-                                    $message_div.data('thread_info', thread);
-                                    $message_div.on('click', function(event) {
-                                        event.preventDefault();
-                                        event.stopImmediatePropagation();
-                                        showMessageThread($(this).data('thread_info'));
-                                    });
+                                    for (i = 0; i < response.payload.length; i++) {
+                                        thread = response.payload[i];
+                                        var $message_div = $('.wt-messager').append('<div id="thread_'+thread.thread_id+'" class="wt-thread-wrapper">\
+                                                                    <div class="wt-thread">\
+                                                                    </div>\
+                                                                   </div>').children(':nth-child('+(i+1)+')');
 
-                                    var $el = $message_div.find('.wt-thread');
-                                    $el.append('<div class="sender-image">\
-                                                <img class="pure-img" src="' + thread.associated_with_image + '"/>\
-                                                </div>');
-                                    $el.append('<div class="thread-info">\
-                                                <h3>' + thread.post_title + '</h3>\
-                                                <span>' + thread.last_user_name + ': ' + thread.last_message +
-                                               '</span>\
-                                                <span>' + thread.datetime + '</span\
-                                                </div>');
+                                        $message_div.data('thread_info', thread);
+                                        $message_div.on('click', function(event) {
+                                            event.preventDefault();
+                                            event.stopImmediatePropagation();
+                                            showMessageThread($(this).data('thread_info'));
+                                        });
+
+                                        var $el = $message_div.find('.wt-thread');
+                                        $el.append('<div class="sender-image">\
+                                                    <img class="pure-img" src="' + thread.associated_with_image + '"/>\
+                                                    </div>');
+                                        $el.append('<div class="thread-info">\
+                                                    <h3>' + thread.post_title + '</h3>\
+                                                    <span>' + thread.last_user_name + ': ' + thread.last_message +
+                                                   '</span>\
+                                                    <span>' + thread.datetime + '</span\
+                                                    </div>');
+                                    }
                                 }
-                            }
-                        });
+                            }).fail(function() {
+                                $('.wt-messager').append('<span>Failed to connect to server :(</span>');
+                            });
                     }
                 });
             }
@@ -282,7 +284,11 @@ $(document).ready(function() {
                                 'z-index': 0
                             });
                             $('.wt-header .wt-header-nav').fadeIn();
-                            getPostsByCategory(school, currentCategory, { resetOffset: true });
+                            getPostsByCategory(school, currentCategory, { resetOffset: true })
+                                .fail(function() {
+                                    $('.wt-results').append('<p>wow cant connect to wt :( </p>');
+                                    $('.wt-results').slideDown('slow');
+                                });
                         }
                     });
             }
@@ -290,29 +296,30 @@ $(document).ready(function() {
     }
     
     function showMessageThread(thread_info) {
-        console.log(thread_info);
         if (!poll) {
             poll = setInterval(function() { 
-                WTHelper.service_getNewMessagesInThread(thread_info.thread_id).done(function(response) {
-                    console.log(response);
-                    if (response.payload.length) {
-                        for (var i = 0; i < response.payload.length; i++) {
-                            var msg = response.payload[i];
-                            $('.wt-message-thread').append('\
-                            <div class="wt-message" style="color:black;">\
-                                <span class="wt-message-avatar" style="float:left;"><img class="pure-img" src="'+msg.avatar+'"/></span>\
-                                <span class="wt-message-text" style="background-color:yellow; float:left;">'+msg.message_content+'</span>\
-                                <div class="wt-message-info" style="float:left;">'+msg.sender_name+' at ' + msg.datetime + '</div>\
-                            </div>');
+                WTHelper.service_getNewMessagesInThread(thread_info.thread_id)
+                    .done(function(response) {
+                        if (response.payload.length) {
+                            for (var i = 0; i < response.payload.length; i++) {
+                                var msg = response.payload[i];
+                                $('.wt-message-thread').append('\
+                                <div class="wt-message" style="color:black;">\
+                                    <span class="wt-message-avatar" style="float:left;"><img class="pure-img" src="'+msg.avatar+'"/></span>\
+                                    <span class="wt-message-text" style="background-color:yellow; float:left;">'+msg.message_content+'</span>\
+                                    <div class="wt-message-info" style="float:left;">'+msg.sender_name+' at ' + msg.datetime + '</div>\
+                                </div>');
+                            }
+
+                            var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                            $('.wt-message-thread').animate({
+                                scrollTop: '+='+offset
+                            }, 100);
                         }
-                        
-                        var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
-                        $('.wt-message-thread').animate({
-                            scrollTop: '+='+offset
-                        }, 100);
-                    }
-                });
-            }, 2500);
+                    })
+                    .fail(function() {
+                    });
+            }, 5000);
         }
         window.location.hash = '#messageThread';
         
@@ -328,7 +335,6 @@ $(document).ready(function() {
                 $(this).children().css('opacity', 0.5);
                 WTHelper.service_getThreadByID(thread_info.thread_id, 10)
                     .done(function(thread) {
-                        console.log(thread);
                         $('body').append('<section class="wt-message-thread-wrapper">\
                                               <div class="wt-message-thread">\
                                               </div>\
@@ -402,7 +408,14 @@ $(document).ready(function() {
                     
                         var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
                         $('.wt-message-thread').scrollTop(offset);
-                    });
+                    })
+                    .fail(function() {
+                        $('body').append('<section class="wt-message-thread-wrapper">\
+                                              <div class="wt-message-thread">\
+                                                  <span>Failed to load message thread</span>\
+                                              </div>\
+                                         </section>');
+                        });
                 
                 $('#wt-header-menu').off('click').on('click', function(event) {
                     window.location.hash = '#messages';
@@ -570,7 +583,7 @@ $(document).ready(function() {
                     .fail(function(errorText) {
                         $dialog_el.find('.login-form label')
                             .text('Failed to connect to server :(')
-                            .css('color', 'magenta');
+                            .css('color', 'red');
                     });
             }
         }
@@ -613,33 +626,34 @@ $(document).ready(function() {
                     .text('The two passwords provided must match.')
                     .css('color', 'red');
             } else {
-                checkSignup(username, email, passwords[0].value).done(function(response) {
-                    if (response.message === 'Success') {
+                checkSignup(username, email, passwords[0].value)
+                    .done(function(response) {
+                        if (response.message === 'Success') {
+                            $dialog_el.find('.signup-form label')
+                                .text('Success :)')
+                                .css('color', 'green');
+                            $dialog_service.$destroy();
+                            $dialog = WTHelper.factory_createDialog('\
+                            <h3>Verify Email</h3>\
+                            <form class="verification-form">\
+                                <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
+                                <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
+                                <label></label>\
+                            </form>', '#verify');
+                            $dialog.$el_promise.done(function($dialog_el) {
+                                bindVerificationDialog($dialog.$service, $dialog_el, email, passwords[0].value);
+                            });
+                        } else {
+                            $dialog_el.find('.signup-form label')
+                                .text(response.message)
+                                .css('color', 'red');
+                        }
+                    })
+                    .fail(function(errorText) {
                         $dialog_el.find('.signup-form label')
-                            .text('Success :)')
-                            .css('color', 'green');
-                        $dialog_service.$destroy();
-                        $dialog = WTHelper.factory_createDialog('\
-                        <h3>Verify Email</h3>\
-                        <form class="verification-form">\
-                            <input placeholder="Verification Code" type="text" autofocus tabindex=1/>\
-                            <input class="pure-button" type="submit" tabindex=2 value="Verify"/>\
-                            <label></label>\
-                        </form>', '#verify');
-                        $dialog.$el_promise.done(function($dialog_el) {
-                            bindVerificationDialog($dialog.$service, $dialog_el, email, passwords[0].value);
-                        });
-                    } else {
-                        $dialog_el.find('.signup-form label')
-                            .text(response.message)
+                            .text('Failed to connect to server :(')
                             .css('color', 'red');
-                    }
-                })
-                .fail(function(errorText) {
-                    $dialog_el.find('.signup-form label')
-                        .text(errorText)
-                        .css('color', 'magenta');
-                });
+                    });
             }
         }
 
@@ -659,29 +673,30 @@ $(document).ready(function() {
                     .text('Please enter the verification code sent to you.')
                     .css('color', 'red');
             } else {
-                checkVerification(key).done(function(responseText) {
-                    if (responseText === 'Your email address has been verified!') {
-                        $dialog_el.find('.verification-form label')
-                            .text('Success :)')
-                            .css('color', 'green');
+                checkVerification(key)
+                    .done(function(responseText) {
+                        if (responseText === 'Your email address has been verified!') {
+                            $dialog_el.find('.verification-form label')
+                                .text('Success :)')
+                                .css('color', 'green');
 
-                        checkLogin(email, password).done(function(responseText) {
-                            if (responseText === 'success') {
-                                $dialog_service.$destroy();
-                                loginUser();
-                            }
-                        });
-                    } else {
+                            checkLogin(email, password).done(function(responseText) {
+                                if (responseText === 'success') {
+                                    $dialog_service.$destroy();
+                                    loginUser();
+                                }
+                            });
+                        } else {
+                            $dialog_el.find('.verification-form label')
+                                .text(responseText)
+                                .css('color', 'red');
+                        }
+                    })
+                    .fail(function() {
                         $dialog_el.find('.verification-form label')
-                            .text(responseText)
-                            .css('color', 'red');
-                    }
-                })
-                .fail(function(errorText) {
-                    $dialog_el.find('.verification-form label')
-                        .text(errorText)
-                        .css('color', 'red'); 
-                });
+                            .text('Failed to connect to server :(')
+                            .css('color', 'red'); 
+                    });
             }
         }
     }
@@ -785,12 +800,9 @@ $(document).ready(function() {
         var $status = $.Deferred();
         WTHelper.service_verifyUser(key)
             .done(function(response) {
-                console.log(response);
                 $status.resolve(response);
             })
             .fail(function(request, errorText) {
-                console.log(request);
-                console.log(errorText);
                 $status.reject(errorText);
             });
         return $status;
@@ -804,10 +816,15 @@ $(document).ready(function() {
         if (cache.hasOwnProperty('sidebarSessionContent')) {
             attachSidebarSession(cache['sidebarSessionContent']);
         } else {
-            $.get('/mobile/partials/sidebar-session.html').done(function(sidebarHTML) {
-                cache['sidebarSessionContent'] = sidebarHTML;
-                attachSidebarSession(cache['sidebarSessionContent']);
-            });
+            $.get('/mobile/partials/sidebar-session.html')
+                .done(function(sidebarHTML) {
+                    cache['sidebarSessionContent'] = sidebarHTML;
+                    attachSidebarSession(cache['sidebarSessionContent']);
+                })
+                .fail(function() {
+                    // TODO: Change to use dialog.
+                    alert('Lost the connection trying to load user info. Refresh the page to fix the problem.');
+                });
         }
 
         function attachSidebarSession(sidebarHTML) {
@@ -816,28 +833,35 @@ $(document).ready(function() {
             var getUsername = WTHelper.service_getUsername();
             var getUserAvatar = WTHelper.service_getUserAvatar();
             
-            $.when(getUsername, getUserAvatar).done(function(response1, response2) {
-                $('.wt-sidebar > .user-info > .user-name')
-                    .html(response1[0].message);
-                $('.wt-sidebar > .user-info > .user-img > img')
-                    .attr('src', 'https://walkntrade.com/'+response2[0].message);
-                
-                $pageUpdate.resolve();
-            });
+            $.when(getUsername, getUserAvatar)
+                .done(function(response1, response2) {
+                    $('.wt-sidebar > .user-info > .user-name')
+                        .html(response1[0].message);
+                    $('.wt-sidebar > .user-info > .user-img > img')
+                        .attr('src', 'https://walkntrade.com/'+response2[0].message);
+
+                    $pageUpdate.resolve();
+                })
+                .fail(function() {
+                    // TODO: Change to use dialog.
+                    alert('Lost the connection trying to load user info. Refresh the page to fix the problem.');
+                });
         }
     }
     
     function logoutUser() {
-        WTHelper.service_logout().done(function(response) {
-            $('.wt-sidebar > .user-info').remove();
-            $('.wt-sidebar > #LogoutBtn').detach();
-            $('.wt-sidebar > #PostBtn').detach();
-            $('.wt-sidebar > #MessageBtn').detach();
-            $('.wt-sidebar > #PanelBtn').detach();
-            $('.wt-sidebar').prepend('<div id="LoginBtn" class="wt-sidebar-content"><a>Login</a></div>');
-        })
-        .fail(function(request) {
-        });
+        WTHelper.service_logout()
+            .done(function(response) {
+                $('.wt-sidebar > .user-info').remove();
+                $('.wt-sidebar > #LogoutBtn').detach();
+                $('.wt-sidebar > #PostBtn').detach();
+                $('.wt-sidebar > #MessageBtn').detach();
+                $('.wt-sidebar > #PanelBtn').detach();
+                $('.wt-sidebar').prepend('<div id="LoginBtn" class="wt-sidebar-content"><a>Login</a></div>');
+            })
+            .fail(function(request) {
+                alert('Lost the connection while trying to log you out. Refresh the page to ensure you are logged out correctly.');
+            });
     }
     
     function populateCategories(categories) {
@@ -980,7 +1004,6 @@ $(document).ready(function() {
             status.resolve();
         })
         .fail(function(request) {
-            console.log(request);
             status.reject();
         });
         
@@ -1003,7 +1026,6 @@ $(document).ready(function() {
             }
             status.resolve();
         }).fail(function(request) {
-            console.log(request);
             status.reject();
         });
         
