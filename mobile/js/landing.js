@@ -126,7 +126,7 @@ $('document').ready(function() {
     }
 
     function setSchool(id) {
-        WTHelper.fn_setCookie('sPref', id, 30);
+        WTHelper.setCookie('sPref', id, 30);
         window.location='./';
     }
     

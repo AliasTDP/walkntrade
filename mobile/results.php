@@ -12,7 +12,6 @@
         <link rel="stylesheet" href="/mobile/css/component.css">
         <link rel="stylesheet" href="/mobile/css/results.css">
         <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans" type="text/css">
-        <script src="/mobile/js/vendor/modernizr-2.6.2.min.js"></script>
     </head>
     <body>
         <header class="wt-header">
@@ -23,7 +22,7 @@
                 <img class="wt-header-content pure-img" style="max-width: 100%;" src="/mobile/img/emblem/wtlogo_dark.png" />
             </div>
             <nav class="wt-header-content-wrapper wt-header-nav">
-                <div class="wt-header-navitem-wrapper results-search">
+                <div class="wt-header-navitem-wrapper results-searchtoggle">
                     <i class="wt-header-content fa fa-lg fa-search"></i>
                 </div>
             </nav>
@@ -31,9 +30,9 @@
         <section class="pure-form results-filter">
             <div class="results-categories">
             </div>
-            <div class="results-searchfield" style="display: none">
-                <input type="search" placeholder="Search for an item..." /><!--
-             --><button class="pure-button">Go!</button>
+            <div class="results-search" style="display: none">
+                <input class="results-searchfield" type="search" placeholder="Search for an item..." /><!--
+             --><button class="results-searchbutton pure-button">Go!</button>
             </div>
         </section>
         <nav class="wt-sidebar" style="overflow-y: scroll;">

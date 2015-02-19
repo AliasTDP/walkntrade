@@ -1,13 +1,16 @@
 $(document).ready(function() {
     
+    /** Constants **/
+    var HEADER_SNAP_POINT = 7; // Measured in relative units
+    var LAZY_LOAD_OFFSET = 66; // Measured in relative units
+
     /** State Variables **/
     var school = window.school; 
     delete window.school;
     
     var currentCategory = "all",
         currentQuery = "",
-        filterSearch = false,
-        filterSort = false,
+        inSortView = false,
         previousRelativeOffset = 0, // Previous scroll position of the window, in em's.
         inhibitUpdate = false, // Flag to be set if all results for school/category/query have been received from the server.
         $pageUpdate = $.Deferred(); // Track any asynchronous operations on the page.
@@ -15,8 +18,7 @@ $(document).ready(function() {
     var poll; // Messaging Long Poll State Variable
     
     /** Cache **/
-    var cache = {
-    };
+    var cache = {};
     
     /** Bootstrap the results page  **/
     initPage();
@@ -39,143 +41,25 @@ $(document).ready(function() {
     }
     
     function bindDOM() {
-        var $sidebar = WTHelper.fn_initSidebar();
-        
-        $sidebar.on('click', function(event) {
-            var $target = $(event.target);
-            
-            if ($target.is('#LoginBtn') || $target.is('#LoginBtn *')) {
-                createLoginDialog();
-            } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
-                logoutUser();
-            } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
-                window.location = "/selector.php";
-            } else if ($target.is('#MessageBtn') || $target.is('#MessageBtn *')) {
-                showConversationsView();
-            }
-        });
-        
-        $('.results-categories > a').on('click', function(event) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            
-            if ($pageUpdate.state() === 'pending') {
-                return;
-            }
-            
-            inhibitUpdate = false;
-            var $category = $(this);
-            var category = $category.data('category');
-            if (category === currentCategory && $('.results-searchfield > input').prop('value') === '') {
-                return;
-            }
-            
-            $('.results-searchfield > input').prop('value', '');
-            $('.results-categories > a').removeClass('selected');
-            $category.addClass('selected');
-            ChangeFilterEventHandler(school, category);
-        });
-        
-        $('.results-search').on('click', function(event) {
-            if (filterSearch) {
-                $('.results-filter > .results-searchfield').fadeOut('slow', function() {
-                    $('.results-categories').fadeIn('fast', function() {
-                        $(window).triggerHandler('resize');
-                        filterSearch = false;
-                    });
-                });
-            } else {
-                $('.results-categories').fadeOut('slow', function() {
-                    $('.results-categories').prev().css('display', 'none');
-                    $('.results-categories').next().css('display', 'none');
-                    $('.results-filter > .results-searchfield').fadeIn('fast', function() {
-                        filterSearch = true;
-                    });
-                });
-            }
-        });
-        
-        $('.results-searchfield > input').on('keyup', function(event) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            if (event.keyCode !== 13 || $(this).prop('value') === currentQuery || $(this).prop('value') === '') { return; }
-            
-            ChangeFilterEventHandler(school, currentCategory, $(this).prop('value'));
-        });
-        
-        $('.results-searchfield > button').on('click', function(event) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            if ($('.results-searchfield > input').prop('value') === '' || 
-                $('.results-searchfield > input').prop('value') === currentQuery) {
-                return;
-            }
-            
-            ChangeFilterEventHandler(school, currentCategory, $('.results-searchfield > input').prop('value'));
-        });
-        
-        $(window).on('scroll', function(event) {
-            var relativeOffset = $(window).scrollTop() / parseFloat(WTHelper.const_fontSize);
-            
-            if (relativeOffset > 7 && previousRelativeOffset <= 7) {
-                $('.wt-header').css({
-                    'position': 'fixed',
-                    'top': "-3.5em"
-                }).animate({ 'top': "+=3.5em" }, 600);
-                $('.results-filter').css({
-                    'position': 'fixed',
-                    'top': "0"
-                }).animate({ 'top': "+=3.5em" }, 600);
-            } else if (relativeOffset < 7 && previousRelativeOffset >= 7) {
-                $('.results-filter').animate({ 'top': "-=3.5em" }, {
-                    'duration': 50,
-                    'complete': function() {
-                        $(this).css({ 'position': 'static' });
-                    }
-                });
-                $('.wt-header').animate({ 'top': "-=3.5em" }, {
-                    'duration': 50,
-                    'complete': function() {
-                        $(this).css({ 'position': 'static' });
-                    }
-                });
-            }
-            previousRelativeOffset = relativeOffset;
-            
-            var relativeHeight_resultsContainer = $('.wt-results').height() / parseFloat(WTHelper.const_fontSize);
-            var relativeOffset_resultsContainer = relativeOffset - 7; // Due to sticky header / results filter
-            if (relativeHeight_resultsContainer - relativeOffset_resultsContainer < 66) {
-                if ($pageUpdate.state() === 'pending' || inhibitUpdate === true) {
-                    return;
-                }
-                
-                $pageUpdate = $.Deferred();
-                getPostsByCategory(school, currentCategory).done(function() {
-                    $pageUpdate.resolve();
-                })
-                .fail(function() {
-                    $pageUpdate.reject();
-                });
-            }
-        });
+        WTHelper.initSidebar().on('click', WTControllers.SidebarController);
+        $('.results-category').on('click', WTControllers.ChangeCategoryController);;
+        $('.results-searchtoggle').on('click', WTControllers.ResultsFilterController);
+        $('.results-search').on('keyup click', WTControllers.SearchController);
+        $(window).on('scroll', WTControllers.HeaderSnapController);
+        $(window).on('scroll', WTControllers.ResultsScrollController);
     }
     
     function showConversationsView() {
-        var $wtMenu; // store the old jQuery data for the navicon.
         window.location.hash = '#messages';
-        $(window).on('hashchange', function() {
-            if (this.location.hash === '') {
-                leaveConversationsView();
-            } else if (this.location.hash === '#messages') {
-                leaveMessageThread();
-            }
-        });
+        $(window).off('scroll', WTControllers.ResultsScrollController);
+        $(window).on('hashchange', WTControllers.LocationController);
         
         $('.wt-results').fadeOut({
             complete: function() {
                 $(this).children().remove();
                 $(this).parent().removeClass('wt-results-wrapper').addClass('wt-messager-wrapper');
-                $(this).removeClass('wt-results').addClass('wt-messager').show();
+                $(this).removeClass('wt-results').addClass('wt-messager');
+                $(this).show();
 
                 $('.wt-header').css({
                     'position': 'fixed',
@@ -191,23 +75,18 @@ $(document).ready(function() {
                     duration: 500,
                     start: function() {
                         $('.wt-header .wt-header-nav').fadeOut();
-                        $('.wt-header > #wt-header-menu').remove();
-                        $('.wt-header').prepend('<div id="wt-header-menu" class="wt-header-content-wrapper">\
-                                                    <i class="wt-header-content fa fa-2x fa-arrow-left"></i>\
-                                                </div>')
-                            .children(':first-child').hide().fadeIn()
+                        $('#wt-header-menu > .fa-navicon')
+                            .hide()
+                            .removeClass('fa-navicon').addClass('fa-arrow-left')
+                            .fadeIn()
+                            .off('click')
                             .on('click', function(event) {
                                 window.location.hash = '';
                             });
                     },
                     complete: function() {
-                        $(this).css('display', 'none');
-                        $('.wt-header').css({
-                            'position': 'static'
-                        });
-                        $('.wt-sidebar').css({
-                            'top': '3.5em'
-                        });
+                        $(this).css('z-index', -1).hide();
+                        $('.wt-header').css('position', 'static');
 
                         WTServices.service_getUserMessageThreads()
                             .done(function(response) {
@@ -219,10 +98,21 @@ $(document).ready(function() {
 
                                     for (i = 0; i < response.payload.length; i++) {
                                         thread = response.payload[i];
-                                        var $message_div = $('.wt-messager').append('<div id="thread_'+thread.thread_id+'" class="wt-thread-wrapper">\
-                                                                    <div class="wt-thread">\
-                                                                    </div>\
-                                                                   </div>').children(':nth-child('+(i+1)+')');
+                                        var $message_div = $('.wt-messager')
+                                            .append('\
+                                                <div id="thread_'+thread.thread_id+'" class="wt-thread-wrapper">\
+                                                    <div class="wt-thread">\
+                                                        <div class="sender-image">\
+                                                            <img class="pure-img" src="' + thread.associated_with_image + '"/>\
+                                                        </div>\
+                                                        <div class="thread-info">\
+                                                            <h3>' + thread.post_title + '</h3>\
+                                                            <span>' + thread.last_user_name + ': ' + thread.last_message + '</span>\
+                                                            <span>' + thread.datetime + '</span>\
+                                                        </div>\
+                                                    </div>\
+                                               </div>')
+                                            .children('#thread_'+thread.thread_id);
 
                                         $message_div.data('thread_info', thread);
                                         $message_div.on('click', function(event) {
@@ -230,17 +120,6 @@ $(document).ready(function() {
                                             event.stopImmediatePropagation();
                                             showMessageThread($(this).data('thread_info'));
                                         });
-
-                                        var $el = $message_div.find('.wt-thread');
-                                        $el.append('<div class="sender-image">\
-                                                    <img class="pure-img" src="' + thread.associated_with_image + '"/>\
-                                                    </div>');
-                                        $el.append('<div class="thread-info">\
-                                                    <h3>' + thread.post_title + '</h3>\
-                                                    <span>' + thread.last_user_name + ': ' + thread.last_message +
-                                                   '</span>\
-                                                    <span>' + thread.datetime + '</span\
-                                                    </div>');
                                     }
                                 }
                             }).fail(function() {
@@ -258,46 +137,56 @@ $(document).ready(function() {
             complete: function() {
                 $(this).children().remove();
                 $(this).parent().removeClass('wt-messager-wrapper').addClass('wt-results-wrapper');
-                $(this).removeClass('wt-messager').addClass('wt-results').show();
+                $(this).removeClass('wt-messager').addClass('wt-results');
+                $(this).show();
                 
                 $('.results-filter')
-                    .css({
-                        'display': 'block',
-                        'z-index': -1
-                    })
+                    .show()
                     .animate({
                         'top': '3.5em'
                     }, {
                         duration: 400,
                         start: function() {
-                            $('.wt-header .wt-header-nav').fadeOut();
-                            $('.wt-header > #wt-header-menu').remove();
-                            $('.wt-header').prepend('<div id="wt-header-menu" class="wt-header-content-wrapper">\
-                                                        <i class="wt-header-content fa fa-2x fa-navicon"></i>\
-                                                    </div>')
-                                .children(':first-child').hide().fadeIn()
-                                .on('click', WTHelper.fn_animateSidebar);
+                            $('#wt-header-menu > .fa-arrow-left')
+                                .hide()
+                                .removeClass('fa-arrow-left').addClass('fa-navicon')
+                                .fadeIn()
+                                .off('click')
+                                .on('click', WTHelper.animateSidebar);
                         },
                         complete: function() {
+                            $('.wt-header .wt-header-nav').fadeIn();
                             $(this).css({
                                 'position': 'static',
                                 'z-index': 0
                             });
-                            $('.wt-header .wt-header-nav').fadeIn();
+                            
+                            $pageUpdate = $.Deferred();
                             getPostsByCategory(school, currentCategory, { resetOffset: true })
+                                .done(function() {
+                                    $pageUpdate.resolve();
+                                })
                                 .fail(function() {
                                     $('.wt-results').append('<p>wow cant connect to wt :( </p>');
                                     $('.wt-results').slideDown('slow');
+                                    $pageUpdate.reject();
                                 });
                         }
                     });
             }
         });
+        
+        $(window).off('hashchange', WTControllers.LocationController);
+        $(window).on('scroll', WTControllers.ResultsScrollController);
     }
     
     function showMessageThread(thread_info) {
         if (!poll) {
             poll = setInterval(function() { 
+                if ($pageUpdate.state() === 'pending') {
+                    return;
+                }
+
                 WTServices.service_getNewMessagesInThread(thread_info.thread_id)
                     .done(function(response) {
                         if (response.payload.length) {
@@ -318,6 +207,7 @@ $(document).ready(function() {
                         }
                     })
                     .fail(function() {
+                        // TODO
                     });
             }, 5000);
         }
@@ -333,66 +223,65 @@ $(document).ready(function() {
             duration: 400,
             complete: function() {
                 $(this).children().css('opacity', 0.5);
+
+                $pageUpdate = $.Deferred();
                 WTServices.service_getThreadByID(thread_info.thread_id, 10)
                     .done(function(thread) {
                         $('body').append('<section class="wt-message-thread-wrapper">\
                                               <div class="wt-message-thread">\
                                               </div>\
                                               <div class="wt-message-reply pure-form">\
-                                                  <input style="display: inline-block; width: 100%;" type="text" />\
-                                                  <i style="display: inline; top: -1.5em; color: grey; left: 90%; position:relative;" class="fa fa-lg fa-arrow-right"></i>\
+                                                  <input type="text" class="wt-message-input" />\
+                                                  <i class="wt-message-submit fa fa-lg fa-arrow-right"></i>\
                                               </div>\
                                           </section>');
                     
-                        $('.wt-message-reply > input').on('keyup', function(event) {
-                            if (event.keyCode === 13) {
-                                var msg = $(this).prop('value');
-                                if (msg === '') { return; }
-                                
-                                $(this).prop('value', '');
-                                $('.wt-message-thread').append('\
-                                    <div class="wt-message" style="opacity: 0.5; color:white;">\
-                                        <span class="wt-message-avatar" style="float:right;"><img class="pure-img" src="'+$('.user-info > .user-img > img').attr('src')+'"/></span>\
-                                        <span class="wt-message-text" style="background-color:green; float:right;">'+msg+'</span>\
-                                    </div>');
-                                var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
-                                $('.wt-message-thread').animate({
-                                    scrollTop: '+='+offset
-                                }, 100);
-                                WTServices.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
-                                    $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">Sent by You just now</div>');
-                                    $('.wt-message:last-child').css('opacity', 1);
-                                    var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
-                                    $('.wt-message-thread').animate({
-                                        scrollTop: '+='+offset
-                                    }, 100);
-                                });
-                            }
-                        });
-                        $('.wt-message-reply > .fa-arrow-right').on('click', function(event) {
-                            var msg = $(this).siblings('input').prop('value');
-                            if (msg === '') { return; }
+                        $('.wt-message-reply').on('keyup click', function(event) {
+                            var event_type = event.type,
+                                $event_target = $(event.target);
 
-                            $(this).siblings('input').prop('value', '');
+                            if (event_type === 'click' && $event_target.is('.wt-message-submit')) {
+                                if ($('.wt-message-input').val() === '') {
+                                    return;
+                                }
+                            } else if (event_type === 'keyup' && $event_target.is('.wt-message-input')) {
+                                if (event.keyCode !== 13 || $('.wt-message-input').val() === '') {
+                                    return;
+                                }
+                            } else {
+                                return;
+                            }
+
+                            // All conditions met to submit a message.
+                            var msg = $('.wt-message-input').val();
                             $('.wt-message-thread').append('\
                                 <div class="wt-message" style="opacity: 0.5; color:white;">\
                                     <span class="wt-message-avatar" style="float:right;"><img class="pure-img" src="'+$('.user-info > .user-img > img').attr('src')+'"/></span>\
                                     <span class="wt-message-text" style="background-color:green; float:right;">'+msg+'</span>\
                                 </div>');
-                            var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
-                            $('.wt-message-thread').animate({
-                                scrollTop: '+='+offset
-                            }, 100);
-                            WTServices.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
-                                $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">Sent by You just now</div>');
-                                $('.wt-message:last-child').css('opacity', 1);
                                 var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
                                 $('.wt-message-thread').animate({
                                     scrollTop: '+='+offset
                                 }, 100);
-                            });
+                                WTServices.service_appendMessageToThread(thread_info.thread_id, msg)
+                                    .done(function(response) {
+                                        $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">Sent by You just now</div>');
+                                        $('.wt-message:last-child').css('opacity', 1);
+                                        var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                                        $('.wt-message-thread').animate({
+                                            scrollTop: '+='+offset
+                                        }, 100);
+                                    }).fail(function() {
+                                        $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">There was an error sending this message</div>');
+                                        var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                                        $('.wt-message-thread').animate({
+                                            scrollTop: '+='+offset
+                                        }, 100);
+                                    });
+
+                            $('.wt-message-input').val('');
                         });
-                        
+
                         for (var i = 0; i < thread.payload.length; i++) {
                             var msg = thread.payload[i];
                             var float = msg.sender_name === "You" ? "right": "left";
@@ -408,6 +297,8 @@ $(document).ready(function() {
                     
                         var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
                         $('.wt-message-thread').scrollTop(offset);
+
+                        $pageUpdate.resolve();
                     })
                     .fail(function() {
                         $('body').append('<section class="wt-message-thread-wrapper">\
@@ -415,6 +306,7 @@ $(document).ready(function() {
                                                   <span>Failed to load message thread</span>\
                                               </div>\
                                          </section>');
+                        $pageUpdate.reject();
                         });
                 
                 $('#wt-header-menu').off('click').on('click', function(event) {
@@ -893,7 +785,7 @@ $(document).ready(function() {
                 categoryDesc = categories[cat][2];
 
             var categoryEl = $('.results-categories')
-                .append('<a>')
+                .append('<a class="results-category">')
                 .children(':nth-child('+(cat+1)+')');
             
             if (cat === 0) { categoryEl.addClass('selected'); }
@@ -975,28 +867,6 @@ $(document).ready(function() {
         }
     }
     
-    function ChangeFilterEventHandler(school, category, queryString) {
-        inhibitUpdate = false;
-        $pageUpdate = $.Deferred();
-        queryString = queryString || '';
-        
-        $('.wt-results').slideUp('slow', function() {
-            $(this).empty();
-            getPostsByCategory(school, category, queryString).done(function() {
-                if (inhibitUpdate) {
-                    $('.wt-results').append('<p>no results :(</p>');
-                }
-                $('.wt-results').slideDown('slow');
-                $pageUpdate.resolve();
-            })
-            .fail(function() {
-                $('.wt-results').append('<p>wow cant connect to wt :( </p>');
-                $('.wt-results').slideDown('slow');
-                $pageUpdate.reject();
-            });
-        });
-    }
-    
     function getCategories() {
         var status = $.Deferred();
         WTServices.service_getCategories().done(function(response) {
@@ -1030,5 +900,189 @@ $(document).ready(function() {
         });
         
         return status;
+    }
+
+    function ChangeResultsFilter(school, category, queryString) {
+        inhibitUpdate = false;
+        $pageUpdate = $.Deferred();
+        queryString = queryString || '';
+
+        $('.wt-results').slideUp('slow', function() {
+            $(this).empty();
+            getPostsByCategory(school, category, queryString).done(function() {
+                if (inhibitUpdate) {
+                    $('.wt-results').append('<p>no results :(</p>');
+                }
+                $('.wt-results').slideDown('slow');
+                $pageUpdate.resolve();
+            })
+            .fail(function() {
+                $('.wt-results').append('<p>wow cant connect to wt :( </p>');
+                $('.wt-results').slideDown('slow');
+                $pageUpdate.reject();
+            });
+        });
+    }
+
+    /** This is tightly coupled to code in here so it currently can't
+        be factored out of this file. **/
+    var inSearchView = false;
+    var WTControllers = {
+        SidebarController: function(event) {
+            var $target = $(event.target);
+
+            if ($target.is('#LoginBtn') || $target.is('#LoginBtn *')) {
+                createLoginDialog();
+            } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
+                logoutUser();
+            } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
+                window.location = "/selector.php";
+            } else if ($target.is('#MessageBtn') || $target.is('#MessageBtn *')) {
+                showConversationsView();
+            }
+        },
+
+        ChangeCategoryController: function(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            if ($pageUpdate.state() === 'pending') {
+                return;
+            }
+            inhibitUpdate = false;
+
+            var $category_el = $(this),
+                category = $category_el.data('category');
+            var $search_el = $('.results-searchfield'),
+                search = $search_el.val();
+
+            if (category === currentCategory && !search.length) {
+                return;
+            }
+
+            $('.results-category').removeClass('selected');
+            $category_el.addClass('selected');
+            $search_el.val('');
+            ChangeResultsFilter(school, category);
+        },
+
+        ResultsFilterController: function(event) {
+            if (inSearchView) {
+                $('.results-search').fadeOut('slow', function() {
+                    $('.results-categories').fadeIn('fast', function() {
+                        $(window).triggerHandler('resize');
+                        inSearchView = false;
+                    });
+                });
+            } else {
+                $('.results-categories').fadeOut('slow', function() {
+                    // Hide the overflow arrows for the results categories view
+                    $('.results-categories').prev().css('display', 'none');
+                    $('.results-categories').next().css('display', 'none');
+
+                    $('.results-search').fadeIn('fast', function() {
+                        inSearchView = true;
+                    });
+                });
+            }
+        },
+
+        SearchController: function(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var event_type = event.type,
+                $event_target = $(event.target);
+
+            if (event_type === 'click' && $event_target.is('.results-searchbutton')) {
+                var search_value = $('.results-searchfield').val();
+                if (search_value === '' || search_value === currentQuery) {
+                    return;
+                }
+            } else if (event_type === 'keyup' && $event_target.is('.results-searchfield')) {
+                if (event.keyCode !== 13 || $('.results-searchfield').val() === '' || $('.results-searchfield').val() === currentQuery) {
+                    return;
+                }
+            } else {
+                return;
+            }
+
+            // All conditions met to conduct a search.
+            ChangeResultsFilter(school, currentCategory, $('.results-searchfield').val());
+        },
+
+        HeaderSnapController: function(event) {
+            var currentRelativeOffset = $(window).scrollTop() / parseFloat(WTHelper.const_fontSize);
+
+            var currentlyPastSnapThreshold = (currentRelativeOffset > HEADER_SNAP_POINT),
+                previouslyBeforeSnapThreshold = (previousRelativeOffset <= HEADER_SNAP_POINT);
+
+            if (currentlyPastSnapThreshold && previouslyBeforeSnapThreshold) {
+
+                $('.wt-header')
+                    .css({
+                        'position': 'fixed',
+                        'top': "-3.5em"
+                    })
+                    .animate({ 'top': "+=3.5em" }, 600);
+
+                $('.results-filter')
+                    .css({
+                        'position': 'fixed',
+                        'top': "0"
+                    })
+                    .animate({ 'top': "+=3.5em" }, 600);
+
+            } else if (!currentlyPastSnapThreshold && !previouslyBeforeSnapThreshold) {
+
+                $('.results-filter').animate({ 'top': "-=3.5em" }, {
+                    'duration': 50,
+                    'complete': function() {
+                        $(this).css({ 'position': 'static' });
+                    }
+                });
+
+                $('.wt-header').animate({ 'top': "-=3.5em" }, {
+                    'duration': 50,
+                    'complete': function() {
+                        $(this).css({ 'position': 'static' });
+                    }
+                });
+            }
+
+            previousRelativeOffset = currentRelativeOffset;
+        },
+
+        ResultsScrollController: function(event) {
+            var currentRelativeOffset = $(window).scrollTop() / parseFloat(WTHelper.const_fontSize),
+                relativeOffset_resultsContainer = currentRelativeOffset - HEADER_SNAP_POINT;
+
+            var currentlyPastLazyLoadThreshold =
+                (($('.wt-results').height() / parseFloat(WTHelper.const_fontSize)) - relativeOffset_resultsContainer < LAZY_LOAD_OFFSET);
+
+            if (currentlyPastLazyLoadThreshold) {
+                if ($pageUpdate.state() === 'pending' || inhibitUpdate === true) {
+                    return;
+                }
+
+                $pageUpdate = $.Deferred();
+                getPostsByCategory(school, currentCategory)
+                    .done(function() {
+                        $pageUpdate.resolve();
+                    })
+                    .fail(function() {
+                        $pageUpdate.reject();
+                    });
+            }
+
+            previousRelativeOffset = currentRelativeOffset;
+        },
+
+        LocationController: function(event) {
+            if (this.location.hash === '') {
+                leaveConversationsView();
+            } else if (this.location.hash === '#messages') {
+                leaveMessageThread();
+            }
+        }
     }
 });

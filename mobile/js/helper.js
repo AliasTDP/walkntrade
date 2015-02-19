@@ -169,9 +169,9 @@ var WTHelper = (function() {
 
     return {
         const_fontSize: fontSize,
-        fn_setCookie: setCookie,
-        fn_initSidebar: initSidebar,
-        fn_animateSidebar: animateSidebar,
+        setCookie: setCookie,
+        initSidebar: initSidebar,
+        animateSidebar: animateSidebar,
         factory_createDialog: createDialog
     };
 
