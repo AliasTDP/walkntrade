@@ -54,15 +54,19 @@
                <div id="LogoutBtn" class="wt-sidebar-content">
                     <a>Logout</a>
                </div>
+               <!--
                <div id="PostBtn" class="wt-sidebar-content">
                     <a>Add a Post</a>
                </div>
+               -->
                <div id="MessageBtn" class="wt-sidebar-content">
                     <a>Messages</a>
                </div>
+               <!--
                <div id="PanelBtn" class="wt-sidebar-content">
                     <a>User CP</a>
-               </div>');
+               </div>
+               -->');
             } else {
                echo('
                <div id="LoginBtn" class="wt-sidebar-content">
@@ -105,6 +109,7 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="/mobile/js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
         <script src="/mobile/js/helper.js"></script>
+        <script src="/mobile/js/services.js"></script>
         <script src="/mobile/js/results.js"></script>
     </body>
 </html>

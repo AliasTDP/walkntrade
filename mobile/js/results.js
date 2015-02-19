@@ -209,7 +209,7 @@ $(document).ready(function() {
                             'top': '3.5em'
                         });
 
-                        WTHelper.service_getUserMessageThreads()
+                        WTServices.service_getUserMessageThreads()
                             .done(function(response) {
                                 if (response.message === 'Threads for current user') {
                                     if (!response.payload.length) {
@@ -298,7 +298,7 @@ $(document).ready(function() {
     function showMessageThread(thread_info) {
         if (!poll) {
             poll = setInterval(function() { 
-                WTHelper.service_getNewMessagesInThread(thread_info.thread_id)
+                WTServices.service_getNewMessagesInThread(thread_info.thread_id)
                     .done(function(response) {
                         if (response.payload.length) {
                             for (var i = 0; i < response.payload.length; i++) {
@@ -333,7 +333,7 @@ $(document).ready(function() {
             duration: 400,
             complete: function() {
                 $(this).children().css('opacity', 0.5);
-                WTHelper.service_getThreadByID(thread_info.thread_id, 10)
+                WTServices.service_getThreadByID(thread_info.thread_id, 10)
                     .done(function(thread) {
                         $('body').append('<section class="wt-message-thread-wrapper">\
                                               <div class="wt-message-thread">\
@@ -359,7 +359,7 @@ $(document).ready(function() {
                                 $('.wt-message-thread').animate({
                                     scrollTop: '+='+offset
                                 }, 100);
-                                WTHelper.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
+                                WTServices.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
                                     $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">Sent by You just now</div>');
                                     $('.wt-message:last-child').css('opacity', 1);
                                     var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
@@ -383,7 +383,7 @@ $(document).ready(function() {
                             $('.wt-message-thread').animate({
                                 scrollTop: '+='+offset
                             }, 100);
-                            WTHelper.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
+                            WTServices.service_appendMessageToThread(thread_info.thread_id, msg).done(function(response) {
                                 $('.wt-message:last-child').append('<div class="wt-message-info" style="float:right;">Sent by You just now</div>');
                                 $('.wt-message:last-child').css('opacity', 1);
                                 var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
@@ -762,7 +762,7 @@ $(document).ready(function() {
     
     function sendMessage(post_id, message) {
         var $status = $.Deferred();
-        WTHelper.service_createMessageThread(post_id, message)
+        WTServices.service_createMessageThread(post_id, message)
             .done(function(response) {
                 $status.resolve(response);
             })
@@ -774,7 +774,7 @@ $(document).ready(function() {
     
     function checkLogin(email, password) {
         var $status = $.Deferred();
-        WTHelper.service_login(email, password)
+        WTServices.service_login(email, password)
             .done(function(response) {
                 $status.resolve(response);
             })
@@ -786,7 +786,7 @@ $(document).ready(function() {
     
     function checkSignup(username, email, password) {
         var $status = $.Deferred();
-        WTHelper.service_registerUser(username, email, password)
+        WTServices.service_registerUser(username, email, password)
             .done(function(response) {
                 $status.resolve(response);
             })
@@ -798,7 +798,7 @@ $(document).ready(function() {
 
     function checkVerification(key) {
         var $status = $.Deferred();
-        WTHelper.service_verifyUser(key)
+        WTServices.service_verifyUser(key)
             .done(function(response) {
                 $status.resolve(response);
             })
@@ -830,8 +830,8 @@ $(document).ready(function() {
         function attachSidebarSession(sidebarHTML) {
             $('.wt-sidebar').prepend(sidebarHTML);
             
-            var getUsername = WTHelper.service_getUsername();
-            var getUserAvatar = WTHelper.service_getUserAvatar();
+            var getUsername = WTServices.service_getUsername();
+            var getUserAvatar = WTServices.service_getUserAvatar();
             
             $.when(getUsername, getUserAvatar)
                 .done(function(response1, response2) {
@@ -850,13 +850,13 @@ $(document).ready(function() {
     }
     
     function logoutUser() {
-        WTHelper.service_logout()
+        WTServices.service_logout()
             .done(function(response) {
                 $('.wt-sidebar > .user-info').remove();
                 $('.wt-sidebar > #LogoutBtn').detach();
-                $('.wt-sidebar > #PostBtn').detach();
+                //$('.wt-sidebar > #PostBtn').detach();
                 $('.wt-sidebar > #MessageBtn').detach();
-                $('.wt-sidebar > #PanelBtn').detach();
+                //$('.wt-sidebar > #PanelBtn').detach();
                 $('.wt-sidebar').prepend('<div id="LoginBtn" class="wt-sidebar-content"><a>Login</a></div>');
             })
             .fail(function(request) {
@@ -999,7 +999,7 @@ $(document).ready(function() {
     
     function getCategories() {
         var status = $.Deferred();
-        WTHelper.service_getCategories().done(function(response) {
+        WTServices.service_getCategories().done(function(response) {
             populateCategories(response.payload.categories);
             status.resolve();
         })
@@ -1012,7 +1012,7 @@ $(document).ready(function() {
     
     function getPostsByCategory(schoolId, category, queryString) {
         var status = $.Deferred();
-        WTHelper.service_getPostsByCategory(schoolId, category, {
+        WTServices.service_getPostsByCategory(schoolId, category, {
             query: queryString || '',
             amount: 12,
             sort: 0
