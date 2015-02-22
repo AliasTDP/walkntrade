@@ -2,6 +2,9 @@ var WTServices = (function() {
     /******************************* Private *********************************/
     var api_url = '/api2/';
     
+    // General purpose cache
+    var cache = {};
+
     // Used by service_getPostsByCategory for state tracking.
     var previousCategory = '', 
         previousQuery = '', 
@@ -83,14 +86,20 @@ var WTServices = (function() {
     };
     
     var getCategories = function() {
-        return $.ajax({
-            type: 'POST',
-            url: api_url,
-            data: {
-                intent: 'getCategories'
-            },
-            dataType: 'JSON'
-        });
+        if (!cache.hasOwnProperty('WTCategories')) {
+            return $.ajax({
+                type: 'POST',
+                url: api_url,
+                data: {
+                    intent: 'getCategories'
+                },
+                dataType: 'JSON'
+            }).done(function(response) {
+                cache['WTCategories'] = response;
+            });
+        } else {
+            return $.Deferred().resolve(cache['WTCategories']);
+        }
     };
     
     var getPostsByCategory = function(schoolId, category, opts) {
@@ -127,6 +136,25 @@ var WTServices = (function() {
         });
     }
     
+    var createPost = function(category, title, author, details, price, location, tags, isbn) {
+        return $.ajax({
+            type: 'POST',
+            url: api_url,
+            data: {
+                intent: 'addPost',
+                cat: category,
+                title: title,
+                author: author,
+                details: details,
+                price: price,
+                location: location,
+                tags: tags,
+                isbn: isbn
+            },
+            dataType: 'HTML'
+        });
+    }
+
     var createMessageThread = function(post_id, message) {
         return $.ajax({
             type: 'POST',
@@ -200,6 +228,7 @@ var WTServices = (function() {
         service_getUserAvatar: getUserAvatar,
         service_getCategories: getCategories,
         service_getPostsByCategory: getPostsByCategory,
+        service_createPost: createPost,
         service_createMessageThread: createMessageThread,
         service_getUserMessageThreads: getUserMessageThreads,
         service_getThreadByID: getThreadByID,

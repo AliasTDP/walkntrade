@@ -474,14 +474,16 @@ body {
         }
 
         .modal-window > .modal-window-content-wrapper input,
-        .modal-window > .modal-window-content-wrapper textarea {
+        .modal-window > .modal-window-content-wrapper textarea,
+        .modal-window > .modal-window-content-wrapper select {
             display: block;
         }
         .modal-window > .modal-window-content-wrapper input[type=text],
         .modal-window > .modal-window-content-wrapper input[type=password],
         .modal-window > .modal-window-content-wrapper input[type=email],
         .modal-window > .modal-window-content-wrapper input[type=phone],
-        .modal-window > .modal-window-content-wrapper textarea {
+        .modal-window > .modal-window-content-wrapper textarea,
+        .modal-window > .modal-window-content-wrapper select{
             margin: 0.5em auto;
             width: 75%;
         }

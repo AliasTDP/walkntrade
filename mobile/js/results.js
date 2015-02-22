@@ -358,7 +358,8 @@ $(document).ready(function() {
                     $dialog.$el_promise
                         .done(function($dialog_el) {
                             bindLoginDialog($dialog.$service, $dialog_el);
-                        }).fail(function(errorMessage) {
+                        })
+                        .fail(function(errorMessage) {
                             alert(errorMessage);
                         });
                 })
@@ -746,7 +747,7 @@ $(document).ready(function() {
             .done(function(response) {
                 $('.wt-sidebar > .user-info').remove();
                 $('.wt-sidebar > #LogoutBtn').detach();
-                //$('.wt-sidebar > #PostBtn').detach();
+                $('.wt-sidebar > #PostBtn').detach();
                 $('.wt-sidebar > #MessageBtn').detach();
                 //$('.wt-sidebar > #PanelBtn').detach();
                 $('.wt-sidebar').prepend('<div id="LoginBtn" class="wt-sidebar-content"><a>Login</a></div>');
@@ -902,6 +903,157 @@ $(document).ready(function() {
         return status;
     }
 
+    function createAddPostDialog() {
+        var $dialog;
+
+        if (cache.hasOwnProperty('addPostWindow')) {
+            $dialog = WTHelper.factory_createDialog(cache['addPostWindow'], '#addPost');
+            $dialog.$el_promise
+                .done(function($dialog_el) {
+                    WTServices.service_getCategories()
+                        .done(function(response) {
+                            var categories = response.payload.categories;
+                            for (i = 0; i < categories.length; i++) {
+                                if (categories[i][1] === 'Everything') {
+                                    continue;
+                                }
+                                $dialog_el.find('.add-post-form .destination-category')
+                                    .append('<option value="'+categories[i][1]+'">'+categories[i][1]+'</option>')
+                                    .on('change', function(event) {
+                                        if ($(this).val().indexOf('books') === -1) {
+                                            $dialog_el.find('.add-post-form .post-author').val('').hide();
+                                            $dialog_el.find('.add-post-form .post-isbn').val('').hide();
+                                        } else {
+                                            $dialog_el.find('.add-post-form .post-author').show();
+                                            $dialog_el.find('.add-post-form .post-isbn').show();
+                                        }
+                                    });
+                            }
+                            bindCreatePostDialog($dialog.$service, $dialog_el);
+                        })
+                        .fail(function() {
+                        });
+                })
+                .fail(function(errorMessage) {
+                    alert(errorMessage);
+                });
+        } else {
+            $.get('/mobile/partials/add-post-window.html')
+                .done(function(addPostHTML) {
+                    cache['addPostWindow'] = addPostHTML;
+                    $dialog = WTHelper.factory_createDialog(cache['addPostWindow'], '#addPost');
+                    $dialog.$el_promise
+                        .done(function($dialog_el) {
+                            WTServices.service_getCategories()
+                                .done(function(response) {
+                                    var categories = response.payload.categories;
+                                    for (i = 0; i < categories.length; i++) {
+                                        if (categories[i][1] === 'Everything') {
+                                            continue;
+                                        }
+                                        $dialog_el.find('.add-post-form .destination-category')
+                                            .append('<option value="'+categories[i][1]+'">'+categories[i][1]+'</option>')
+                                            .on('change', function(event) {
+                                                if ($(this).val().indexOf('books') === -1) {
+                                                    $dialog_el.find('.add-post-form .post-author').val('').hide();
+                                                    $dialog_el.find('.add-post-form .post-isbn').val('').hide();
+                                                } else {
+                                                    $dialog_el.find('.add-post-form .post-author').show();
+                                                    $dialog_el.find('.add-post-form .post-isbn').show();
+                                                }
+                                            });
+                                    }
+                                    bindCreatePostDialog($dialog.$service, $dialog_el);
+                                })
+                                .fail(function() {
+                                });
+                        })
+                        .fail(function(errorMessage) {
+                            alert(errorMessage);
+                        });
+                })
+                .fail(function() {
+                    var errorMessage = '<span>There was a problem loading some data from the server. Please try again.</span>';
+                    $dialog = WTHelper.factory_createDialog(errorMessage, '#addPost')
+                    $dialog.$el_promise.fail(function(errorMessage) {
+                        alert(errorMessage);
+                    });
+                });
+        }
+
+        function bindCreatePostDialog($dialog_service, $dialog_el) {
+            $dialog_el.find('.add-post-form .post-submit').on({
+                'click': checkNewPostHandler
+            }, {
+                $dialog_service: $dialog_service,
+                $dialog_el: $dialog_el
+            });
+        }
+
+        function checkNewPostHandler(event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            var $dialog_service = event.data.$dialog_service,
+                $dialog_el = event.data.$dialog_el;
+
+            var category = $dialog_el.find('.destination-category').val().toLowerCase(),
+                title = $dialog_el.find('.post-title').val().trim(),
+                author = $dialog_el.find('.post-author').val().trim(),
+                details = $dialog_el.find('.post-details').val().trim(),
+                price = parseFloat($dialog_el.find('.post-price').val().trim()),
+                tags = $dialog_el.find('.post-tags').val().trim(),
+                isbn = $dialog_el.find('.post-isbn').val().trim();
+
+            if (!title.length) {
+                 $dialog_el.find('.add-post-form label')
+                    .text('Please enter a title for your post.')
+                    .css('color', 'red');
+            } else if (!author.length && category.indexOf('book') > -1) {
+                $dialog_el.find('.add-post-form label')
+                    .text('Please enter the author of the textbook, or N/A if necessary.')
+                    .css('color', 'red');
+            } else if (!details.length) {
+                 $dialog_el.find('.add-post-form label')
+                    .text('Please enter some details about your post.')
+                    .css('color', 'red');
+            } else if (details.length && details.length < 10) {
+                 $dialog_el.find('.add-post-form label')
+                    .text('Your product details are too short.')
+                    .css('color', 'red');
+            } else if (isNaN(price)) {
+                 $dialog_el.find('.add-post-form label')
+                    .text('You\'ve entered an invalid price.')
+                    .css('color', 'red');
+            } else if (!tags.length) {
+                 $dialog_el.find('.add-post-form label')
+                    .text('Please enter some tags for your post.')
+                    .css('color', 'red');
+            } else {
+                var obsId_regex = /^[0-9a-fA-f]{32}/;
+                WTServices.service_createPost(category, title, author, details, price, tags, isbn)
+                    .done(function(responseText) {
+                        if (responseText.match(obsId_regex)) {
+                            $dialog_el.find('.login-form label')
+                                .text('Success :)')
+                                .css('color', 'green');
+                            setTimeout(function() {
+                                window.location="./";
+                            }, 1000);
+                        } else {
+                            // TODO
+                        }
+                    })
+                    .fail(function(errorText) {
+                        console.log(errorText);
+                        $dialog_el.find('.add-post-form label')
+                            .text('Failed to connect to server :(')
+                            .css('color', 'red');
+                    });
+            }
+        }
+    }
+
     function ChangeResultsFilter(school, category, queryString) {
         inhibitUpdate = false;
         $pageUpdate = $.Deferred();
@@ -935,6 +1087,8 @@ $(document).ready(function() {
                 createLoginDialog();
             } else if ($target.is('#LogoutBtn') || $target.is('#LogoutBtn *')) {
                 logoutUser();
+            } else if ($target.is('#PostBtn') || $target.is('#PostBtn *')) {
+                createAddPostDialog();
             } else if ($target.is('#ChangeSchoolBtn') || $target.is('#ChangeSchoolBtn *')) {
                 window.location = "/selector.php";
             } else if ($target.is('#MessageBtn') || $target.is('#MessageBtn *')) {
