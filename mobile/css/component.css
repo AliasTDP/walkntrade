@@ -4,79 +4,156 @@
 */
 
 body {
-    font-family: "Garamond", Helvetica, Arial, sans-serif;
+    font-family: "Droid Sans", "Garamond", Helvetica, Arial, sans-serif;
+    font-size: 1em;
 }
 
 /* Header */
 .wt-header {
-    background-color: #FFF;
-    opacity: 0.95;
     width: 100%;
     height: 3.5em;
+    box-sizing: border-box;
     border-bottom: 0.15em solid #34d132;
-}
-
-.wt-header-content-container {
-    display: inline-block;
-    float: right;
-    vertical-align: middle;
-    height: 100%;
-}
-
-.wt-header-logo-wrapper {
-    display: inline-block;
-    text-align:center;
-    width:100%;
-    height: 100%;
+    background-color: #FFF;
+    opacity: 0.95;
 }
 
 .wt-header-content-wrapper {
-    height: 100%;
-    padding-left: 1em;
-    padding-right: 1em;
-    background-color: inherit;
-    transition: background-color 0.1s;
-    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
 }
-.wt-header-content-wrapper:hover { background-color: #DDD; }
 
-.wt-header-content-full { display: inline-block; }
-.wt-header-content-condensed { display: none; }
-
+.wt-header-content::after {
+    content: "";
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
 .wt-header-content {
     display: inline;
     vertical-align: middle;
+    line-height: 1.75em;
     text-decoration: none;
     color: #000;
 }
 
-.wt-header-menu-wrapper {
-    border-top:0.15em solid #34d132; 
-    background-color:#FFF; 
-    display:none; 
-    position: absolute; 
-    right:0; 
-    top:3.5em; 
-    width:10em;
+.wt-header-center-logo {
+    text-align:center;
+    width:100%;
+    padding-top: 0.25em;
 }
-/* For the dynamically generated content in the condensed menu */
-.wt-header-menu-wrapper > .wt-header-content-full {
-    display: block;
-    padding: 1em 1em 1em 1em;
-    border-bottom: 0.1em solid #888;
+
+.wt-header-offset-logo {
+    position: relative;
+    right: 0.5em;
+    max-width: 60%;
+}
+
+#wt-header-menu {
+}
+
+.wt-header-nav {
+    float: right;
+    height: 100%;
+}
+
+.wt-header-navitem-wrapper {
+    display: inline-block;
+    height: 100%;
+    padding: 0 1em 0 1em;
+    cursor: pointer;
+    background-color: inherit;
+    transition: background-color 0.1s;
+}
+.wt-header-navitem-wrapper *::before {
+    vertical-align: middle; 
+}
+
+.wt-header-navitem-wrapper:hover { background-color: #4fad68;}
+
+/* Sidebar */
+.wt-sidebar {
+    position: fixed; /* change to static at certain viewport */
+    z-index: 1;
+    top: 3.5em;
+    left: 0;
+    max-width: 50%; /* override with media queries */
+    height: calc(100% - 3.5em);
+    background-color: #EEE;
+    color: white;
+    opacity: 1;
+    box-shadow: 0 0.4em 1em rgba(0, 0, 0, 0.78);
+}
+
+.wt-sidebar .user-info {
+    background-color: #9CCC65;
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+}
+
+.wt-sidebar .user-info > .user-name {
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 0.5em;
+}
+
+.wt-sidebar .user-info > .user-img > img {
+    margin: 0 auto;
+}
+
+.wt-sidebar #LoginBtn,
+.wt-sidebar #LogoutBtn,
+.wt-sidebar #PostBtn,
+.wt-sidebar #MessageBtn,
+.wt-sidebar #PanelBtn {
+    background: #9CCC65;
+}
+
+.wt-sidebar #ChangeSchoolBtn{
+    background: #B98989;
+}
+
+.wt-sidebar-content {
+    box-sizing: border-box;
+    margin: 0.5em;
+    padding: 0.5em;
+    text-align: center;
+    transition: background-color 0.1s;
+    cursor: pointer;
+}
+
+.wt-sidebar-footer {
+    padding-top: 1em;
+    width: 100%;
+    position: absolute;
+    background-color: #444;
+    bottom: 6.5em;
+    height: 4em;
     text-align: center;
 }
 
-/* Switch to hamburger style menu on smaller viewports */
-@media screen and (max-device-width: 900px) {
-    .wt-header-content-full { display: none; }
-    .wt-header-content-condensed { display: inline-block; }
+.wt-sidebar-content:hover { background-color: #1dad68; }
+
+@media screen and (min-width: 600px) {
+    .wt-sidebar {
+        max-width: 37.5%;
+    }
+}
+@media screen and (min-width: 1000px) {
+    .wt-sidebar {
+        max-width: 25%;
+    }
+}
+
+.wt-sidebar > * {
+    display: none;
 }
 
 /* General "Content" wrapper styling */
 .wt-content {
     width: 100%;
-    color: #FFF;
 }
  
 .wt-content-wrapper {
@@ -86,8 +163,8 @@ body {
 
 /* Footer */
 .wt-footer {
-    height: 2.5em;
     width: 100%;
+    height: 2.5em;
     background-color: #EEE;
     opacity: 0.95;
 }
@@ -100,8 +177,7 @@ body {
 .wt-footer-content-wrapper {
     display: inline-block;
     height: 100%;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding: 0 1em 0 1em;
     background-color: inherit;
     transition: background-color 0.1s;
     cursor: pointer;

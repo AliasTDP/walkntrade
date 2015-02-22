@@ -33,12 +33,4 @@
 	</div>
 	<script type="text/javascript">
 	</script>
-<?php
-	if ($loggedIn){
-	
-	}
-	else {
-
-	}
-?>
 </div>

@@ -92,7 +92,6 @@ $('document').ready(function() {
         if (searchResults.query === undefined) {
             $.ajax({
                 'type': 'POST',
-                'crossDomain': true,
                 'url': '/api2/',
                 'data': {
                     'intent': 'getSchools',
@@ -125,9 +124,10 @@ $('document').ready(function() {
         
         $('ul#schools').slideDown();
     }
-    
+
     function setSchool(id) {
-        window.location.href='https://walkntrade.com/schools/' + id;
+        WTHelper.setCookie('sPref', id, 30);
+        window.location='./';
     }
     
     function searchSchools(query) {

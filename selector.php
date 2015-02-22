@@ -1,11 +1,13 @@
 <?php
-$needles = array("Android", "iPhone", "iPad", "Windows Phone");
-	foreach ($needles as $needle) {
-		if(strpos($_SERVER["HTTP_USER_AGENT"], $needle) !== false){
-			include("mobile/index.html");
-			return;
-		}
-	}
+$userAgent = $_SERVER["HTTP_USER_AGENT"];
+$mobileDevices = array("Android", "iPhone", "iPad", "Windows Phone");
+
+foreach ($mobileDevices as $mobileDevice) {
+    if(strpos($userAgent, $mobileDevice) !== false){
+        include("mobile/index.html");
+        return;
+    }
+}
 ?>
 
 <!DOCTYPE HTML>
