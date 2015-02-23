@@ -96,7 +96,7 @@ $(document).ready(function() {
                             .done(function(response) {
                                 if (response.message === 'Threads for current user') {
                                     if (!response.payload.length) {
-                                        $('.wt-messager').append('<span>No messages</span>');
+                                        $('.wt-messager').append('<span class="wt-content-info">No Messages.</span>');
                                         return;
                                     }
 
@@ -127,7 +127,7 @@ $(document).ready(function() {
                                     }
                                 }
                             }).fail(function() {
-                                $('.wt-messager').append('<span>Failed to connect to server :(</span>');
+                                $('.wt-messager').append('<span class="wt-content-error">Failed to connect to server.</span>');
                             });
                     }
                 });
@@ -179,8 +179,8 @@ $(document).ready(function() {
                                 .done(function() {
                                     $pageUpdate.resolve();
                                 })
-                                .fail(function() {
-                                    $('.wt-results').append('<p>wow cant connect to wt :( </p>');
+                                .fail(function(error) {
+                                    $('.wt-results').append('<span class="wt-content-error">'+error.detailed+'</span>');
                                     $('.wt-results').slideDown('slow');
                                     $pageUpdate.reject();
                                 });
@@ -316,7 +316,7 @@ $(document).ready(function() {
                     .fail(function() {
                         $('body').append('<section class="wt-message-thread-wrapper">\
                                               <div class="wt-message-thread">\
-                                                  <span>Failed to load message thread</span>\
+                                                  <span class="wt-content-info">Failed to connect to server.</span>\
                                               </div>\
                                          </section>');
                         $pageUpdate.reject();
@@ -915,7 +915,10 @@ $(document).ready(function() {
                 status.resolve();
             })
             .fail(function(request) {
-                status.reject();
+                status.reject({
+                    simple: 'Failed to connect to Walkntrade.',
+                    detailed: 'Failed to connect to Walkntrade while retrieving the post catalog.'
+                });
             });
         
         return status;
@@ -1082,13 +1085,13 @@ $(document).ready(function() {
             getPostsByCategory(school, category, { query: queryString })
                 .done(function() {
                     if (inhibitUpdate) {
-                        $('.wt-results').append('<p>no results :(</p>');
+                        $('.wt-results').append('<span class="wt-content-info">No Results</span>');
                     }
                     $('.wt-results').slideDown('slow');
                     $pageUpdate.resolve();
                 })
-                .fail(function() {
-                    $('.wt-results').append('<p>wow cant connect to wt :( </p>');
+                .fail(function(error) {
+                    $('.wt-results').append('<span class="wt-content-error">'+error.detailed+'</span>');
                     $('.wt-results').slideDown('slow');
                     $pageUpdate.reject();
                 });
