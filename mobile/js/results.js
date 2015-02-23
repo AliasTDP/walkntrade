@@ -161,6 +161,15 @@ $(document).ready(function() {
                                 'z-index': 0
                             });
                             
+                            /**
+                            Since we are reloading the results from scratch, we
+                            need to reset the 'inhibitUpdate' flag which is set
+                            when there are no more results to load (the user
+                            may have already triggered this).
+                            **/
+                            inhibitUpdate = false;
+
+                            // Fetch results
                             $pageUpdate = $.Deferred();
                             getPostsByCategory(school, currentCategory, { resetOffset: true })
                                 .done(function() {
@@ -881,24 +890,29 @@ $(document).ready(function() {
         return status;
     }
     
-    function getPostsByCategory(schoolId, category, queryString) {
+    function getPostsByCategory(schoolId, category, opts) {
         var status = $.Deferred();
-        WTServices.service_getPostsByCategory(schoolId, category, {
-            query: queryString || '',
-            amount: 12,
-            sort: 0
-        }).done(function(response) {
-            currentCategory = category;
-            currentQuery = queryString || '';
-            if (response.payload.length > 0) {
-                populateResults(response.payload);
-            } else {
-                inhibitUpdate = true;
-            }
-            status.resolve();
-        }).fail(function(request) {
-            status.reject();
-        });
+
+        var opts = opts || {};
+
+            opts['query'] = opts['query'] || '',
+            opts['amount'] = opts['amount'] || 12,
+            opts['sort'] = opts['sort'] || 0;
+
+        WTServices.service_getPostsByCategory(schoolId, category, opts)
+            .done(function(response) {
+                currentCategory = category;
+                currentQuery = opts.query || '';
+                if (response.payload.length > 0) {
+                    populateResults(response.payload);
+                } else {
+                    inhibitUpdate = true;
+                }
+                status.resolve();
+            })
+            .fail(function(request) {
+                status.reject();
+            });
         
         return status;
     }
@@ -1061,18 +1075,19 @@ $(document).ready(function() {
 
         $('.wt-results').slideUp('slow', function() {
             $(this).empty();
-            getPostsByCategory(school, category, queryString).done(function() {
-                if (inhibitUpdate) {
-                    $('.wt-results').append('<p>no results :(</p>');
-                }
-                $('.wt-results').slideDown('slow');
-                $pageUpdate.resolve();
-            })
-            .fail(function() {
-                $('.wt-results').append('<p>wow cant connect to wt :( </p>');
-                $('.wt-results').slideDown('slow');
-                $pageUpdate.reject();
-            });
+            getPostsByCategory(school, category, { query: queryString })
+                .done(function() {
+                    if (inhibitUpdate) {
+                        $('.wt-results').append('<p>no results :(</p>');
+                    }
+                    $('.wt-results').slideDown('slow');
+                    $pageUpdate.resolve();
+                })
+                .fail(function() {
+                    $('.wt-results').append('<p>wow cant connect to wt :( </p>');
+                    $('.wt-results').slideDown('slow');
+                    $pageUpdate.reject();
+                });
         });
     }
 
