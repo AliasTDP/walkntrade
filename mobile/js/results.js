@@ -50,6 +50,10 @@ $(document).ready(function() {
     }
     
     function showConversationsView() {
+        if (inSearchView) {
+            WTControllers.ResultsFilterController(); // State Machine will return to Categories view.
+        }
+
         window.location.hash = '#messages';
         $(window).off('scroll', WTControllers.ResultsScrollController);
         $(window).on('hashchange', WTControllers.LocationController);
@@ -1138,6 +1142,7 @@ $(document).ready(function() {
         ResultsFilterController: function(event) {
             if (inSearchView) {
                 $('.results-search').fadeOut('slow', function() {
+                    $('.results-searchfield').prop('value', '');
                     $('.results-categories').fadeIn('fast', function() {
                         $(window).triggerHandler('resize');
                         inSearchView = false;
@@ -1234,7 +1239,9 @@ $(document).ready(function() {
                 }
 
                 $pageUpdate = $.Deferred();
-                getPostsByCategory(school, currentCategory)
+
+                var queryString = inSearchView ? $('.results-searchfield').val() : '';
+                getPostsByCategory(school, currentCategory, { query: queryString })
                     .done(function() {
                         $pageUpdate.resolve();
                     })

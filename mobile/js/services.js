@@ -110,7 +110,7 @@ var WTServices = (function() {
             sort = opts.sort || undefined,
             flag = opts.resetOffset || false;
             
-        if (flag === true || category !== previousCategory || query !== previousQuery || query.length > 0) { 
+        if (flag === true || category !== previousCategory || query !== previousQuery || (previousQuery.length === 0 && query.length > 0)) { 
             offset = 0;
         }
         
