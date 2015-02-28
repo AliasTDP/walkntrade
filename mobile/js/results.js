@@ -194,36 +194,7 @@ $(document).ready(function() {
     }
     
     function showMessageThread(thread_info) {
-        if (!poll) {
-            poll = setInterval(function() { 
-                if ($pageUpdate.state() === 'pending') {
-                    return;
-                }
-
-                WTServices.service_getNewMessagesInThread(thread_info.thread_id)
-                    .done(function(response) {
-                        if (response.payload.length) {
-                            for (var i = 0; i < response.payload.length; i++) {
-                                var msg = response.payload[i];
-                                $('.wt-message-thread').append('\
-                                <div class="wt-message" style="color:black;">\
-                                    <span class="wt-message-avatar" style="float:left;"><img class="pure-img" src="'+msg.avatar+'"/></span>\
-                                    <span class="wt-message-text" style="background-color:yellow; float:left;">'+msg.message_content+'</span>\
-                                    <div class="wt-message-info" style="float:left;">'+msg.sender_name+' at ' + msg.datetime + '</div>\
-                                </div>');
-                            }
-
-                            var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
-                            $('.wt-message-thread').animate({
-                                scrollTop: '+='+offset
-                            }, 100);
-                        }
-                    })
-                    .fail(function() {
-                        // TODO
-                    });
-            }, 5000);
-        }
+        $pageUpdate = $.Deferred();
         window.location.hash = '#messageThread';
         
         $('body > section.wt-content').css({
@@ -237,7 +208,6 @@ $(document).ready(function() {
             complete: function() {
                 $(this).children().css('opacity', 0.5);
 
-                $pageUpdate = $.Deferred();
                 WTServices.service_getThreadByID(thread_info.thread_id, 10)
                     .done(function(thread) {
                         $('body').append('<section class="wt-message-thread-wrapper">\
@@ -327,6 +297,37 @@ $(document).ready(function() {
                 });
            }
         });
+
+        if (!poll) {
+            poll = setInterval(function() {
+                if ($pageUpdate.state() === 'pending') {
+                    return;
+                }
+
+                WTServices.service_getNewMessagesInThread(thread_info.thread_id)
+                    .done(function(response) {
+                        if (response.payload.length) {
+                            for (var i = 0; i < response.payload.length; i++) {
+                                var msg = response.payload[i];
+                                $('.wt-message-thread').append('\
+                                <div class="wt-message" style="color:black;">\
+                                    <span class="wt-message-avatar" style="float:left;"><img class="pure-img" src="'+msg.avatar+'"/></span>\
+                                    <span class="wt-message-text" style="background-color:yellow; float:left;">'+msg.message_content+'</span>\
+                                    <div class="wt-message-info" style="float:left;">'+msg.sender_name+' at ' + msg.datetime + '</div>\
+                                </div>');
+                            }
+
+                            var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                            $('.wt-message-thread').animate({
+                                scrollTop: '+='+offset
+                            }, 100);
+                        }
+                    })
+                    .fail(function() {
+                        // TODO
+                    });
+            }, 5000);
+        }
     }
     
     function leaveMessageThread() {
