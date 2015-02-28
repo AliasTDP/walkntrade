@@ -194,6 +194,8 @@ $(document).ready(function() {
     }
     
     function showMessageThread(thread_info) {
+        if ($pageUpdate.state() === 'pending') return;
+
         $pageUpdate = $.Deferred();
         window.location.hash = '#messageThread';
         
