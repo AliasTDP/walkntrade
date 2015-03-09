@@ -440,6 +440,14 @@ body {
         color: grey;
     }
 
+.wt-content-error,
+.wt-content-info {
+    display: block;
+    font-size: 1.25em;
+    color: grey;
+    text-align: center;
+}
+
 .body-overlay {
     position: absolute; 
     background-color: rgba(80, 80, 80, 0.95);

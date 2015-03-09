@@ -108,11 +108,15 @@ var WTServices = (function() {
             query = opts.query || '',
             amount = opts.amount || undefined,
             sort = opts.sort || undefined,
-            flag = opts.resetOffset || false;
-            
-        if (flag === true || category !== previousCategory || query !== previousQuery || query.length > 0) { 
-            offset = 0;
-        }
+            resetFlag = opts.resetOffset || false;
+
+        var filterChanged = (
+            category !== previousCategory ||
+            query !== previousQuery ||
+            (previousQuery.length === 0 && query.length > 0)
+        );
+
+        if (resetFlag || filterChanged) { offset = 0; }
         
         previousCategory = category;
         previousQuery = query;

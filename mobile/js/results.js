@@ -50,6 +50,10 @@ $(document).ready(function() {
     }
     
     function showConversationsView() {
+        if (inSearchView) {
+            WTControllers.ResultsFilterController(); // State Machine will return to Categories view.
+        }
+
         window.location.hash = '#messages';
         $(window).off('scroll', WTControllers.ResultsScrollController);
         $(window).on('hashchange', WTControllers.LocationController);
@@ -92,7 +96,7 @@ $(document).ready(function() {
                             .done(function(response) {
                                 if (response.message === 'Threads for current user') {
                                     if (!response.payload.length) {
-                                        $('.wt-messager').append('<span>No messages</span>');
+                                        $('.wt-messager').append('<span class="wt-content-info">No Messages.</span>');
                                         return;
                                     }
 
@@ -123,7 +127,7 @@ $(document).ready(function() {
                                     }
                                 }
                             }).fail(function() {
-                                $('.wt-messager').append('<span>Failed to connect to server :(</span>');
+                                $('.wt-messager').append('<span class="wt-content-error">Failed to connect to server.</span>');
                             });
                     }
                 });
@@ -161,13 +165,22 @@ $(document).ready(function() {
                                 'z-index': 0
                             });
                             
+                            /**
+                            Since we are reloading the results from scratch, we
+                            need to reset the 'inhibitUpdate' flag which is set
+                            when there are no more results to load (the user
+                            may have already triggered this).
+                            **/
+                            inhibitUpdate = false;
+
+                            // Fetch results
                             $pageUpdate = $.Deferred();
                             getPostsByCategory(school, currentCategory, { resetOffset: true })
                                 .done(function() {
                                     $pageUpdate.resolve();
                                 })
-                                .fail(function() {
-                                    $('.wt-results').append('<p>wow cant connect to wt :( </p>');
+                                .fail(function(error) {
+                                    $('.wt-results').append('<span class="wt-content-error">'+error.detailed+'</span>');
                                     $('.wt-results').slideDown('slow');
                                     $pageUpdate.reject();
                                 });
@@ -181,36 +194,9 @@ $(document).ready(function() {
     }
     
     function showMessageThread(thread_info) {
-        if (!poll) {
-            poll = setInterval(function() { 
-                if ($pageUpdate.state() === 'pending') {
-                    return;
-                }
+        if ($pageUpdate.state() === 'pending') return;
 
-                WTServices.service_getNewMessagesInThread(thread_info.thread_id)
-                    .done(function(response) {
-                        if (response.payload.length) {
-                            for (var i = 0; i < response.payload.length; i++) {
-                                var msg = response.payload[i];
-                                $('.wt-message-thread').append('\
-                                <div class="wt-message" style="color:black;">\
-                                    <span class="wt-message-avatar" style="float:left;"><img class="pure-img" src="'+msg.avatar+'"/></span>\
-                                    <span class="wt-message-text" style="background-color:yellow; float:left;">'+msg.message_content+'</span>\
-                                    <div class="wt-message-info" style="float:left;">'+msg.sender_name+' at ' + msg.datetime + '</div>\
-                                </div>');
-                            }
-
-                            var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
-                            $('.wt-message-thread').animate({
-                                scrollTop: '+='+offset
-                            }, 100);
-                        }
-                    })
-                    .fail(function() {
-                        // TODO
-                    });
-            }, 5000);
-        }
+        $pageUpdate = $.Deferred();
         window.location.hash = '#messageThread';
         
         $('body > section.wt-content').css({
@@ -224,7 +210,6 @@ $(document).ready(function() {
             complete: function() {
                 $(this).children().css('opacity', 0.5);
 
-                $pageUpdate = $.Deferred();
                 WTServices.service_getThreadByID(thread_info.thread_id, 10)
                     .done(function(thread) {
                         $('body').append('<section class="wt-message-thread-wrapper">\
@@ -303,7 +288,7 @@ $(document).ready(function() {
                     .fail(function() {
                         $('body').append('<section class="wt-message-thread-wrapper">\
                                               <div class="wt-message-thread">\
-                                                  <span>Failed to load message thread</span>\
+                                                  <span class="wt-content-info">Failed to connect to server.</span>\
                                               </div>\
                                          </section>');
                         $pageUpdate.reject();
@@ -314,6 +299,37 @@ $(document).ready(function() {
                 });
            }
         });
+
+        if (!poll) {
+            poll = setInterval(function() {
+                if ($pageUpdate.state() === 'pending') {
+                    return;
+                }
+
+                WTServices.service_getNewMessagesInThread(thread_info.thread_id)
+                    .done(function(response) {
+                        if (response.payload.length) {
+                            for (var i = 0; i < response.payload.length; i++) {
+                                var msg = response.payload[i];
+                                $('.wt-message-thread').append('\
+                                <div class="wt-message" style="color:black;">\
+                                    <span class="wt-message-avatar" style="float:left;"><img class="pure-img" src="'+msg.avatar+'"/></span>\
+                                    <span class="wt-message-text" style="background-color:yellow; float:left;">'+msg.message_content+'</span>\
+                                    <div class="wt-message-info" style="float:left;">'+msg.sender_name+' at ' + msg.datetime + '</div>\
+                                </div>');
+                            }
+
+                            var offset = $('.wt-message-thread').children('.wt-message:last-child').position().top;
+                            $('.wt-message-thread').animate({
+                                scrollTop: '+='+offset
+                            }, 100);
+                        }
+                    })
+                    .fail(function() {
+                        // TODO
+                    });
+            }, 5000);
+        }
     }
     
     function leaveMessageThread() {
@@ -881,24 +897,32 @@ $(document).ready(function() {
         return status;
     }
     
-    function getPostsByCategory(schoolId, category, queryString) {
+    function getPostsByCategory(schoolId, category, opts) {
         var status = $.Deferred();
-        WTServices.service_getPostsByCategory(schoolId, category, {
-            query: queryString || '',
-            amount: 12,
-            sort: 0
-        }).done(function(response) {
-            currentCategory = category;
-            currentQuery = queryString || '';
-            if (response.payload.length > 0) {
-                populateResults(response.payload);
-            } else {
-                inhibitUpdate = true;
-            }
-            status.resolve();
-        }).fail(function(request) {
-            status.reject();
-        });
+
+        var opts = opts || {};
+
+            opts['query'] = opts['query'] || '',
+            opts['amount'] = opts['amount'] || 12,
+            opts['sort'] = opts['sort'] || 0;
+
+        WTServices.service_getPostsByCategory(schoolId, category, opts)
+            .done(function(response) {
+                currentCategory = category;
+                currentQuery = opts.query || '';
+                if (response.payload.length > 0) {
+                    populateResults(response.payload);
+                } else {
+                    inhibitUpdate = true;
+                }
+                status.resolve();
+            })
+            .fail(function(request) {
+                status.reject({
+                    simple: 'Failed to connect to Walkntrade.',
+                    detailed: 'Failed to connect to Walkntrade while retrieving the post catalog.'
+                });
+            });
         
         return status;
     }
@@ -1061,18 +1085,19 @@ $(document).ready(function() {
 
         $('.wt-results').slideUp('slow', function() {
             $(this).empty();
-            getPostsByCategory(school, category, queryString).done(function() {
-                if (inhibitUpdate) {
-                    $('.wt-results').append('<p>no results :(</p>');
-                }
-                $('.wt-results').slideDown('slow');
-                $pageUpdate.resolve();
-            })
-            .fail(function() {
-                $('.wt-results').append('<p>wow cant connect to wt :( </p>');
-                $('.wt-results').slideDown('slow');
-                $pageUpdate.reject();
-            });
+            getPostsByCategory(school, category, { query: queryString })
+                .done(function() {
+                    if (inhibitUpdate) {
+                        $('.wt-results').append('<span class="wt-content-info">No Results</span>');
+                    }
+                    $('.wt-results').slideDown('slow');
+                    $pageUpdate.resolve();
+                })
+                .fail(function(error) {
+                    $('.wt-results').append('<span class="wt-content-error">'+error.detailed+'</span>');
+                    $('.wt-results').slideDown('slow');
+                    $pageUpdate.reject();
+                });
         });
     }
 
@@ -1123,6 +1148,7 @@ $(document).ready(function() {
         ResultsFilterController: function(event) {
             if (inSearchView) {
                 $('.results-search').fadeOut('slow', function() {
+                    $('.results-searchfield').prop('value', '');
                     $('.results-categories').fadeIn('fast', function() {
                         $(window).triggerHandler('resize');
                         inSearchView = false;
@@ -1219,7 +1245,9 @@ $(document).ready(function() {
                 }
 
                 $pageUpdate = $.Deferred();
-                getPostsByCategory(school, currentCategory)
+
+                var queryString = inSearchView ? $('.results-searchfield').val() : '';
+                getPostsByCategory(school, currentCategory, { query: queryString })
                     .done(function() {
                         $pageUpdate.resolve();
                     })
