@@ -282,6 +282,8 @@ body {
 
     .wt-result > .visual > img {
         display: inline-block;
+        max-width: 90%;
+        max-height: 90%;
         vertical-align: middle;
         box-shadow: 0 2px 2px rgba(0,0,0,0.2), 0 1px 5px rgba(0,0,0,0.2), 0 0 0 10px rgba(255,255,255,0.6);
         margin: 0 auto;
@@ -292,7 +294,7 @@ body {
         box-sizing: border-box;
         text-align: left;
         width: 49%;
-        height: 3.5em;
+        height: 10em;
         padding-right: 0.25em;
         padding-left: 0.25em;
         vertical-align: top;
@@ -527,7 +529,7 @@ body {
     
     .wt-result > .info {
         display: block;
-        height: 8.5em;
+        height: 8em;
         width: 100%;
     }
     
