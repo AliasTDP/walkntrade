@@ -747,7 +747,7 @@ $(document).ready(function() {
                     $('.wt-sidebar > .user-info > .user-name')
                         .html(response1[0].message);
                     $('.wt-sidebar > .user-info > .user-img > img')
-                        .attr('src', 'https://walkntrade.com/'+response2[0].message);
+                        .attr('src', response2[0].message);
 
                     $pageUpdate.resolve();
                 })
