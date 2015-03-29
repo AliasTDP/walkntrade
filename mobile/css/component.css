@@ -72,9 +72,19 @@ body {
 .wt-header-navitem-wrapper:hover { background-color: #4fad68;}
 
 /* Sidebar */
+.wt-sidebar-container {
+    position: fixed;
+    z-index: 1;
+    top: 3.5em;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Opacity without nested element quirk */
+    display: none;
+}
 .wt-sidebar {
     position: fixed; /* change to static at certain viewport */
-    z-index: 1;
+    z-index: 2;
     top: 3.5em;
     left: 0;
     max-width: 50%; /* override with media queries */

@@ -18,8 +18,9 @@ var WTHelper = (function() {
     var initSidebar = function() {
         var $menu = $('.wt-header').find('#wt-header-menu'),
             $sidebar = $('.wt-sidebar');
-        
+
         $menu.on('click', animateSidebar);
+
         $("body").on('click', function(event) {
             $target = $(event.target);
             if ($target.is($sidebar)) {
@@ -32,9 +33,6 @@ var WTHelper = (function() {
         $(window).on('resize', function(event) {
             if (sidebarState === 'visible') { animateSidebar(event); }
         });
-        $(window).on('scroll', function(event) {
-            if (sidebarState === 'visible') { animateSidebar(event); }
-        });
         
         return $sidebar;
     };
@@ -42,18 +40,26 @@ var WTHelper = (function() {
     var animateSidebar = function(event) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        var $sidebar = $('.wt-sidebar');
-        if (sidebarState === 'hidden') { 
-            $sidebar.animate({ "width": $sidebar.css('max-width') }, {
-                "duration": 250,
-                "start": function() {
-                    $sidebar.children().fadeIn();
-                },
+        var $sidebar_container = $('.wt-sidebar-container');
+        var $sidebar = $sidebar_container.find('.wt-sidebar');
+        if (sidebarState === 'hidden') {
+            $('body').css('overflow-y', 'hidden');
+            $sidebar_container.fadeIn({
+                "duration": 100,
                 "complete": function() {
-                    sidebarState = 'visible';
+                    $sidebar.animate({ "width": $sidebar.css('max-width') }, {
+                        "duration": 250,
+                        "start": function() {
+                            $sidebar.children().fadeIn();
+                        },
+                        "complete": function() {
+                            sidebarState = 'visible';
+                        }
+                    });
                 }
             });
         } else if (sidebarState === 'visible') {
+            $('body').css('overflow-y', 'initial');
             $sidebar.animate({ "width": "0" }, {
                 "duration": 250,
                 "start": function() {
@@ -61,6 +67,7 @@ var WTHelper = (function() {
                 },
                 "complete": function() {
                     sidebarState = 'hidden';
+                    $sidebar_container.fadeOut(100);
                 }
             });
         }

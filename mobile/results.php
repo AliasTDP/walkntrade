@@ -35,58 +35,60 @@
              --><button class="results-searchbutton pure-button">Go!</button>
             </div>
         </section>
-        <nav class="wt-sidebar" style="overflow-y: scroll;">
-            <?php if($loggedIn) {
-                if(file_exists(ROOTPATH."user_images/uid_".$_SESSION["user_id"].".jpg")) {
-                    $image = ROOTPATH.'/user_images/uid_'.$_SESSION["user_id"].'.jpg';
-                } else {
-                    $image = ROOTPATH.'/colorful/Anonymous_User.jpg';
-                }
-                
-               echo('
-               <div class="user-info">
-                   <div class="user-name">'.$_SESSION["username"].'</div>
-                   <div class="user-img">
-                       <img class="pure-img" src="'.$image.'"/>
+        <div class="wt-sidebar-container">
+            <nav class="wt-sidebar" style="overflow-y: scroll;">
+                <?php if($loggedIn) {
+                    if(file_exists(ROOTPATH."user_images/uid_".$_SESSION["user_id"].".jpg")) {
+                        $image = ROOTPATH.'/user_images/uid_'.$_SESSION["user_id"].'.jpg';
+                    } else {
+                        $image = ROOTPATH.'/colorful/Anonymous_User.jpg';
+                    }
+
+                   echo('
+                   <div class="user-info">
+                       <div class="user-name">'.$_SESSION["username"].'</div>
+                       <div class="user-img">
+                           <img class="pure-img" src="'.$image.'"/>
+                       </div>
                    </div>
-               </div>
-               <div id="LogoutBtn" class="wt-sidebar-content">
-                    <a>Logout</a>
-               </div>
-               <div id="PostBtn" class="wt-sidebar-content">
-                    <a>Add a Post</a>
-               </div>
-               <div id="MessageBtn" class="wt-sidebar-content">
-                    <a>Messages</a>
-               </div>
-               <!--
-               <div id="PanelBtn" class="wt-sidebar-content">
-                    <a>User CP</a>
-               </div>
-               -->');
-            } else {
-               echo('
-               <div id="LoginBtn" class="wt-sidebar-content">
-                   <a>Login</a>
-               </div>');
-            } ?>
-            <div id="ChangeSchoolBtn" class="wt-sidebar-content">
-                <a>Change School</a>
-            </div>
-            <!--
-            <div class="wt-sidebar-footer">
-                <div>
-                    <a>Terms of Service</a>
+                   <div id="LogoutBtn" class="wt-sidebar-content">
+                        <a>Logout</a>
+                   </div>
+                   <div id="PostBtn" class="wt-sidebar-content">
+                        <a>Add a Post</a>
+                   </div>
+                   <div id="MessageBtn" class="wt-sidebar-content">
+                        <a>Messages</a>
+                   </div>
+                   <!--
+                   <div id="PanelBtn" class="wt-sidebar-content">
+                        <a>User CP</a>
+                   </div>
+                   -->');
+                } else {
+                   echo('
+                   <div id="LoginBtn" class="wt-sidebar-content">
+                       <a>Login</a>
+                   </div>');
+                } ?>
+                <div id="ChangeSchoolBtn" class="wt-sidebar-content">
+                    <a>Change School</a>
                 </div>
-                <div>
-                    <a>Privacy Policy</a>
+                <!--
+                <div class="wt-sidebar-footer">
+                    <div>
+                        <a>Terms of Service</a>
+                    </div>
+                    <div>
+                        <a>Privacy Policy</a>
+                    </div>
+                    <div>
+                        <a>Feedback</a>
+                    </div>
                 </div>
-                <div>
-                    <a>Feedback</a>
-                </div>
-            </div>
-            -->
-        </nav>
+                -->
+            </nav>
+        </div>
         <section class="wt-content">
             <div class="wt-results-wrapper">
                 <main class="wt-results">
