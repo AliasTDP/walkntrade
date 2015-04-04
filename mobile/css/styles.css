@@ -20,6 +20,7 @@ li {
 input[type=search] {
     box-shadow: 0;
     transition: box-shadow 0.05s;
+    -webkit-appearance: none;
 }
 input[type=search]:focus {
     box-shadow: 0 0 0.3em 0.2em #34d132 inset;
