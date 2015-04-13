@@ -333,6 +333,10 @@ $(document).ready(function() {
     }
     
     function leaveMessageThread() {
+        if ($pageUpdate.state() === 'pending') return;
+
+        $pageUpdate = $.Deferred();
+
         clearInterval(poll);
         poll = undefined;
         $('section.wt-message-thread-wrapper').remove();
@@ -350,6 +354,8 @@ $(document).ready(function() {
                 $('.wt-header > #wt-header-menu').off('click').on('click', function(event) {
                     leaveConversationsView();
                 });
+
+                $pageUpdate.resolve();
             }
         });
     }
